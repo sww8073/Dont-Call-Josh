@@ -1,5 +1,3 @@
-package storagemanager;
-
 public class StorageManager extends AStorageManager {
 
     /**

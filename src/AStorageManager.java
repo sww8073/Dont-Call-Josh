@@ -1,5 +1,3 @@
-package storagemanager;
-
 import java.util.ArrayList;
 
 /**
