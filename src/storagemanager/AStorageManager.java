@@ -1,9 +1,11 @@
+package storagemanager;
+
 import java.util.ArrayList;
 
 /**
  * Abstract class for the Storage Manager.
  *
- * Any errors must throw a new StorageManagerException.
+ * Any errors must throw a new storagemanager.StorageManagerException.
  *
  * Example Errors:
  *
@@ -21,7 +23,7 @@ public abstract class AStorageManager {
      * @param restart restart the database in the location if true; start a new database otherwise
      * @throws StorageManagerException database fails to restart or start
      */
-    protected AStorageManager(String dbLoc, int pageBufferSize, int pageSize, boolean restart) throws StorageManagerException{
+    protected AStorageManager(String dbLoc, int pageBufferSize, int pageSize, boolean restart) throws StorageManagerException {
         if(restart)
             this.restartDatabase(dbLoc);
         else

@@ -1,3 +1,7 @@
+package storagemanager;
+
+import storagemanager.AStorageManager;
+
 public class StorageManager extends AStorageManager {
 
     /**
