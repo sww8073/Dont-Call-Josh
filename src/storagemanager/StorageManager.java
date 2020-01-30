@@ -1,10 +1,18 @@
+/**
+ * Storage Manager: Phase 1
+ * Team: Don't Tell Josh
+ * Members: Matthew Clements, Josh Tellier, Stone Warren, Josh Schenk
+ */
 package storagemanager;
-
-import storagemanager.AStorageManager;
-
 import java.io.File;
 
 public class StorageManager extends AStorageManager {
+
+    // private instance variables
+    private String dbLoc;
+    private int pageBufferSize;
+    private int pageSize;
+    private Buffer buffer;
 
     /**
      * Creates an instance of the database. Tries to restart, if requested, the database at the provided location.
@@ -27,6 +35,13 @@ public class StorageManager extends AStorageManager {
         return new Object[0][];
     }
 
+    /**
+     * Gets a record for the provided table name.
+     * @param table the number of the table
+     * @param keyValue an array representing the key to find
+     * @return an 1d array of objects representing the data in the record, or NULL if no such record exists.
+     * @throws StorageManagerException if the table does not exist
+     */
     @Override
     public Object[] getRecord(int table, Object[] keyValue) throws StorageManagerException {
         return new Object[0];
@@ -74,7 +89,10 @@ public class StorageManager extends AStorageManager {
 
     @Override
     protected void restartDatabase(String dbLoc) throws StorageManagerException {
+        //TODO retrieve pageBufferSize and pageSize and set them equal to the instance variables
+        // we will probly store this somewhere in a file
 
+        //TODO grab buffer info from file
     }
 
     /**
@@ -91,7 +109,9 @@ public class StorageManager extends AStorageManager {
         for (File file: dbDirectory.listFiles()) {
             deleteFile(file.getAbsolutePath());//delete everything in file
         }
-        
+
+        this.pageBufferSize = pageBufferSize;
+        this.pageSize = pageSize;
     }
 
     /**
