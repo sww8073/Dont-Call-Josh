@@ -90,7 +90,11 @@ public class StorageManager extends AStorageManager {
      */
     @Override
     public void addTable(int table, String[] dataTypes, Integer[] keyIndices) throws StorageManagerException {
-
+        // it says these are ArrayLists but they are being passed in as an array?
+        // are tables going to get bigger and smaller
+        //
+        // find a page and add table into it, if there isn't enough room then split data on page to two pages?
+        // should i make a page object that keeps track of the amount of dat in it, just a big int array?
     }
 
     @Override
