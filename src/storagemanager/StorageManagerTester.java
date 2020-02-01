@@ -37,7 +37,6 @@ public class StorageManagerTester {
         String[] dataTypes1 = {"integer", "char(40)", "double", "boolean"};
         Integer[] keyIndices1 = new Integer[]{0,2};
 
-        /**
         try {
             sm.addTable(1, dataTypes1, keyIndices1);
         } catch (Exception e) {
@@ -94,6 +93,7 @@ public class StorageManagerTester {
             e.printStackTrace();
         }
 
+        /**
         // Table 2
         try {
             BufferedReader br = new BufferedReader(new FileReader("inputs/data2.csv"));
