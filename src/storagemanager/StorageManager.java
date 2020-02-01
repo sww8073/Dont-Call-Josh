@@ -5,13 +5,17 @@
  */
 package storagemanager;
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
 
 public class StorageManager extends AStorageManager {
 
     // private instance variables
-    private Map<Integer, String[]> dataTypes;
-    private Map<Integer, Integer[]> keyIndices;
+    private Map<Integer, String[]> dataTypes; // key is table id, value is the data types
+    private Map<Integer, Integer[]> keyIndices; // key is table id, vale is keyIndices
+
+    private int pageBufferSize;
+    private int pageSize;
 
     /**
      * Creates an instance of the database. Tries to restart, if requested, the database at the provided location.
@@ -89,7 +93,7 @@ public class StorageManager extends AStorageManager {
      */
     @Override
     public void addTable(int table, String[] dataTypes, Integer[] keyIndices) throws StorageManagerException {
-
+        this.dataTypes.put(table, )
     }
 
     @Override
@@ -125,6 +129,11 @@ public class StorageManager extends AStorageManager {
             deleteFile(file.getAbsolutePath());//delete everything in file
         }
 
+        this.dataTypes = new HashMap<Integer, String[]>();
+        this.keyIndices = new HashMap<Integer, Integer[]>();
+
+        this.pageBufferSize = pageBufferSize;
+        this.pageSize = pageSize;
     }
 
     /**
