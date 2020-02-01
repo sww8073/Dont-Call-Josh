@@ -13,9 +13,15 @@ public class StorageManager extends AStorageManager {
     // private instance variables
     private Map<Integer, String[]> dataTypes; // key is table id, value is the data types
     private Map<Integer, Integer[]> keyIndices; // key is table id, vale is keyIndices
+    private Map<Integer, Integer> maxPageSize; // key is table id, value is tha max size of a page
 
     private int pageBufferSize;
     private int pageSize;
+
+    private final int INTSIZE = 4;
+    private final int DOUBLESIZE = 8;
+    private final int BOOLSIZE = 1;
+    private final int CHARSIZE = 2;
 
     /**
      * Creates an instance of the database. Tries to restart, if requested, the database at the provided location.
@@ -111,6 +117,9 @@ public class StorageManager extends AStorageManager {
         }
         this.dataTypes.put(table, dataTypes);
         this.keyIndices.put(table, keyIndices);
+
+        for(int i = 0;i < dataTypes.length;i++)
+
     }
 
     @Override
@@ -125,10 +134,7 @@ public class StorageManager extends AStorageManager {
 
     @Override
     protected void restartDatabase(String dbLoc) throws StorageManagerException {
-        //TODO retrieve pageBufferSize and pageSize and set them equal to the instance variables
-        // we will probly store this somewhere in a file
-
-        //TODO grab buffer info from file
+        //TODO use read object
     }
 
     /**
@@ -148,6 +154,7 @@ public class StorageManager extends AStorageManager {
 
         this.dataTypes = new HashMap<Integer, String[]>();
         this.keyIndices = new HashMap<Integer, Integer[]>();
+        this.maxPageSize = new HashMap<Integer, Integer>();
 
         this.pageBufferSize = pageBufferSize;
         this.pageSize = pageSize;
