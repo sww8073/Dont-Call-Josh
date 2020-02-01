@@ -5,13 +5,13 @@
  */
 package storagemanager;
 import java.io.File;
+import java.util.Map;
 
 public class StorageManager extends AStorageManager {
 
     // private instance variables
-    private String dbLoc;
-    private int pageBufferSize;
-    private int pageSize;
+    private Map<Integer, String[]> dataTypes;
+    private Map<Integer, Integer[]> keyIndices;
 
     /**
      * Creates an instance of the database. Tries to restart, if requested, the database at the provided location.
@@ -125,8 +125,6 @@ public class StorageManager extends AStorageManager {
             deleteFile(file.getAbsolutePath());//delete everything in file
         }
 
-        this.pageBufferSize = pageBufferSize;
-        this.pageSize = pageSize;
     }
 
     /**
