@@ -29,35 +29,9 @@ public class Page {
     }
 
     /**
-     * 
-     * @param record
-     * @param primaryKeys
-     * @param dataTypes
-     * @return
-     */
-    public boolean insertRecord(Object record, int[] primaryKeys, String[] dataTypes) {
-        
-        // Check if record is full
-        if (recordList.size() == maxRecordsPerPage) {
-            return false;
-        }
-
-        // TODO check if record exists
-
-        for (Object[] pageRecord : recordList) {
-            for (int key : primaryKeys) {
-
-            }
-        }
-
-        return true;
-    }
-
-
-    /**
-     * 
-     * @param table
-     * @return
+     * Checks to see if the page is in the table passed in.
+     * @param table The table to find.
+     * @return Whether the page is in that table.
      */
     public boolean inTable(int table) {
         if (this.table == table) {
@@ -67,15 +41,15 @@ public class Page {
     }
 
     /**
-     * 
+     * Gets the id of the page
      */
     public int getPageId(){
         return this.pageId;
     }
 
     /**
-     * 
-     * @return
+     * Checks to see if the current page is full
+     * @return Whether the page is full
      */
     public boolean pageFull() {
         if (maxRecordsPerPage == recordList.size()) {
