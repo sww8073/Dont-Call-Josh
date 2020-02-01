@@ -1,4 +1,4 @@
-ppackage storagemanager;
+package storagemanager;
 
 import storagemanager.AStorageManager;
 import storagemanager.StorageManager;
