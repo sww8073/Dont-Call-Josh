@@ -93,7 +93,11 @@ public class StorageManager extends AStorageManager {
      */
     @Override
     public void addTable(int table, String[] dataTypes, Integer[] keyIndices) throws StorageManagerException {
-        this.dataTypes.put(table, )
+        if(this.dataTypes.containsKey(table))   { // check to see if table exists
+            throw new StorageManagerException("Table already exist");
+        }
+        this.dataTypes.put(table, dataTypes);
+        this.keyIndices.put(table, keyIndices);
     }
 
     @Override
