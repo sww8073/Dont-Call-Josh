@@ -5,6 +5,7 @@
  */
 package storagemanager;
 import java.io.File;
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,7 +14,7 @@ public class StorageManager extends AStorageManager {
     // private instance variables
     private Map<Integer, String[]> dataTypes; // key is table id, value is the data types
     private Map<Integer, Integer[]> keyIndices; // key is table id, vale is keyIndices
-    private Map<Integer, Integer> maxPageSize; // key is table id, value is tha max size of a page
+    private Map<Integer, Integer> maxRecordsPerPage; // key is table id
 
     private int pageBufferSize;
     private int pageSize;
@@ -105,8 +106,32 @@ public class StorageManager extends AStorageManager {
         this.dataTypes.put(table, dataTypes);
         this.keyIndices.put(table, keyIndices);
 
-        for(int i = 0;i < dataTypes.length;i++)
+        // calculate the size of a record
+        int recordSize = 0;
+        for(int i = 0;i < dataTypes.length;i++) {
+            if(dataTypes[i].equals("integer"))
+                recordSize += INTSIZE;
+            else if(dataTypes[i].equals("double"))
+                recordSize += DOUBLESIZE;
+            else if(dataTypes[i].equals("boolean"))
+                recordSize += BOOLSIZE;
+            else if(dataTypes[i].contains("varchar(")) {
+                int startIndex = dataTypes[i].indexOf("(") + 1;
+                int endIndex = dataTypes[i].indexOf(")") - 1;
+                String numString = dataTypes[i].substring(startIndex, endIndex);
+                recordSize += Integer.parseInt(numString);
+            }
+            else if(dataTypes[i].contains("char(")) {
+                int startIndex = dataTypes[i].indexOf("(") + 1;
+                int endIndex = dataTypes[i].indexOf(")") - 1;
+                String numString = dataTypes[i].substring(startIndex, endIndex);
+                recordSize += Integer.parseInt(numString);
+            }
+        }
 
+        // calculate the number of records that can fit on a page
+        int recordsPerPage = pageSize / recordSize;
+        this.maxRecordsPerPage.put(table, recordsPerPage);
     }
 
     @Override
@@ -141,7 +166,7 @@ public class StorageManager extends AStorageManager {
 
         this.dataTypes = new HashMap<Integer, String[]>();
         this.keyIndices = new HashMap<Integer, Integer[]>();
-        this.maxPageSize = new HashMap<Integer, Integer>();
+        this.maxRecordsPerPage = new HashMap<Integer, Integer>();
 
         this.pageBufferSize = pageBufferSize;
         this.pageSize = pageSize;
