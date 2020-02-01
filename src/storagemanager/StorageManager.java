@@ -172,6 +172,9 @@ public class StorageManager extends AStorageManager {
     @Override
     protected void newDatabase(String dbLoc, int pageBufferSize, int pageSize) throws StorageManagerException {
         File dbDirectory = new File(dbLoc);
+        if(dbDirectory.exists()){
+            //it exists
+        }
         for (File file: dbDirectory.listFiles()) {
             deleteFile(file.getAbsolutePath());//delete everything in file
         }
