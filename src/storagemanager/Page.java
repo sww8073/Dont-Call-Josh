@@ -66,8 +66,21 @@ public class Page {
         return false;
     }
 
+    /**
+     * 
+     */
     public int getPageId(){
         return this.pageId;
     }
 
+    /**
+     * 
+     * @return
+     */
+    public boolean pageFull() {
+        if (maxRecordsPerPage == recordList.size()) {
+            return true;
+        }
+        return false;
+    }
 }
