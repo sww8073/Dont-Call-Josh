@@ -12,7 +12,6 @@ public class StorageManager extends AStorageManager {
     private String dbLoc;
     private int pageBufferSize;
     private int pageSize;
-    private Buffer buffer;
 
     /**
      * Creates an instance of the database. Tries to restart, if requested, the database at the provided location.
