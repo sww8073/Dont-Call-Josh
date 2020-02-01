@@ -46,6 +46,9 @@ public class Page {
     public int getPageId(){
         return this.pageId;
     }
+    public ArrayList<Object[]> getRecordList(){
+        return this.recordList;
+    }
 
     /**
      * Checks to see if the current page is full
