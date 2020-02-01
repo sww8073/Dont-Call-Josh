@@ -66,4 +66,8 @@ public class Page {
         return false;
     }
 
+    public int getPageId(){
+        return this.pageId;
+    }
+
 }

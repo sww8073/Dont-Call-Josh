@@ -15,7 +15,9 @@ public class StorageManager extends AStorageManager {
     private Map<Integer, String[]> dataTypes; // key is table id, value is the data types
     private Map<Integer, Integer[]> keyIndices; // key is table id, vale is keyIndices
     private Map<Integer, Integer> maxRecordsPerPage; // key is table id
-    private Map<Integer, ArrayList<Page>> tablePages;
+    private Map<Integer, ArrayList<Integer>> tablePages;
+    
+    private ArrayList<Page> buffer; // TODO Initialize buffer, find way to add pages
 
     private int pageBufferSize;
     private int pageSize;
@@ -80,7 +82,24 @@ public class StorageManager extends AStorageManager {
      */
     @Override
     public void insertRecord(int table, Object[] record) throws StorageManagerException {
+        Integer[] indicies = this.keyIndices.get(table);
 
+        if(!this.tablePages.containsKey(table)){
+            throw new StorageManagerException("Table does not exist");
+        }
+        ArrayList<Integer> pages = this.tablePages.get(table);
+        ArrayList<Page> requiredPages = new ArrayList<>();
+        //this for loop assumes all pages are in the buffer
+        for(int i : pages){
+            for (Page pageRecord: this.buffer) {
+                if( pageRecord.getPageId() == i){
+                    requiredPages.add(pageRecord);
+                }
+            }
+        }
+        //TODO Check where it belongs, then if it exists
+
+        
     }
 
     @Override
@@ -187,6 +206,7 @@ public class StorageManager extends AStorageManager {
 
         this.pageBufferSize = pageBufferSize;
         this.pageSize = pageSize;
+        this.buffer = new ArrayList<>();
     }
 
     /**
