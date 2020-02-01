@@ -5,7 +5,6 @@
  */
 package storagemanager;
 import java.io.File;
-import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
 
