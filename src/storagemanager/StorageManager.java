@@ -5,6 +5,7 @@
  */
 package storagemanager;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,6 +15,7 @@ public class StorageManager extends AStorageManager {
     private Map<Integer, String[]> dataTypes; // key is table id, value is the data types
     private Map<Integer, Integer[]> keyIndices; // key is table id, vale is keyIndices
     private Map<Integer, Integer> maxRecordsPerPage; // key is table id
+    private Map<Integer, ArrayList<Page>> tablePages;
 
     private int pageBufferSize;
     private int pageSize;
