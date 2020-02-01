@@ -40,8 +40,17 @@ public class StorageManager extends AStorageManager {
         super(dbLoc, pageBufferSize, pageSize, restart);
     }
 
+    /**
+     * Gets all of the records for the given table name
+     * @param table the number of the table
+     * @return A 2d array of objects representing the data in the table.
+     *         Basically any array of records containing attribute values.
+     * @throws StorageManagerException if the table does not exist
+     */
     @Override
     public Object[][] getRecords(int table) throws StorageManagerException {
+        // TODO buffer management
+
         return new Object[0][];
     }
 
@@ -54,6 +63,10 @@ public class StorageManager extends AStorageManager {
      */
     @Override
     public Object[] getRecord(int table, Object[] keyValue) throws StorageManagerException {
+        // TODO buffer management table check
+
+        // for now I'll assume that the table is in the buffer.
+        
         return new Object[0];
     }
 
