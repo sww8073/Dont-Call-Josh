@@ -132,13 +132,13 @@ public class StorageManager extends AStorageManager {
                 int startIndex = dataTypes[i].indexOf("(") + 1;
                 int endIndex = dataTypes[i].indexOf(")") - 1;
                 String numString = dataTypes[i].substring(startIndex, endIndex);
-                recordSize += Integer.parseInt(numString);
+                recordSize += (Integer.parseInt(numString) * CHARSIZE);
             }
             else if(dataTypes[i].contains("char(")) {
                 int startIndex = dataTypes[i].indexOf("(") + 1;
                 int endIndex = dataTypes[i].indexOf(")") - 1;
                 String numString = dataTypes[i].substring(startIndex, endIndex);
-                recordSize += Integer.parseInt(numString);
+                recordSize += (Integer.parseInt(numString) * CHARSIZE);
             }
         }
 
