@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class Page {
 
-    private long pageId;
+    private Integer pageId;
     private int maxRecordsPerPage;
     private int table;
     private ArrayList<Object[]> recordList; // Array list of all the record stored on a page
@@ -21,7 +21,7 @@ public class Page {
      * @param pageId the page id
      * @param record1 the 1st record to be added to the page
      */
-    public Page(long pageId, int table, int maxRecordsPerPage, Object[] record1, String[] dataTypes, Integer[] keyIndices) {
+    public Page(Integer pageId, int table, int maxRecordsPerPage, Object[] record1, String[] dataTypes, Integer[] keyIndices) {
         this.pageId = pageId;
         this.recordList = new ArrayList<Object[]>();
         this.table = table;
@@ -46,7 +46,7 @@ public class Page {
     /**
      * Gets the id of the page
      */
-    public long getPageId(){
+    public Integer getPageId(){
         return this.pageId;
     }
     public ArrayList<Object[]> getRecordList(){

@@ -29,7 +29,7 @@ public class StorageManager extends AStorageManager {
     private final int BOOLSIZE = 1;
     private final int CHARSIZE = 2;
 
-    private static long pageId; // this is used to generate unique page ids
+    private static Integer pageId = 0; // this is used to generate unique page ids
 
     /**
      * Creates an instance of the database. Tries to restart, if requested, the database at the provided location.
@@ -97,15 +97,16 @@ public class StorageManager extends AStorageManager {
         if(!this.tablePages.containsKey(table)) {
             // table does not have any pages, so ADD NEW PAGE
             pageId += 1; // increment page id each time
+
+            // create new page and ADD record
             Page page = new Page(pageId, table, maxRecordsPerPage.get(table), record, dataTypes.get(table), keyIndices.get(table));
 
-            if(!page.pageFull())    {
-                page.addRecordToPage(record);
-            }
-
-            ArrayList<Page> newPageList = new ArrayList<>();
-
+            ArrayList<Integer> newPageList = new ArrayList<>();
+            newPageList.add(page.getPageId());
+            tablePages.put(table, newPageList); // add the ordered list of table ids to map
+            buffer.add(page); // add page to the buffer
         }
+        
 
         /*
         if(!this.tablePages.containsKey(table)){
@@ -258,6 +259,7 @@ public class StorageManager extends AStorageManager {
         this.dataTypes = new HashMap<Integer, String[]>();
         this.keyIndices = new HashMap<Integer, Integer[]>();
         this.maxRecordsPerPage = new HashMap<Integer, Integer>();
+        this.tablePages = new HashMap<Integer, ArrayList<Integer>>();
 
         this.pageBufferSize = pageBufferSize;
         this.pageSize = pageSize;
