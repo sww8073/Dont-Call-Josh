@@ -83,14 +83,14 @@ public class Page {
             }
             else if(compareIndices(recordList.get(recIndSize)[keyIndices[i]], recordToAdd[keyIndices[i]]) == -1)  {
                 // insert record at end
-                recordList.add(recIndSize, recordToAdd);
+                recordList.add(recordList.size(), recordToAdd);
                 return true;
             }
             else {
                 // insert record between 2 values
                 for (Object[] record : recordList) { // loop through all records
-                    if (compareIndices(record[keyIndices[i]], recordToAdd[keyIndices[i]]) == -1 ||
-                            compareIndices(record[keyIndices[i + 1]], recordToAdd[keyIndices[i + 1]]) == 1) {
+                    if (compareIndices(record[keyIndices[i]], recordToAdd[keyIndices[i]]) == 1 ||
+                            compareIndices(record[keyIndices[i + 1]], recordToAdd[keyIndices[i + 1]]) == -1) {
                         // inserted record belongs between theses two records
                         int currentRecordIndex = recordList.indexOf(record);
                         recordList.add(currentRecordIndex + 1, recordToAdd); // insert after current record
