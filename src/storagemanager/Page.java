@@ -72,16 +72,16 @@ public class Page {
      */
     public boolean addRecordToPage(Object[] recordToAdd)
     {
-        int recIndSize = recordList.size();
+        int recIndSize = recordList.size() - 1;
         // insert record between 2 values
         for(int i = 0;i < keyIndices.length - 1;i++)   { // search by indices in order skipping last value
             // record belongs in the beginning
-            if(compareIndices(recordList.get(0)[keyIndices[i]], recordToAdd[keyIndices[i]]) == -1) {
+            if(compareIndices(recordList.get(0)[keyIndices[i]], recordToAdd[keyIndices[i]]) == 1) {
                 // insert record at beginning
                 recordList.add(0, recordToAdd);
                 return true;
             }
-            else if(compareIndices(recordList.get(recIndSize)[keyIndices[i]], recordToAdd[keyIndices[i]]) == 1)  {
+            else if(compareIndices(recordList.get(recIndSize)[keyIndices[i]], recordToAdd[keyIndices[i]]) == -1)  {
                 // insert record at end
                 recordList.add(recIndSize, recordToAdd);
                 return true;
@@ -101,6 +101,28 @@ public class Page {
         }
         return false;
     }
+
+    /**
+     * this function checks to see if record belongs on page
+     * @param recordToAdd Object array
+     * @return true if record belongs on page
+     */
+    public boolean shouldRecordBeOnPage(Object[] recordToAdd)   {
+        int recIndSize = recordList.size();
+
+        // insert record between 2 values
+        for(int i = 0;i < keyIndices.length - 1;i++)   { // search by indices in order skipping last value
+            // record is between first and last value?
+            if(compareIndices(recordList.get(0)[keyIndices[i]], recordToAdd[keyIndices[i]]) == -1 &&
+                    compareIndices(recordList.get(recIndSize)[keyIndices[i]], recordToAdd[keyIndices[i]]) == 1) {
+                // insert record at beginning
+                return true;
+            }
+
+        }
+        return false;
+    }
+
 
     /**
      * This function compares two indices.

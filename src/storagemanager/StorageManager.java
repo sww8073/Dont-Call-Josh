@@ -106,7 +106,42 @@ public class StorageManager extends AStorageManager {
             tablePages.put(table, newPageList); // add the ordered list of table ids to map
             buffer.add(page); // add page to the buffer
         }
-        
+        // a page exists
+        else    {
+            ArrayList<Integer> pageIdList = this.tablePages.get(table); // get page ids in order
+            ArrayList<Page> requiredPages = new ArrayList<>(); // ist of all page for table
+            //this for loop assumes all pages are in the buffer
+            for(int pageid : pageIdList)    {
+                for (Page pageRecord: this.buffer) { // grab all th pages form buffer
+                    if( pageRecord.getPageId() == pageid){
+                        requiredPages.add(pageRecord);
+                    }
+                }
+            }
+
+            // if there is only one page we must insert record on that page
+            if(requiredPages.size() == 1) {
+                if (requiredPages.get(0).pageFull()) {
+                    // TODO split page
+                } else {
+                    requiredPages.get(0).addRecordToPage(record);
+
+                }
+            }
+            else {
+                for (Page page : requiredPages) {
+
+                    // check to see if record being inserted exist between 2 values on a page. NOT checking single value pages
+                    if (page.shouldRecordBeOnPage(record)) {
+                        if (page.pageFull()) {
+                            // TODO split page
+                        } else {
+                            page.addRecordToPage(record);
+                        }
+                    }
+                }
+            }
+        }
 
         /*
         if(!this.tablePages.containsKey(table)){
