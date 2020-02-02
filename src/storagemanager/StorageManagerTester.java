@@ -93,7 +93,7 @@ public class StorageManagerTester {
             e.printStackTrace();
         }
 
-        /**
+        /*
         // Table 2
         try {
             BufferedReader br = new BufferedReader(new FileReader("inputs/data2.csv"));
