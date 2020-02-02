@@ -15,6 +15,8 @@ public class StorageManager extends AStorageManager {
     private Map<Integer, String[]> dataTypes; // key is table id, value is the data types
     private Map<Integer, Integer[]> keyIndices; // key is table id, vale is keyIndices
     private Map<Integer, Integer> maxRecordsPerPage; // key is table id
+
+    // key is table id, value is ArrayList pages sorted in order form lowest to highest
     private Map<Integer, ArrayList<Integer>> tablePages;
     
     private ArrayList<Page> buffer; // TODO Initialize buffer, find way to add pages
@@ -26,6 +28,8 @@ public class StorageManager extends AStorageManager {
     private final int DOUBLESIZE = 8;
     private final int BOOLSIZE = 1;
     private final int CHARSIZE = 2;
+
+    private static long pageId; // this is used to generate unique page ids
 
     /**
      * Creates an instance of the database. Tries to restart, if requested, the database at the provided location.
@@ -82,8 +86,29 @@ public class StorageManager extends AStorageManager {
      */
     @Override
     public void insertRecord(int table, Object[] record) throws StorageManagerException {
-        Integer[] indicies = this.keyIndices.get(table);
 
+        // check to see if the table exists
+        Integer[] indicies = this.keyIndices.get(table);
+        if(indicies == null)    {
+            throw new StorageManagerException("The table does not exist");
+        }
+
+        // check if table contains any pages
+        if(!this.tablePages.containsKey(table)) {
+            // table does not have any pages, so ADD NEW PAGE
+            pageId += 1; // increment page id each time
+            Page page = new Page(pageId, table, maxRecordsPerPage.get(table), record, dataTypes.get(table), keyIndices.get(table));
+
+            if(!page.pageFull())    {
+                // page is not full so add record
+            }
+
+
+            //TODO add page to table pages
+            //tablePages.put(keyIndices)
+        }
+
+        /*
         if(!this.tablePages.containsKey(table)){
             throw new StorageManagerException("Table does not exist");
         }
@@ -130,7 +155,7 @@ public class StorageManager extends AStorageManager {
                 //TODO finish exiting
             }
         }
-        
+        */
     }
 
     @Override
