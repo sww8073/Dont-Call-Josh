@@ -104,7 +104,7 @@ public class StorageManager extends AStorageManager {
             }
 
             ArrayList<Page> newPageList = new ArrayList<>();
-            
+
         }
 
         /*

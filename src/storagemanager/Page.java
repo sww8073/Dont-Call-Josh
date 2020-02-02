@@ -4,7 +4,6 @@
  * Members: Matthew Clements, Josh Tellier, Stone Warren, Josh Schenk
  */
 package storagemanager;
-import com.sun.org.apache.bcel.internal.generic.INSTANCEOF;
 
 import java.util.ArrayList;
 
@@ -75,7 +74,7 @@ public class Page {
     {
         int recIndSize = recordList.size();
         // insert record between 2 values
-        for(int i = 0;i < keyIndices.length - 1;i++)   { // search by indices es in order
+        for(int i = 0;i < keyIndices.length - 1;i++)   { // search by indices in order skipping last value
             // record belongs in the beginning
             if(compareIndices(recordList.get(0)[keyIndices[i]], recordToAdd[keyIndices[i]]) == -1) {
                 // insert record at beginning
@@ -116,25 +115,25 @@ public class Page {
     private int compareIndices(Object val1, Object val2)    {
         // compare Integer
         if(val1 instanceof Integer) {
-            if((Integer)val1 > (Integer)val1)
+            if((Integer)val1 > (Integer)val2)
                 return 1;
-            else if((Integer)val1 < (Integer)val1)
+            else if((Integer)val1 < (Integer)val2)
                 return -1;
             else
                 return 0;
         }
         // compare Doubles
         if(val1 instanceof Double) {
-            if((Double)val1 > (Double) val1)
+            if((Double)val1 > (Double) val2)
                 return 1;
-            else if((Double)val1 < (Double) val1)
+            else if((Double)val1 < (Double) val2)
                 return -1;
             else
                 return 0;
         }
         // compare Booleans
         if(val1 instanceof Boolean) {
-            if((Boolean)val1 == (Boolean)val1)
+            if((Boolean)val1 == (Boolean)val2)
                 return 0;
             else
                 return 1;
