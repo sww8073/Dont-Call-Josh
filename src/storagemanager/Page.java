@@ -73,14 +73,33 @@ public class Page {
      */
     public boolean addRecordToPage(Object[] recordToAdd)
     {
+        int recIndSize = recordList.size();
+        // insert record between 2 values
         for(int i = 0;i < keyIndices.length - 1;i++)   { // search by indices es in order
-            for(Object[] record : recordList)   { // loop through all records
-                if(compareIndices(record[keyIndices[i]], recordToAdd[keyIndices[i]]) == 0)
-                    return false; // record already exists so return false
-
+            // record belongs in the beginning
+            if(compareIndices(recordList.get(0)[keyIndices[i]], recordToAdd[keyIndices[i]]) == -1) {
+                // insert record at beginning
+                recordList.add(0, recordToAdd);
+                return true;
+            }
+            else if(compareIndices(recordList.get(recIndSize)[keyIndices[i]], recordToAdd[keyIndices[i]]) == 1)  {
+                // insert record at end
+                recordList.add(recIndSize, recordToAdd);
+                return true;
+            }
+            else {
+                // insert record between 2 values
+                for (Object[] record : recordList) { // loop through all records
+                    if (compareIndices(record[keyIndices[i]], recordToAdd[keyIndices[i]]) == -1 ||
+                            compareIndices(record[keyIndices[i + 1]], recordToAdd[keyIndices[i + 1]]) == 1) {
+                        // inserted record belongs between theses two records
+                        int currentRecordIndex = recordList.indexOf(record);
+                        recordList.add(currentRecordIndex + 1, recordToAdd); // insert after current record
+                        return true;
+                    }
+                }
             }
         }
-
         return false;
     }
 

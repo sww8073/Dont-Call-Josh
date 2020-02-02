@@ -100,12 +100,11 @@ public class StorageManager extends AStorageManager {
             Page page = new Page(pageId, table, maxRecordsPerPage.get(table), record, dataTypes.get(table), keyIndices.get(table));
 
             if(!page.pageFull())    {
-                // page is not full so add record
+                page.addRecordToPage(record);
             }
 
-
-            //TODO add page to table pages
-            //tablePages.put(keyIndices)
+            ArrayList<Page> newPageList = new ArrayList<>();
+            
         }
 
         /*
