@@ -124,24 +124,7 @@ public class StorageManager extends AStorageManager {
             // if there is only one page we must insert record on that page
             if(requiredPages.size() == 1) {
                 if (requiredPages.get(0).pageFull()) {
-                    // create new unique page id
-                    pageId += 1; // increment page id each time
-
-                    Page botHalfPg = requiredPages.get(0);
-                    Page topHalfPg = botHalfPg.splitPage(pageId);
-
-                    // add new record to page
-                    if(botHalfPg.shouldRecordBeOnPage(record))
-                        botHalfPg.addRecordToPage(record);
-                    else
-                        topHalfPg.addRecordToPage(record);
-
-                    // add new page buffer
-                    buffer.add(topHalfPg);
-
-                    // new page id to the tables ordered list of tables
-                    int botHalfPgIndex = tablePages.get(table).indexOf(table);
-                    tablePages.get(table).add(botHalfPgIndex + 1, pageId);
+                    splitPageAndRec(table, requiredPages.get(0), record);
                 } else {
                     requiredPages.get(0).addRecordToPage(record);
                 }
@@ -152,9 +135,7 @@ public class StorageManager extends AStorageManager {
                     // check to see if record being inserted exist between 2 values on a page. NOT checking single value pages
                     if (page.shouldRecordBeOnPage(record)) {
                         if (page.pageFull()) {
-                            // TODO split page
-                            int val = 0;
-                            val++;
+                            splitPageAndRec(table, page, record);
                         } else {
                             page.addRecordToPage(record);
                         }
@@ -162,6 +143,35 @@ public class StorageManager extends AStorageManager {
                 }
             }
         }
+    }
+
+    /**
+     * This function removes the upper half of the records in pgToBeSplit and
+     * adds that upper half of the records to a new page. A new record is added
+     * to whatever table it belongs in.
+     * @param table table id in which the page belongs
+     * @param pgToBeSplit the full page that needs to be split
+     * @param record the new record that needs to be added
+     */
+    public void splitPageAndRec(int table, Page pgToBeSplit,  Object[] record)   {
+        // create new unique page id
+        pageId += 1; // increment page id each time
+
+        Page botHalfPg = pgToBeSplit;
+        Page topHalfPg = botHalfPg.splitPage(pageId);
+
+        // add new record to page
+        if(botHalfPg.shouldRecordBeOnPage(record))
+            botHalfPg.addRecordToPage(record);
+        else
+            topHalfPg.addRecordToPage(record);
+
+        // add new page buffer
+        buffer.add(topHalfPg);
+
+        // new page id to the tables ordered list of tables
+        int botHalfPgIndex = tablePages.get(table).indexOf(table);
+        tablePages.get(table).add(botHalfPgIndex + 1, pageId);
     }
 
     @Override
