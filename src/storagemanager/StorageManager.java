@@ -73,6 +73,7 @@ public class StorageManager extends AStorageManager {
         // TODO buffer management table check
 
         // for now I'll assume that the table is in the buffer.
+        //TODO throw exception if the table does not exist
         ArrayList<Integer> pages = tablePages.get(table);
         Object[] record = null;
         for (Integer pageNum: pages) {
@@ -198,21 +199,62 @@ public class StorageManager extends AStorageManager {
         tablePages.get(table).add(botHalfPgIndex + 1, pageId);
     }
 
+    /**
+     * Updates the record in the given table if the record already exists it overwrites it. If it does not
+     * exist it finds a page with a empty spot to add it to; makes new pages as needed.
+     * @param table the number of the table
+     * @param record the record to insert; an 1d array of objects representing the data in the record
+     * @throws StorageManagerException if the table does not exist
+     */
     @Override
     public void updateRecord(int table, Object[] record) throws StorageManagerException {
+        if(keyIndices.get(table) == null){throw new StorageManagerException("table " + table + " does not exist");}
+        else {
+            Integer[] keyInd = keyIndices.get(table);//the keyIndices from the table
+            Object[] recordKeyInd = new Object[keyInd.length];//the keyValue pair based off the keyIndices
+            int keyIndValue;
+            //making the keyValue pair
+            for (int i = 0; i < keyInd.length; i++) {
+                keyIndValue = keyInd[i];
+                recordKeyInd[i] = record[keyIndValue];
+            }
 
+            if (getRecord(table, recordKeyInd) != null) {
+                //record exists so update
+            } else {
+                //record does not exist so insert
+            }
+        }
     }
 
+    /**
+     * removes a record for the provided table name. If a page becomes empty it frees it.
+     * @param table the number of the table
+     * @param keyValue an array representing the key to find
+     * @throws StorageManagerException if the table or record does exist
+     */
     @Override
     public void removeRecord(int table, Object[] keyValue) throws StorageManagerException {
 
     }
 
+    /**
+     * Will delete all entries in this table. Including clearing and freeing all pages. Will also remove the table
+     * from the database
+     * @param table: the number of the table to delete
+     * @throws StorageManagerException if the table does not exist
+     */
     @Override
     public void dropTable(int table) throws StorageManagerException {
 
     }
 
+    /**
+     * Will delete all entries in this table. Including clearing and freeing all pages. Will not remove the
+     * table from the database
+     * @param table: the number of the table to clear
+     * @throws StorageManagerException if the table does not exist
+     */
     @Override
     public void clearTable(int table) throws StorageManagerException {
 
