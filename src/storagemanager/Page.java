@@ -298,7 +298,7 @@ public class Page {
         return newPage;
     }
 
-    private boolean compareRecords(Object[] record, Object[] recordToCompare){
+    private boolean areRecordsEqual(Object[] record, Object[] recordToCompare){
         int keyInd;
         for(int i = 0; i < keyIndices.length; i++) {
             keyInd = keyIndices[i];
@@ -311,7 +311,7 @@ public class Page {
 
     public Object[] getRecordFromPage(Object[] keyValue){
         for (Object[] record: recordList) {
-            if(compareRecords(record, keyValue) == true){
+            if(areRecordsEqual(record, keyValue)){
                 return record;
             }
         }
