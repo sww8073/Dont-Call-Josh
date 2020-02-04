@@ -73,27 +73,41 @@ public class Page {
     public boolean addRecordToPage(Object[] recordToAdd)
     {
         int recIndSize = recordList.size() - 1;
+
         // insert record between 2 values
         for(int i = 0;i < keyIndices.length - 1;i++)   { // search by indices in order skipping last value
+            Object insertRecCompVal = recordToAdd[i]; // value we are comparing to see if we should insert
+
+            // comparison value for first record
+            Object[] firstRec = recordList.get(0);
+            Object firstRecCompVal = firstRec[i];
+
+            // comparison value for last record
+            Object[] lastRec = recordList.get(recIndSize); // last value in record
+            Object lastRecCompVal = lastRec[i];
+
             // record belongs in the beginning
-            if(compareIndices(recordList.get(0)[keyIndices[i]], recordToAdd[keyIndices[i]]) == 1) {
-                // insert record at beginning
-                recordList.add(0, recordToAdd);
+            if(compareIndices(insertRecCompVal, firstRecCompVal) == -1) {
+                recordList.add(0, recordToAdd); // insert record at beginning
                 return true;
             }
-            else if(compareIndices(recordList.get(recIndSize)[keyIndices[i]], recordToAdd[keyIndices[i]]) == -1)  {
-                // insert record at end
-                recordList.add(recordList.size(), recordToAdd);
+            else if(compareIndices(insertRecCompVal, lastRecCompVal) == 1)  {
+                recordList.add(recordList.size(), recordToAdd); // insert record at end
                 return true;
             }
             else {
                 // insert record between 2 values
-                for (Object[] record : recordList) { // loop through all records
-                    if (compareIndices(record[keyIndices[i]], recordToAdd[keyIndices[i]]) == 1 ||
-                            compareIndices(record[keyIndices[i + 1]], recordToAdd[keyIndices[i + 1]]) == -1) {
+                for(int j = 0;j < recordList.size();j++)    { // loop through all records
+                    Object[] record = recordList.get(j); // current record to check
+                    Object[] nextRecord = recordList.get(j + 1); // record after that record
+
+                    Object recCompVal = record[i];
+                    Object nextRecCompVal = nextRecord[i];
+
+                    if (compareIndices(recCompVal, insertRecCompVal) == 1 ||
+                            compareIndices(insertRecCompVal, nextRecCompVal) == -1) {
                         // inserted record belongs between theses two records
-                        int currentRecordIndex = recordList.indexOf(record);
-                        recordList.add(currentRecordIndex + 1, recordToAdd); // insert after current record
+                        recordList.add(j + 1, recordToAdd); // insert after current record
                         return true;
                     }
                 }

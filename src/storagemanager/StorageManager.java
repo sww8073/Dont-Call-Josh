@@ -142,55 +142,6 @@ public class StorageManager extends AStorageManager {
                 }
             }
         }
-
-        /*
-        if(!this.tablePages.containsKey(table)){
-            throw new StorageManagerException("Table does not exist");
-        }
-        ArrayList<Integer> pages = this.tablePages.get(table);
-        ArrayList<Page> requiredPages = new ArrayList<>();
-        //this for loop assumes all pages are in the buffer
-        for(int i : pages){
-            for (Page pageRecord: this.buffer) {
-                if( pageRecord.getPageId() == i){
-                    requiredPages.add(pageRecord);
-                }
-            }
-        }
-        //TODO Check where it belongs, then if it exists
-        for(Page p : requiredPages){
-            ArrayList<Object[]> recordList = p.getRecordList();
-            for(Object[] rec : recordList){
-                ArrayList<String> pr = new ArrayList<>(); // Passed in record
-                ArrayList<String> rr = new ArrayList<>(); // record received from required pages
-                //convert rec indice values to strings
-                for(int in : indicies){
-                    String recordVal = record[in].toString();
-                    pr.add(recordVal);
-                    String recVal = rec[in].toString();
-                    rr.add(recVal);
-                }
-                if( pr.equals(rr)){
-                    throw new StorageManagerException("Record already exists");
-                }
-                boolean nextRecord = false;
-                for(int i = 0; i< pr.size(); i++){
-                    if(pr.get(i).compareTo(rr.get(i)) == 0){
-                        continue;
-                    }
-                    else if(pr.get(i).compareTo(rr.get(i)) > 0 ){
-                        nextRecord = true;
-                        break;
-                    }
-                    else{
-                        //TODO record spot found, insert here
-                    }
-                }
-                if(nextRecord) continue;
-                //TODO finish exiting
-            }
-        }
-        */
     }
 
     @Override
