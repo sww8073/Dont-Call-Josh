@@ -5,14 +5,31 @@
  */
 package storagemanager;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class StorageManager extends AStorageManager {
 
     // private instance variables
-    private String dbLoc;
+    private Map<Integer, String[]> dataTypes; // key is table id, value is the data types
+    private Map<Integer, Integer[]> keyIndices; // key is table id, vale is keyIndices
+    private Map<Integer, Integer> maxRecordsPerPage; // key is table id
+
+    // key is table id, value is ArrayList pages sorted in order form lowest to highest
+    private Map<Integer, ArrayList<Integer>> tablePages;
+    
+    private ArrayList<Page> buffer; // TODO Initialize buffer, find way to add pages
+
     private int pageBufferSize;
     private int pageSize;
-    private Buffer buffer;
+
+    private final int INTSIZE = 4;
+    private final int DOUBLESIZE = 8;
+    private final int BOOLSIZE = 1;
+    private final int CHARSIZE = 2;
+
+    private static Integer pageId = 0; // this is used to generate unique page ids
 
     /**
      * Creates an instance of the database. Tries to restart, if requested, the database at the provided location.
@@ -30,8 +47,17 @@ public class StorageManager extends AStorageManager {
         super(dbLoc, pageBufferSize, pageSize, restart);
     }
 
+    /**
+     * Gets all of the records for the given table name
+     * @param table the number of the table
+     * @return A 2d array of objects representing the data in the table.
+     *         Basically any array of records containing attribute values.
+     * @throws StorageManagerException if the table does not exist
+     */
     @Override
     public Object[][] getRecords(int table) throws StorageManagerException {
+        // TODO buffer management
+
         return new Object[0][];
     }
 
@@ -44,6 +70,10 @@ public class StorageManager extends AStorageManager {
      */
     @Override
     public Object[] getRecord(int table, Object[] keyValue) throws StorageManagerException {
+        // TODO buffer management table check
+
+        // for now I'll assume that the table is in the buffer.
+        
         return new Object[0];
     }
 
@@ -57,6 +87,110 @@ public class StorageManager extends AStorageManager {
     @Override
     public void insertRecord(int table, Object[] record) throws StorageManagerException {
 
+        // check to see if the table exists
+        Integer[] indicies = this.keyIndices.get(table);
+        if(indicies == null)    {
+            throw new StorageManagerException("The table does not exist");
+        }
+
+        // check if table contains any pages
+        if(!this.tablePages.containsKey(table)) {
+            // table does not have any pages, so ADD NEW PAGE
+            pageId += 1; // increment page id each time
+
+            // create new page and ADD record
+            Page page = new Page(pageId, table, maxRecordsPerPage.get(table), record, dataTypes.get(table), keyIndices.get(table));
+
+            ArrayList<Integer> newPageList = new ArrayList<>();
+            newPageList.add(page.getPageId());
+            tablePages.put(table, newPageList); // add the ordered list of table ids to map
+            buffer.add(page); // add page to the buffer
+        }
+        // a page exists
+        else    {
+            // grab construct list of pages we need to look through to insert
+            ArrayList<Integer> pageIdList = this.tablePages.get(table); // get page ids of tables in order
+            ArrayList<Page> requiredPages = new ArrayList<>(); // list of all page for table
+
+            // this for loop assumes all pages are in the buffer
+            for(int pageid : pageIdList)    {
+                for (Page pageRecord: this.buffer) { // grab all th pages form buffer
+                    if( pageRecord.getPageId() == pageid){
+                        requiredPages.add(pageRecord);
+                    }
+                }
+            }
+
+            // if there is only one page we must insert record on that page
+            if(requiredPages.size() == 1) {
+                if (requiredPages.get(0).pageFull()) {
+                    splitPageAndRec(table, requiredPages.get(0), record); // split table!!!!
+                } else {
+                    requiredPages.get(0).addRecordToPage(record);
+                }
+            }
+            else {
+
+                int pgInTable = requiredPages.size();
+                for(int i = 0;i < pgInTable;i++)    {
+                    Page page = requiredPages.get(i); // get current page
+
+                     if(i == pgInTable - 1) { // last page in table
+                        // the last page has been reached so the record must belong in here
+                        if (page.pageFull()) {
+                            splitPageAndRec(table, page, record); // page is full so split!!!
+                        } // page is full so split!!!
+                        else {
+                            page.addRecordToPage(record);
+                        };
+                        return;
+                    }
+                    else    {
+                        Page nextPage = requiredPages.get(i + 1); // get next page
+
+                        // record is smaller than the smallest record in that table, thus it belongs in current table
+                        if(nextPage.smallerThanMinRecOnPg(record))  {
+                            if (page.pageFull()) {
+                                splitPageAndRec(table, page, record); // page is full so split!!!
+                            }
+                            else {
+                                page.addRecordToPage(record);
+                            };
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * This function removes the upper half of the records in pgToBeSplit and
+     * adds that upper half of the records to a new page. A new record is added
+     * to whatever table it belongs in.
+     * @param table table id in which the page belongs
+     * @param pgToBeSplit the full page that needs to be split
+     * @param record the new record that needs to be added
+     */
+    public void splitPageAndRec(int table, Page pgToBeSplit,  Object[] record)   {
+        // create new unique page id
+        pageId += 1; // increment page id each time
+
+        Page botHalfPg = pgToBeSplit;
+        Page topHalfPg = botHalfPg.splitPage(pageId);
+
+        // add new record to page
+        if(botHalfPg.shouldRecordBeOnPage(record))
+            botHalfPg.addRecordToPage(record);
+        else
+            topHalfPg.addRecordToPage(record);
+
+        // add new page buffer
+        buffer.add(topHalfPg);
+
+        // new page id to the tables ordered list of tables
+        int botHalfPgIndex = tablePages.get(table).indexOf(table);
+        tablePages.get(table).add(botHalfPgIndex + 1, pageId);
     }
 
     @Override
@@ -90,11 +224,38 @@ public class StorageManager extends AStorageManager {
      */
     @Override
     public void addTable(int table, String[] dataTypes, Integer[] keyIndices) throws StorageManagerException {
-        // it says these are ArrayLists but they are being passed in as an array?
-        // are tables going to get bigger and smaller
-        //
-        // find a page and add table into it, if there isn't enough room then split data on page to two pages?
-        // should i make a page object that keeps track of the amount of dat in it, just a big int array?
+        if(this.dataTypes.containsKey(table))   { // check to see if table exists
+            throw new StorageManagerException("Table already exist");
+        }
+        this.dataTypes.put(table, dataTypes);
+        this.keyIndices.put(table, keyIndices);
+
+        // calculate the size of a record
+        int recordSize = 0;
+        for(int i = 0;i < dataTypes.length;i++) {
+            if(dataTypes[i].equals("integer"))
+                recordSize += INTSIZE;
+            else if(dataTypes[i].equals("double"))
+                recordSize += DOUBLESIZE;
+            else if(dataTypes[i].equals("boolean"))
+                recordSize += BOOLSIZE;
+            else if(dataTypes[i].contains("varchar(")) {
+                int startIndex = dataTypes[i].indexOf("(") + 1;
+                int endIndex = dataTypes[i].indexOf(")") - 1;
+                String numString = dataTypes[i].substring(startIndex, endIndex);
+                recordSize += (Integer.parseInt(numString) * CHARSIZE);
+            }
+            else if(dataTypes[i].contains("char(")) {
+                int startIndex = dataTypes[i].indexOf("(") + 1;
+                int endIndex = dataTypes[i].indexOf(")") - 1;
+                String numString = dataTypes[i].substring(startIndex, endIndex);
+                recordSize += (Integer.parseInt(numString) * CHARSIZE);
+            }
+        }
+
+        // calculate the number of records that can fit on a page
+        int recordsPerPage = pageSize / recordSize;
+        this.maxRecordsPerPage.put(table, recordsPerPage);
     }
 
     @Override
@@ -109,10 +270,7 @@ public class StorageManager extends AStorageManager {
 
     @Override
     protected void restartDatabase(String dbLoc) throws StorageManagerException {
-        //TODO retrieve pageBufferSize and pageSize and set them equal to the instance variables
-        // we will probly store this somewhere in a file
-
-        //TODO grab buffer info from file
+        //TODO use read object
     }
 
     /**
@@ -126,12 +284,21 @@ public class StorageManager extends AStorageManager {
     @Override
     protected void newDatabase(String dbLoc, int pageBufferSize, int pageSize) throws StorageManagerException {
         File dbDirectory = new File(dbLoc);
+        if(dbDirectory.exists() == false)   { // check if directory exists
+            throw new StorageManagerException("directory does not exist");
+        }
         for (File file: dbDirectory.listFiles()) {
             deleteFile(file.getAbsolutePath());//delete everything in file
         }
 
+        this.dataTypes = new HashMap<Integer, String[]>();
+        this.keyIndices = new HashMap<Integer, Integer[]>();
+        this.maxRecordsPerPage = new HashMap<Integer, Integer>();
+        this.tablePages = new HashMap<Integer, ArrayList<Integer>>();
+
         this.pageBufferSize = pageBufferSize;
         this.pageSize = pageSize;
+        this.buffer = new ArrayList<>();
     }
 
     /**
