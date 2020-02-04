@@ -5,6 +5,8 @@
  */
 package storagemanager;
 
+import org.omg.CORBA.OBJ_ADAPTER;
+
 import java.util.ArrayList;
 
 public class Page {
@@ -160,6 +162,56 @@ public class Page {
             // record is between first and last value or equal
             if (compareIndices(recToAddCompVal, firstRecCompVal) > -1 &&
                     compareIndices(recToAddCompVal, lastRecCompVal) < 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * record to be added is smaller than 1st rec on page
+     * @param recordToAdd Object array
+     * @return
+     */
+    public boolean smallerThanMinRecOnPg(Object[] recordToAdd)  {
+
+        // insert record between 2 values
+        for(int i = 0;i < keyIndices.length;i++) { // loop through indices
+            Object[] firstRec = recordList.get(0);
+
+            Object firstRecCompVal = firstRec[keyIndices[i]];
+            Object recToAddCompVal = recordToAdd[keyIndices[i]];
+
+            // record to be added is smaller than 1st rec on page
+            if (compareIndices(recToAddCompVal, firstRecCompVal) == -1) {
+                return true;
+            }
+            else if (compareIndices(recToAddCompVal, firstRecCompVal) == 1) {
+                return false;
+            }
+
+            // only continue loop if values are equal, then you must check next index
+        }
+        return false;
+    }
+
+    /**
+     * record to add is larger than max record on page
+     * @param recordToAdd Object array
+     * @return
+     */
+    public boolean largerThanMaxRecOnPg(Object[] recordToAdd)  {
+        int recListSize = recordList.size() - 1;
+
+        // insert record between 2 values
+        for(int i = 0;i < keyIndices.length;i++) { // loop through indices
+            Object[] lastRec = recordList.get(recListSize);
+
+            Object lastRecCompVal = lastRec[keyIndices[i]];
+            Object recToAddCompVal = recordToAdd[keyIndices[i]];
+
+            // record to add is larger than max record on page
+            if (compareIndices(recToAddCompVal, lastRecCompVal) == 1) {
                 return true;
             }
         }

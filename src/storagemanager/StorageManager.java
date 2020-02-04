@@ -124,20 +124,39 @@ public class StorageManager extends AStorageManager {
             // if there is only one page we must insert record on that page
             if(requiredPages.size() == 1) {
                 if (requiredPages.get(0).pageFull()) {
-                    splitPageAndRec(table, requiredPages.get(0), record);
+                    splitPageAndRec(table, requiredPages.get(0), record); // split table!!!!
                 } else {
                     requiredPages.get(0).addRecordToPage(record);
                 }
             }
             else {
-                for (Page page : requiredPages) {
 
-                    // check to see if record being inserted exist between 2 values on a page. NOT checking single value pages
-                    if (page.shouldRecordBeOnPage(record)) {
+                int pgInTable = requiredPages.size();
+                for(int i = 0;i < pgInTable;i++)    {
+                    Page page = requiredPages.get(i); // get current page
+
+                     if(i == pgInTable - 1) { // last page in table
+                        // the last page has been reached so the record must belong in here
                         if (page.pageFull()) {
-                            splitPageAndRec(table, page, record);
-                        } else {
+                            splitPageAndRec(table, page, record); // page is full so split!!!
+                        } // page is full so split!!!
+                        else {
                             page.addRecordToPage(record);
+                        };
+                        return;
+                    }
+                    else    {
+                        Page nextPage = requiredPages.get(i + 1); // get next page
+
+                        // record is smaller than the smallest record in that table, thus it belongs in current table
+                        if(nextPage.smallerThanMinRecOnPg(record))  {
+                            if (page.pageFull()) {
+                                splitPageAndRec(table, page, record); // page is full so split!!!
+                            }
+                            else {
+                                page.addRecordToPage(record);
+                            };
+                            return;
                         }
                     }
                 }
