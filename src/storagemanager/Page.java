@@ -17,15 +17,39 @@ public class Page {
     private Integer[] keyIndices;
 
     /**
-     * Page Constructor
-     * @param pageId the page id
-     * @param record1 the 1st record to be added to the page
+     * Page constructor
+     * @param pageId unique id of the page
+     * @param table id of the table the page belongs in
+     * @param maxRecordsPerPage max number of records per page
+     * @param record1 1st record to be added to the page
+     * @param dataTypes data type that belong in each record
+     * @param keyIndices key indices of each record
      */
     public Page(Integer pageId, int table, int maxRecordsPerPage, Object[] record1, String[] dataTypes, Integer[] keyIndices) {
         this.pageId = pageId;
         this.recordList = new ArrayList<Object[]>();
         this.table = table;
         this.recordList.add(record1); // add the first record to the beginning of the arrayList
+        this.maxRecordsPerPage = maxRecordsPerPage;
+        this.dataTypes = dataTypes;
+        this.keyIndices = keyIndices;
+    }
+
+    /**
+     * This constructor is used to created a new slitted page
+     * @param pageId unique id
+     * @param table id of the table the page belongs in
+     * @param maxRecordsPerPage max number of records per page
+     * @param recordList populated list of record
+     * @param dataTypes data types in each record
+     * @param keyIndices key indices of each record
+     */
+    private Page(Integer pageId, int table, int maxRecordsPerPage, ArrayList<Object[]> recordList, String[] dataTypes,
+                Integer[] keyIndices) {
+        this.pageId = pageId;
+        this.recordList = new ArrayList<Object[]>();
+        this.table = table;
+        this.recordList = recordList;
         this.maxRecordsPerPage = maxRecordsPerPage;
         this.dataTypes = dataTypes;
         this.keyIndices = keyIndices;
@@ -185,4 +209,36 @@ public class Page {
         }
         return -2;
     }
+
+    /**
+     * This function will split a page.
+     * The 1st half of the values will remain in this page and the 2nd half will be
+     * be placed on the new page. ***new page belongs after old Page***
+     * @param newPageId the new unique id of a page
+     * @return new page half full page
+     */
+    public Page splitPage(Integer newPageId) {
+        ArrayList<Object[]> botHalfRecList = new ArrayList<Object[]>();
+        ArrayList<Object[]> topHalfRecList = new ArrayList<Object[]>();
+
+        int centerIndex = recordList.size() / 2;
+
+        // populates botHalfRecList with bottom half values of record List
+        for(int i = 0;i < centerIndex;i++)  {
+            botHalfRecList.add(recordList.get(i));
+        }
+
+        // populates topHalfRecList with top half values of record List
+        for(int i = centerIndex;i < recordList.size();i++)  {
+            topHalfRecList.add(recordList.get(i));
+        }
+
+        // current page now has bottom half of its previous record list
+        recordList = botHalfRecList;
+
+        // creates new page with upper half of records
+        Page newPage = new Page(newPageId, this.table, maxRecordsPerPage, topHalfRecList, dataTypes, keyIndices);
+        return newPage;
+    }
+
 }

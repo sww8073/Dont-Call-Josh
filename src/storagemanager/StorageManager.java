@@ -108,9 +108,11 @@ public class StorageManager extends AStorageManager {
         }
         // a page exists
         else    {
-            ArrayList<Integer> pageIdList = this.tablePages.get(table); // get page ids in order
-            ArrayList<Page> requiredPages = new ArrayList<>(); // ist of all page for table
-            //this for loop assumes all pages are in the buffer
+            // grab construct list of pages we need to look through to insert
+            ArrayList<Integer> pageIdList = this.tablePages.get(table); // get page ids of tables in order
+            ArrayList<Page> requiredPages = new ArrayList<>(); // list of all page for table
+
+            // this for loop assumes all pages are in the buffer
             for(int pageid : pageIdList)    {
                 for (Page pageRecord: this.buffer) { // grab all th pages form buffer
                     if( pageRecord.getPageId() == pageid){
@@ -123,9 +125,10 @@ public class StorageManager extends AStorageManager {
             if(requiredPages.size() == 1) {
                 if (requiredPages.get(0).pageFull()) {
                     // TODO split page
+                    int val = 0;
+                    val++;
                 } else {
                     requiredPages.get(0).addRecordToPage(record);
-
                 }
             }
             else {
@@ -135,6 +138,8 @@ public class StorageManager extends AStorageManager {
                     if (page.shouldRecordBeOnPage(record)) {
                         if (page.pageFull()) {
                             // TODO split page
+                            int val = 0;
+                            val++;
                         } else {
                             page.addRecordToPage(record);
                         }
