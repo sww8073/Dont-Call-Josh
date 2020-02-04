@@ -146,17 +146,22 @@ public class Page {
      * @return true if record belongs on page
      */
     public boolean shouldRecordBeOnPage(Object[] recordToAdd)   {
-        int recIndSize = recordList.size();
+        int recListSize = recordList.size() - 1;
 
         // insert record between 2 values
-        for(int i = 0;i < keyIndices.length - 1;i++)   { // search by indices in order skipping last value
-            // record is between first and last value?
-            if(compareIndices(recordList.get(0)[keyIndices[i]], recordToAdd[keyIndices[i]]) == -1 &&
-                    compareIndices(recordList.get(recIndSize)[keyIndices[i]], recordToAdd[keyIndices[i]]) == 1) {
-                // insert record at beginning
+        for(int i = 0;i < keyIndices.length;i++) { // loop through indices
+            Object[] firstRec = recordList.get(0);
+            Object[] lastRec = recordList.get(recListSize);
+
+            Object firstRecCompVal = firstRec[keyIndices[i]];
+            Object lastRecCompVal = lastRec[keyIndices[i]];
+            Object recToAddCompVal = recordToAdd[keyIndices[i]];
+
+            // record is between first and last value or equal
+            if (compareIndices(recToAddCompVal, firstRecCompVal) > -1 &&
+                    compareIndices(recToAddCompVal, lastRecCompVal) < 1) {
                 return true;
             }
-
         }
         return false;
     }

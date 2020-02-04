@@ -124,9 +124,24 @@ public class StorageManager extends AStorageManager {
             // if there is only one page we must insert record on that page
             if(requiredPages.size() == 1) {
                 if (requiredPages.get(0).pageFull()) {
-                    // TODO split page
-                    int val = 0;
-                    val++;
+                    // create new unique page id
+                    pageId += 1; // increment page id each time
+
+                    Page botHalfPg = requiredPages.get(0);
+                    Page topHalfPg = botHalfPg.splitPage(pageId);
+
+                    // add new record to page
+                    if(botHalfPg.shouldRecordBeOnPage(record))
+                        botHalfPg.addRecordToPage(record);
+                    else
+                        topHalfPg.addRecordToPage(record);
+
+                    // add new page buffer
+                    buffer.add(topHalfPg);
+
+                    // new page id to the tables ordered list of tables
+                    int botHalfPgIndex = tablePages.get(table).indexOf(table);
+                    tablePages.get(table).add(botHalfPgIndex + 1, pageId);
                 } else {
                     requiredPages.get(0).addRecordToPage(record);
                 }
