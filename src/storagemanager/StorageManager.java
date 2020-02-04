@@ -70,10 +70,17 @@ public class StorageManager extends AStorageManager {
      */
     @Override
     public Object[] getRecord(int table, Object[] keyValue) throws StorageManagerException {
+        
+        // check to see if table exists
+        Integer[] indicies = this.keyIndices.get(table);
+        if(indicies == null)    {
+            throw new StorageManagerException("The table does not exist");
+        }
+        
         // TODO buffer management table check
 
         // for now I'll assume that the table is in the buffer.
-        //TODO throw exception if the table does not exist
+
         ArrayList<Integer> pages = tablePages.get(table);
         Object[] record = null;
         for (Integer pageNum: pages) {
