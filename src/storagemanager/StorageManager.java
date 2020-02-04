@@ -73,8 +73,13 @@ public class StorageManager extends AStorageManager {
         // TODO buffer management table check
 
         // for now I'll assume that the table is in the buffer.
-        
-        return new Object[0];
+        ArrayList<Integer> pages = tablePages.get(table);
+        Object[] record = null;
+        for (Integer pageNum: pages) {
+            Page page = buffer.get(pageNum);
+            record = page.getRecordFromPage(keyValue);
+        }
+        return record;
     }
 
     /**

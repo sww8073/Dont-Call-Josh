@@ -298,4 +298,24 @@ public class Page {
         return newPage;
     }
 
+    private boolean compareRecords(Object[] record, Object[] recordToCompare){
+        int keyInd;
+        for(int i = 0; i < keyIndices.length; i++) {
+            keyInd = keyIndices[i];
+            if (compareIndices(record[keyInd],recordToCompare[keyInd]) !=0){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public Object[] getRecordFromPage(Object[] keyValue){
+        for (Object[] record: recordList) {
+            if(compareRecords(record, keyValue) == true){
+                return record;
+            }
+        }
+        return null;
+    }
+
 }
