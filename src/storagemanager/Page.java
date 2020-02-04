@@ -102,15 +102,15 @@ public class Page {
 
         // insert record between 2 values
         for(int i = 0;i < keyIndices.length - 1;i++)   { // search by indices in order skipping last value
-            Object insertRecCompVal = recordToAdd[i]; // value we are comparing to see if we should insert
+            Object insertRecCompVal = recordToAdd[keyIndices[i]]; // value we are comparing to see if we should insert
 
             // comparison value for first record
             Object[] firstRec = recordList.get(0);
-            Object firstRecCompVal = firstRec[i];
+            Object firstRecCompVal = firstRec[keyIndices[i]];
 
             // comparison value for last record
             Object[] lastRec = recordList.get(recIndSize); // last value in record
-            Object lastRecCompVal = lastRec[i];
+            Object lastRecCompVal = lastRec[keyIndices[i]];
 
             // record belongs in the beginning
             if(compareIndices(insertRecCompVal, firstRecCompVal) == -1) {
@@ -123,17 +123,17 @@ public class Page {
             }
             else {
                 // insert record between 2 values
-                for(int j = 0;j < recordList.size();j++)    { // loop through all records
+                for(int j = 0;j < recordList.size() - 1;j++)    { // loop through all records
                     Object[] record = recordList.get(j); // current record to check
                     Object[] nextRecord = recordList.get(j + 1); // record after that record
 
-                    Object recCompVal = record[i];
-                    Object nextRecCompVal = nextRecord[i];
+                    Object recCompVal = record[keyIndices[i]];
+                    Object nextRecCompVal = nextRecord[keyIndices[i]];
 
-                    if (compareIndices(recCompVal, insertRecCompVal) == 1 ||
+                    if (compareIndices(recCompVal, insertRecCompVal) == 1 && // TODO fix secondary index comparison
                             compareIndices(insertRecCompVal, nextRecCompVal) == -1) {
                         // inserted record belongs between theses two records
-                        recordList.add(j + 1, recordToAdd); // insert after current record
+                        recordList.add(j, recordToAdd); // insert after current record
                         return true;
                     }
                 }
