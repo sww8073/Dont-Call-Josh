@@ -76,7 +76,7 @@ public class StorageManager extends AStorageManager {
         if(indicies == null)    {
             throw new StorageManagerException("The table does not exist");
         }
-        
+
         // TODO buffer management table check
 
         // for now I'll assume that the table is in the buffer.
@@ -229,7 +229,8 @@ public class StorageManager extends AStorageManager {
             if (getRecord(table, recordKeyInd) != null) {
                 //record exists so update
             } else {
-                //record does not exist so insert
+                // we can jsut call insert record
+                insertRecord(table, record);
             }
         }
     }
