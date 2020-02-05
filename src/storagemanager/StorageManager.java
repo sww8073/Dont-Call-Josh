@@ -375,7 +375,8 @@ public class StorageManager extends AStorageManager {
         this.pageSize = pageSize;
         this.buffer = new ArrayList<>();
 
-        this.bufferManager = new BufferManager(pageSize, pageBufferSize, )
+        File file = new File(dbLoc + "buffer");
+        this.bufferManager = new BufferManager(pageSize, pageBufferSize, dbLoc + "buffer");
     }
 
     /**
