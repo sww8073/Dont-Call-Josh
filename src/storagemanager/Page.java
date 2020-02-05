@@ -82,7 +82,7 @@ public class Page {
      * @return Whether the page is full
      */
     public boolean pageFull() {
-        if (maxRecordsPerPage == recordList.size()) {
+        if (maxRecordsPerPage <= recordList.size()) {
             return true;
         }
         return false;
@@ -94,73 +94,36 @@ public class Page {
      * @prcondition the page must have been check to have room for a record*******
      * @return true if record added
      */
-    public boolean addRecordToPage(Object[] recordToAdd)
+    public boolean addRecordToPage(Object[] recordToAdd) throws StorageManagerException
     {
-        int recIndSize = recordList.size() - 1;
+        Object[] firstRec = recordList.get(0);
+        Object[] lastRec = recordList.get(recordList.size() - 1); // last value in record
 
-        // insert record between 2 values
-        for(int i = 0;i < keyIndices.length - 1;i++)   { // search by indices in order skipping last value
-            Object insertRecCompVal = recordToAdd[keyIndices[i]]; // value we are comparing to see if we should insert
 
-            // comparison value for first record
-            Object[] firstRec = recordList.get(0);
-            Object firstRecCompVal = firstRec[keyIndices[i]];
-
-            // comparison value for last record
-            Object[] lastRec = recordList.get(recIndSize); // last value in record
-            Object lastRecCompVal = lastRec[keyIndices[i]];
-
-            // record belongs in the beginning
-            if(compareIndices(insertRecCompVal, firstRecCompVal) == -1) {
-                recordList.add(0, recordToAdd); // insert record at beginning
-                return true;
-            }
-            else if(compareIndices(insertRecCompVal, lastRecCompVal) == 1)  {
-                recordList.add(recordList.size(), recordToAdd); // insert record at end
-                return true;
-            }
-            else {
-                // insert record between 2 values
-                for(int j = 0;j < recordList.size() - 1;j++)    { // loop through all records
-                    Object[] record = recordList.get(j); // current record to check
-                    Object[] nextRecord = recordList.get(j + 1); // record after that record
-
-                    Object recCompVal = record[keyIndices[i]];
-                    Object nextRecCompVal = nextRecord[keyIndices[i]];
-
-                    if (compareIndices(recCompVal, insertRecCompVal) == 1 && // TODO fix secondary index comparison
-                            compareIndices(insertRecCompVal, nextRecCompVal) == -1) {
-                        // inserted record belongs between theses two records
-                        recordList.add(j, recordToAdd); // insert after current record
-                        return true;
-                    }
-                }
-            }
+        if(compareRecords(recordToAdd, firstRec) == -1) { // record belongs in the beginning
+            recordList.add(0, recordToAdd);
+            return true;
         }
-        return false;
-    }
+        else if(compareRecords(recordToAdd, lastRec) == 1)  { // record belongs in the end
+            recordList.add(recordList.size(), recordToAdd);
+            return true;
+        }
+        else if(compareRecords(recordToAdd, lastRec) == 0)  {
+            throw new StorageManagerException("Cannot add duplicate record");
+        }
+        else {
+            // insert record between 2 values
+            for(int j = 0;j < recordList.size() - 1;j++)    { // loop through all records
+                Object[] currRecord = recordList.get(j); // current record to check
+                Object[] nextRecord = recordList.get(j + 1); // record after that record
 
-    /**
-     * this function checks to see if record belongs on page
-     * @param recordToAdd Object array
-     * @return true if record belongs on page
-     */
-    public boolean shouldRecordBeOnPage(Object[] recordToAdd)   {
-        int recListSize = recordList.size() - 1;
-
-        // insert record between 2 values
-        for(int i = 0;i < keyIndices.length;i++) { // loop through indices
-            Object[] firstRec = recordList.get(0);
-            Object[] lastRec = recordList.get(recListSize);
-
-            Object firstRecCompVal = firstRec[keyIndices[i]];
-            Object lastRecCompVal = lastRec[keyIndices[i]];
-            Object recToAddCompVal = recordToAdd[keyIndices[i]];
-
-            // record is between first and last value or equal
-            if (compareIndices(recToAddCompVal, firstRecCompVal) > -1 &&
-                    compareIndices(recToAddCompVal, lastRecCompVal) < 1) {
-                return true;
+                if (isRecBetweenRecs(recordToAdd, currRecord, nextRecord)) {
+                    // inserted record belongs between theses two records
+                    recordList.add(j + 1, recordToAdd); // insert after current record
+                    return true;
+                }
+                else if(compareRecords(recordToAdd, currRecord) == 0)
+                    throw new StorageManagerException("Cannot add duplicate record");
             }
         }
         return false;
@@ -168,54 +131,58 @@ public class Page {
 
     /**
      * record to be added is smaller than 1st rec on page
-     * @param recordToAdd Object array
+     * @param record Object array
      * @return
      */
-    public boolean smallerThanMinRecOnPg(Object[] recordToAdd)  {
-
+    public boolean smallerThanMinRecOnPg(Object[] record)  {
         // insert record between 2 values
-        for(int i = 0;i < keyIndices.length;i++) { // loop through indices
-            Object[] firstRec = recordList.get(0);
-
-            Object firstRecCompVal = firstRec[keyIndices[i]];
-            Object recToAddCompVal = recordToAdd[keyIndices[i]];
-
-            // record to be added is smaller than 1st rec on page
-            if (compareIndices(recToAddCompVal, firstRecCompVal) == -1) {
-                return true;
-            }
-            else if (compareIndices(recToAddCompVal, firstRecCompVal) == 1) {
-                return false;
-            }
-
-            // only continue loop if values are equal, then you must check next index
+        Object[] firstRec = recordList.get(0);
+        if(compareRecords(record, firstRec) == -1) { // record is smaller than first val on this page
+            return true;
         }
         return false;
     }
 
     /**
-     * record to add is larger than max record on page
-     * @param recordToAdd Object array
-     * @return
+     * this function compares records on a page. It compare the values of all indices
+     * in order.
+     * @param rec1 record on this page
+     * @param rec2 record on this page
+     * @return 1 if rec1 > rec2
+     *         -1 if rec1 < rec2
+     *         0 if rec1 == rec2
+     *         -2 if error
      */
-    public boolean largerThanMaxRecOnPg(Object[] recordToAdd)  {
-        int recListSize = recordList.size() - 1;
+    public int compareRecords(Object[] rec1, Object[] rec2) {
+        // loop though and check each key indices
+        for(int i = 0;i < keyIndices.length;i++)    {
+            // compares key indices that corresponds to i
+            Object rec1Key = rec1[keyIndices[i]];
+            Object rec2Key = rec2[keyIndices[i]];
 
-        // insert record between 2 values
-        for(int i = 0;i < keyIndices.length;i++) { // loop through indices
-            Object[] lastRec = recordList.get(recListSize);
+            int result = compareIndices(rec1Key, rec2Key);
 
-            Object lastRecCompVal = lastRec[keyIndices[i]];
-            Object recToAddCompVal = recordToAdd[keyIndices[i]];
-
-            // record to add is larger than max record on page
-            if (compareIndices(recToAddCompVal, lastRecCompVal) == 1) {
-                return true;
-            }
+            // a difference was found from compareIndices()
+            if(result != 0)
+                return result;
         }
-        return false;
+
+        // no differences were found
+        return 0;
     }
 
+    /**
+     * this function check if a record exists between two records
+     * @param midRec record on page
+     * @param lowerRec record on page
+     * @param upperRec record on page
+     * @return treu if midRec belongs between lowerRec and upperRec
+     */
+    public boolean isRecBetweenRecs(Object[] midRec, Object[] lowerRec, Object[] upperRec)  {
+        if(compareRecords(lowerRec, midRec) == -1 && compareRecords(midRec, upperRec) == -1)
+            return true;
+        return false;
+    }
 
     /**
      * This function compares two indices.

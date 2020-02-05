@@ -175,6 +175,7 @@ public class StorageManager extends AStorageManager {
                 }
             }
         }
+        //throw new StorageManagerException("Cannot add duplicated record");
     }
 
     /**
@@ -185,7 +186,7 @@ public class StorageManager extends AStorageManager {
      * @param pgToBeSplit the full page that needs to be split
      * @param record the new record that needs to be added
      */
-    public void splitPageAndRec(int table, Page pgToBeSplit,  Object[] record)   {
+    public void splitPageAndRec(int table, Page pgToBeSplit,  Object[] record) throws StorageManagerException   {
         // create new unique page id
         pageId += 1; // increment page id each time
 
@@ -193,7 +194,7 @@ public class StorageManager extends AStorageManager {
         Page topHalfPg = botHalfPg.splitPage(pageId);
 
         // add new record to page
-        if(botHalfPg.shouldRecordBeOnPage(record))
+        if(topHalfPg.smallerThanMinRecOnPg(record))
             botHalfPg.addRecordToPage(record);
         else
             topHalfPg.addRecordToPage(record);
