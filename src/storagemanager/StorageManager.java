@@ -235,7 +235,7 @@ public class StorageManager extends AStorageManager {
                     for (Page pageRecord: this.buffer) { // grab all the pages from buffer
                         if(pageRecord.getPageId() == pageid) {
                             if (pageRecord.updateRecordFromPage(record, recordKeyInd) != null) {
-                                return; // this probably doesn't work and seems too complicated to me
+                                return; // this might not work and seems too complicated to me
                                         // I'll test and work on this more tomorrow, right now I need to sleep.
                             }
                         }

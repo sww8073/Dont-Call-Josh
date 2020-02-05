@@ -310,7 +310,7 @@ public class Page {
     public Object[] getRecordFromPage(Object[] keyValue){
         for (Object[] record: recordList) {
             if(areRecordsEqual(record, keyValue)){
-                
+                return record;
             }
         }
         return null;
