@@ -17,7 +17,7 @@ public class StorageManagerTester {
     public static void main(String[] args) {
 
         // Modify based on your system and testing params
-        String dbLoc = "C:\\Users\\jtell\\Desktop\\Database/";
+        String dbLoc = "C:\\Users\\Matthew\\Desktop\\DBSIDataBase";
         int pageBufferSize = 20;
         int pageSize = 4096;
         AStorageManager sm = null;
@@ -92,6 +92,8 @@ public class StorageManagerTester {
             System.err.println("Failed to insert record.");
             e.printStackTrace();
         }
+
+
 
         /*
         // Table 2

@@ -20,8 +20,8 @@ public class StorageManager extends AStorageManager {
     private Map<Integer, ArrayList<Integer>> tablePages;
     
     private ArrayList<Page> buffer; // TODO Initialize buffer, find way to add pages
+    private BufferManager bufferManager;
 
-    private int pageBufferSize;
     private int pageSize;
 
     private final int INTSIZE = 4;
@@ -175,7 +175,6 @@ public class StorageManager extends AStorageManager {
                 }
             }
         }
-        //throw new StorageManagerException("Cannot add duplicated record");
     }
 
     /**
@@ -365,10 +364,10 @@ public class StorageManager extends AStorageManager {
         this.keyIndices = new HashMap<Integer, Integer[]>();
         this.maxRecordsPerPage = new HashMap<Integer, Integer>();
         this.tablePages = new HashMap<Integer, ArrayList<Integer>>();
-
-        this.pageBufferSize = pageBufferSize;
         this.pageSize = pageSize;
         this.buffer = new ArrayList<>();
+
+        this.bufferManager = new BufferManager(pageSize, pageBufferSize, )
     }
 
     /**
@@ -389,5 +388,4 @@ public class StorageManager extends AStorageManager {
             }
         }
     }
-
 }
