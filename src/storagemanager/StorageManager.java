@@ -229,7 +229,7 @@ public class StorageManager extends AStorageManager {
             if (getRecord(table, recordKeyInd) != null) {
                 //record exists so update
             } else {
-                // we can jsut call insert record
+                // call insert record
                 insertRecord(table, record);
             }
         }
