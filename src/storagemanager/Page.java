@@ -300,4 +300,18 @@ public class Page {
         return null;
     }
 
+    public boolean tryToRemoveRecord(Object[] keyValue){
+        Object[] record;
+        if((record = getRecordFromPage(keyValue)) != null){
+            //remove here
+            int indexOfRecord = recordList.indexOf(record);
+            recordList.remove(indexOfRecord);
+            //if page is empty now remove it from list
+            if(recordList.isEmpty()){
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
