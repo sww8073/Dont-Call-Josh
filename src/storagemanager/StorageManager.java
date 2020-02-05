@@ -217,8 +217,8 @@ public class StorageManager extends AStorageManager {
     public void updateRecord(int table, Object[] record) throws StorageManagerException {
         if(keyIndices.get(table) == null){throw new StorageManagerException("table " + table + " does not exist");}
         else {
-            Integer[] keyInd = keyIndices.get(table);//the keyIndices from the table
-            Object[] recordKeyInd = new Object[keyInd.length];//the keyValue pair based off the keyIndices
+            Integer[] keyInd = keyIndices.get(table); //the keyIndices from the table
+            Object[] recordKeyInd = new Object[keyInd.length]; //the keyValue pair based off the keyIndices
             int keyIndValue;
             //making the keyValue pair
             for (int i = 0; i < keyInd.length; i++) {
@@ -227,7 +227,21 @@ public class StorageManager extends AStorageManager {
             }
 
             if (getRecord(table, recordKeyInd) != null) {
-                //record exists so update
+                // grab all pages so that we can look for our record
+                ArrayList<Integer> pageIdList = this.tablePages.get(table); // get page ids of tables in order
+
+                // this for loop assumes all pages are in the buffer
+                for(int pageid : pageIdList)    {
+                    for (Page pageRecord: this.buffer) { // grab all the pages from buffer
+                        if(pageRecord.getPageId() == pageid) {
+                            if (pageRecord.updateRecordFromPage(record, recordKeyInd) != null) {
+                                return; // this probably doesn't work and seems too complicated to me
+                                        // I'll test and work on this more tomorrow, right now I need to sleep.
+                            }
+                        }
+                    }
+                }
+
             } else {
                 // call insert record
                 insertRecord(table, record);

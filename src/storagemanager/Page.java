@@ -312,7 +312,24 @@ public class Page {
     public Object[] getRecordFromPage(Object[] keyValue){
         for (Object[] record: recordList) {
             if(areRecordsEqual(record, keyValue)){
-                return record;
+                
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Finds a record and updates it.
+     * @param record new record data.
+     * @param keyValue the keyValue of the record to update
+     * @return The new record, null if the record wasnt found.
+     */
+    public Object[] updateRecordFromPage(Object[] record, Object[] keyValue) {
+        // this class currently doesnt change the order of the records if any of the keyValues are changed
+        for (Object[] rec: recordList) {
+            if(areRecordsEqual(rec, keyValue)){
+                rec = record; // I don' think this is how I wan't to do this, but for now I'll keep it like this
+                return rec;
             }
         }
         return null;
