@@ -5,8 +5,6 @@
  */
 package storagemanager;
 
-import org.omg.CORBA.OBJ_ADAPTER;
-
 import java.util.ArrayList;
 
 public class Page {
