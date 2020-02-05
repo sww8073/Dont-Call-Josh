@@ -155,7 +155,7 @@ public class StorageManager extends AStorageManager {
                         } // page is full so split!!!
                         else {
                             page.addRecordToPage(record);
-                        };
+                        }
                         return;
                     }
                     else    {
@@ -168,7 +168,7 @@ public class StorageManager extends AStorageManager {
                             }
                             else {
                                 page.addRecordToPage(record);
-                            };
+                            }
                             return;
                         }
                     }
@@ -258,7 +258,15 @@ public class StorageManager extends AStorageManager {
      */
     @Override
     public void removeRecord(int table, Object[] keyValue) throws StorageManagerException {
-
+        ArrayList<Integer> pages = tablePages.get(table);
+        boolean pageIsEmpty;
+        for (Integer pageNum: pages) {
+            Page page = buffer.get(pageNum);
+            pageIsEmpty = page.tryToRemoveRecord(keyValue);
+            if(pageIsEmpty){//page is empty and has to be removed
+                pages.remove(pageNum);
+            }
+        }
     }
 
     /**
