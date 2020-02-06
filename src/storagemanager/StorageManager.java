@@ -307,6 +307,7 @@ public class StorageManager extends AStorageManager {
      */
     @Override
     public void clearTable(int table) throws StorageManagerException {
+        //TODO throw StorageManagerExecption
         ArrayList<Integer> pages = new ArrayList<>();
         ArrayList<Object[]> records;
         Integer[] keyInd = keyIndices.get(table);
