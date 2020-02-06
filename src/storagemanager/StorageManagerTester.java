@@ -17,7 +17,7 @@ public class StorageManagerTester {
     public static void main(String[] args) {
 
         // Modify based on your system and testing params
-        String dbLoc = "C:\\Users\\wyatt\\Desktop\\Directory";
+        String dbLoc = "C:\\Users\\Matthew\\Desktop\\DBSIDataBase";
         int pageBufferSize = 20;
         int pageSize = 4096;
         AStorageManager sm = null;
@@ -242,7 +242,7 @@ public class StorageManagerTester {
         ((StorageManager)sm).printBuff(); // TODO remove this printLine
 
         // BufferManagerTester
-        BufferManager bufferManager = new BufferManager(pageSize, 4, dbLoc);
+        BufferManager bufferManager = new BufferManager(pageSize, 4, dbLoc = "\\pages");
         Object[] rec = new Object[5];
         Page page1 = new Page(1, 1, 40, rec, dataTypes1, keyIndices1);
         Page page2 = new Page(2, 1, 40, rec, dataTypes1, keyIndices1);

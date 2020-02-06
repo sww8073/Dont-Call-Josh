@@ -66,6 +66,7 @@ public class BufferManager {
 
         // look for page in memory
         Page page = readPageFromMem(pageId);
+        addPage(page); // add page to buffer
         return page;
     }
 
