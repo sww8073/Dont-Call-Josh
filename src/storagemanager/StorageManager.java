@@ -5,13 +5,11 @@
  */
 package storagemanager;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class StorageManager extends AStorageManager {
 
@@ -22,10 +20,12 @@ public class StorageManager extends AStorageManager {
 
     // key is table id, value is ArrayList pages sorted in order form lowest to highest
     private Map<Integer, ArrayList<Integer>> tablePages;
-
+    
+    public ArrayList<Page> buffer; // TODO Initialize buffer, find way to add pages
     private BufferManager bufferManager;
 
     private int pageSize;
+    private String dbLoc;
 
     private final int INTSIZE = 4;
     private final int DOUBLESIZE = 8;
@@ -70,7 +70,7 @@ public class StorageManager extends AStorageManager {
         // get total # of records in table
         int totalRecordCount = 0;
         for (Integer id: pageIdList) {
-            Page page = bufferManager.getPage(id);
+            Page page  = getPageFromBuff(id);
             totalRecordCount += page.getRecordList().size();
         }
 
@@ -81,7 +81,7 @@ public class StorageManager extends AStorageManager {
 
         int index = 0;
         for(int i = 0;i < pageCount;i++)    {
-            Page page = bufferManager.getPage(pageIdList.get(i));
+            Page page = getPageFromBuff(pageIdList.get(i)); // gets ordered page // TODO eventually replace with buffer call
             ArrayList<Object[]> records = page.getRecordList();
 
             for(Object[] record : records)    {
@@ -107,7 +107,8 @@ public class StorageManager extends AStorageManager {
 
         ArrayList<Integer> pageIdsList = tablePages.get(table);
         for (Integer id: pageIdsList) {
-            Page page = bufferManager.getPage(id);
+            Page page = getPageFromBuff(id); // gets ordered page // TODO eventually replace with buffer call
+            //Page page = bufferManager.getPage(id);
 
             ArrayList<Object[]> records = page.getRecordList();
             for(Object[] record : records)  {
@@ -143,12 +144,14 @@ public class StorageManager extends AStorageManager {
             ArrayList<Integer> newPageList = new ArrayList<>();
             newPageList.add(page.getPageId());
             tablePages.put(table, newPageList); // add the ordered list of table ids to map
-            bufferManager.addPage(page);
+            buffer.add(page); // add page to the buffer // TODO eventually get this page from real buffer
+            //bufferManager.addPage(page);
         }
         else {
             ArrayList<Integer> orderedPageIds = tablePages.get(table);
             for (int i = 0; i < orderedPageIds.size(); i++) {
-                Page page = bufferManager.getPage(orderedPageIds.get(i));
+                Page page = getPageFromBuff(orderedPageIds.get(i)); // TODO eventually get this page from real buffer
+                //Page page = bufferManager.getPage(orderedPageIds.get(i));
 
                 // record exists between(inclusive) min and max record, if so add/split
                 if (page.isRecBetweenMaxAndMin(record)) {
@@ -156,7 +159,8 @@ public class StorageManager extends AStorageManager {
                     return;
                 } else {
                     if (i + 1 < orderedPageIds.size()) { // there is a next page
-                        Page nextPage = bufferManager.getPage(orderedPageIds.get(i));
+                        Page nextPage = getPageFromBuff(orderedPageIds.get(i)); // TODO eventually get this page from real buffer
+                        //Page nextPage = bufferManager.getPage(orderedPageIds.get(i));
                         if (nextPage.smallerThanMinRecOnPg(record)) { // record is smaller than the smallest record in the next page
                             addRecOrSplitAndAddRec(table, page, record);
                             return;
@@ -169,6 +173,15 @@ public class StorageManager extends AStorageManager {
                 }
             }
         }
+    }
+
+    private Page getPageFromBuff(Integer pageId)    {
+        for(int i = 0;i < buffer.size();i++)    {
+            if(buffer.get(i).getPageId() == pageId) {
+                return buffer.get(i);
+            }
+        }
+        return null;
     }
 
     /**
@@ -208,7 +221,8 @@ public class StorageManager extends AStorageManager {
             topHalfPg.addRecordToPage(record);
 
         // add new page buffer
-        bufferManager.addPage(topHalfPg);
+        buffer.add(topHalfPg); // TODO eventually get this page from real buffer
+        //bufferManager.addPage(topHalfPg);
 
         // new page id to the tables ordered list of tables
         int botHalfPgIndex = tablePages.get(table).indexOf(pgToBeSplit.getPageId());
@@ -232,7 +246,7 @@ public class StorageManager extends AStorageManager {
 
         ArrayList<Integer> pageIdsList = tablePages.get(table);
         for (Integer id: pageIdsList) {
-            Page page = bufferManager.getPage(id);
+            Page page = getPageFromBuff(id); // gets ordered page // TODO eventually replace with buffer call
 
             // You can use this function with the record with the new values since
             // only the key indices are being used to compare and search.
@@ -264,8 +278,7 @@ public class StorageManager extends AStorageManager {
 
         ArrayList<Integer> pageIdsList = tablePages.get(table);
         for (Integer id: pageIdsList) {
-            Page page = bufferManager.getPage(id);
-
+            Page page = getPageFromBuff(id); // gets ordered page // TODO eventually replace with buffer call
             ArrayList<Object[]> records = page.getRecordList();
             for(int i = 0;i < records.size();i++)    {
                 if(page.compareRecordToKeyIndices(records.get(i), keyValue) == 0)   {
@@ -277,7 +290,8 @@ public class StorageManager extends AStorageManager {
                         ArrayList<Integer> pageIds = tablePages.get(table);
                         pageIds.remove(page.getPageId());
 
-                        bufferManager.deletePage(page.getPageId());
+                        // remove page from buffer // TODO eventually replace with buffer call
+                        buffer.remove(page);
                     }
                 }
             }
@@ -296,14 +310,7 @@ public class StorageManager extends AStorageManager {
      */
     @Override
     public void dropTable(int table) throws StorageManagerException {
-        if(!doesTableExist(table)) {
-            throw new StorageManagerException("The table does not exist");
-        }
-        clearTable(table);
-        dataTypes.remove(table);
-        keyIndices.remove(table);
-        maxRecordsPerPage.remove(table);
-        tablePages.remove(table);
+
     }
 
     /**
@@ -314,14 +321,12 @@ public class StorageManager extends AStorageManager {
      */
     @Override
     public void clearTable(int table) throws StorageManagerException {
-        if(!doesTableExist(table)) {
-            throw new StorageManagerException("The table does not exist");
-        }
+
         ArrayList<Integer> pages = new ArrayList<>();
         ArrayList<Object[]> records;
         Integer[] keyInd = keyIndices.get(table);
         for (Integer pageNum: pages) {
-            records = bufferManager.getPage(pageNum).getRecordList();
+            records = buffer.get(pageNum).getRecordList();
             for (Object[] record: records) {
                 Object[] keyValue = new Object[keyInd.length];
                 for (int i = 0; i < keyValue.length; i++) {
@@ -382,23 +387,24 @@ public class StorageManager extends AStorageManager {
 
     }
 
-    /**
-     * Will purge the page buffer and write any needed data to the physical hardware needed to restart the database.
-     * @throws StorageManagerException any failure to write the buffer or database information to hardware
-     */
     @Override
     public void terminateDatabase() throws StorageManagerException {
-        /**
-         * Calls purgeBuffer() and then writes out pageBufferSize and pageSize in bytes to a file called Sizes.txt
-         */
-        // TODO Implement throwing of StorageManagerException.
         purgeBuffer();
         try{
-            FileOutputStream out = new FileOutputStream("Sizes.txt");
-            Integer ps = this.pageSize;
-            byte pageSize = ps.byteValue();
-            out.write(pageSize);
-            out.close();
+
+            FileOutputStream out = new FileOutputStream("database.txt");
+            ObjectOutputStream objectOut = new ObjectOutputStream(out);
+            objectOut.writeObject(this.dataTypes);
+            objectOut.writeObject(this.keyIndices);
+            objectOut.writeObject(this.maxRecordsPerPage);
+            objectOut.writeObject(this.tablePages);
+            objectOut.writeObject(this.pageId);
+
+            objectOut.writeObject(this.bufferManager.getBufferSize());
+            objectOut.writeObject(this.bufferManager.getPageSize());
+            objectOut.writeObject(this.bufferManager.getBufLoc());
+
+            objectOut.close();
         }catch(IOException e){
             System.out.println("IMPLEMENT ERROR MESSAGE HERE");
         }
@@ -406,22 +412,25 @@ public class StorageManager extends AStorageManager {
 
     @Override
     protected void restartDatabase(String dbLoc) throws StorageManagerException {
-        //TODO use read object
-        /**
-         * My implementation implies a few things here,
-         * 1. pageBuffersize and pageSize are written out to a Sizes.txt file in order as bytes in terminateDatabase()
-         *
-         */
-        // TODO Implement throwing of StorageManagerException and read in buffer info
-        String sizes = dbLoc + "\\Sizes.txt";
+        String sizes = dbLoc + "\\database.txt";
         try{
             FileInputStream in = new FileInputStream(sizes);
-//            this.pageBufferSize = in.read();
-            this.pageSize = in.read();
+            ObjectInputStream ois = new ObjectInputStream(in);
+            this.dataTypes = (HashMap<Integer, String[]>) ois.readObject();
+            this.keyIndices = (HashMap<Integer, Integer[]>) ois.readObject();
+            this.maxRecordsPerPage = (HashMap<Integer, Integer>) ois.readObject();
+            this.tablePages = (HashMap<Integer, ArrayList<Integer>>) ois.readObject();
+            this.pageId = (Integer) ois.readObject();
+
+            int pageSize = (int) ois.readObject();
+            int pageBufferSize = (int) ois.readObject();
+            String dbloc = (String) ois.readObject();
+            this.bufferManager = new BufferManager(pageSize, pageBufferSize, dbloc);
         }catch(IOException e){
             System.out.println("IMPLEMENT ERROR MESSAGE HERE");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
-        //TODO grab buffer info from file
     }
 
     /**
@@ -447,6 +456,8 @@ public class StorageManager extends AStorageManager {
         this.maxRecordsPerPage = new HashMap<Integer, Integer>();
         this.tablePages = new HashMap<Integer, ArrayList<Integer>>();
         this.pageSize = pageSize;
+        this.buffer = new ArrayList<>();
+        this.dbLoc = dbLoc;
 
         new File(dbLoc + "\\pages").mkdirs(); // create a new folder where buffer pages will be stored
         this.bufferManager = new BufferManager(pageSize, pageBufferSize, dbLoc + "\\pages");
@@ -483,5 +494,39 @@ public class StorageManager extends AStorageManager {
             return false;
         }
         return true;
+    }
+
+    public void printBuff() {
+
+        Set<Integer> tableIds = tablePages.keySet();
+        for (Integer tableId : tableIds) {
+            ArrayList<Integer> tableList = tablePages.get(tableId);
+            System.out.println("---------------------");
+            System.out.println("table: " + tableId);
+            for(int i = 0;i < tableList.size();i++) {
+
+                int count = 0;
+                Object[] v = new Object[10];
+                Page page = new Page(-1, -1, -1, v, new String[1], new Integer[1]);
+                for(int j = 0;j < buffer.size();j++)    {
+                    if(buffer.get(j).getPageId() == tableList.get(i))
+                        page = buffer.get(j);
+                }
+
+                System.out.print("Page Id: " + buffer.get(i).getPageId() + "          ");
+                ArrayList<Object[]> recs = page.getRecordList();
+                for (int j = 0; j < recs.size(); j++) {
+                    Object[] rec = recs.get(j);
+                    System.out.print(" [ ");
+                    for (int l = 0; l < rec.length; l++) {
+                        System.out.print(rec[l] + " ");
+                    }
+                    System.out.print(" ] ");
+                    count++;
+                }
+                System.out.println("\n\t\tcount: " + count);
+            }
+            System.out.println("---------------------");
+        }
     }
 }

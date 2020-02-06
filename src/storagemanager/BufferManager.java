@@ -29,6 +29,16 @@ public class BufferManager {
         this.bufLoc = bufLoc;
     }
 
+    public int getBufferSize(){
+        return this.bufferSize;
+    }
+    public int getPageSize(){
+        return this.pageSize;
+    }
+    public String getBufLoc(){
+        return this.bufLoc;
+    }
+
     /**
      * this function adds a page to the buffer. If the buffer is full it
      * write the LRU page to memory and the adds the page to the buffer.
