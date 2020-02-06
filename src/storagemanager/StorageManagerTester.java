@@ -95,7 +95,7 @@ public class StorageManagerTester {
 
 
 
-        /*
+
         // Table 2
         try {
             BufferedReader br = new BufferedReader(new FileReader("inputs/data2.csv"));
@@ -123,11 +123,13 @@ public class StorageManagerTester {
         }
 
         try {
-            sm.insertRecord(1, new Object[]{500, "Duplicate key", 37.73, false});
+            // sm.insertRecord(1, new Object[]{500, "Duplicate key", 37.73, false});
+            sm.insertRecord(1, new Object[]{500, "Gayleen Darker", 37.73, false});
             System.err.println("Inserted a record with duplicate key");
             System.exit(1);
         } catch (StorageManagerException e) {}
 
+        /*
         System.out.println("Testing getRecords for all tables");
         // Getting all table entries
         // Table 1
@@ -204,7 +206,7 @@ public class StorageManagerTester {
             e.printStackTrace();
             System.exit(1);
         }
-
+        /*
         System.out.println("Testing update");
 
         try {

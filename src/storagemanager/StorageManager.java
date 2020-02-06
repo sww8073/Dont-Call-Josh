@@ -99,7 +99,39 @@ public class StorageManager extends AStorageManager {
      */
     @Override
     public void insertRecord(int table, Object[] record) throws StorageManagerException {
+        // check to see if the table exists
+        Integer[] indicies = this.keyIndices.get(table);
+        if(indicies == null)    {
+            throw new StorageManagerException("The table does not exist");
+        }
 
+        // check if table contains any pages
+        if(!this.tablePages.containsKey(table)) {
+            // table does not have any pages, so ADD NEW PAGE
+            pageId += 1; // increment page id each time
+            Page page = new Page(pageId, table, maxRecordsPerPage.get(table), record, dataTypes.get(table),
+                    keyIndices.get(table));
+            ArrayList<Integer> newPageList = new ArrayList<>();
+            newPageList.add(page.getPageId());
+            tablePages.put(table, newPageList); // add the ordered list of table ids to map
+            buffer.add(page); // add page to the buffer
+        }
+        else    {
+            ArrayList<Integer> pageIdList = this.tablePages.get(table); // get page ids of tables in order
+
+            if(pageIdList.size() == 1) {
+                int pageIndex = buffer.indexOf(pageId); // TODO get this from buffer manager
+                Page page = buffer.get(pageIndex);
+
+                page.addRecordToPage(record);
+            }
+            else    {
+                int i = 0;
+                i++;
+            }
+        }
+
+        /*
         // check to see if the table exists
         Integer[] indicies = this.keyIndices.get(table);
         if(indicies == null)    {
@@ -175,6 +207,7 @@ public class StorageManager extends AStorageManager {
                 }
             }
         }
+         */
     }
 
     /**
