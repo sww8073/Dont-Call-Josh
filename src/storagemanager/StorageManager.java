@@ -117,16 +117,6 @@ public class StorageManager extends AStorageManager {
         return null;
     }
 
-    public Page getPage(Integer Id) {
-        Object[] v = new Object[10];
-        Page page = new Page(-1, -1, -1, v, new String[1], new Integer[1]);
-        for(int i = 0;i < buffer.size();i++)    {
-            if(buffer.get(i).getPageId() == Id)
-                page = buffer.get(i);
-        }
-        return page;
-    }
-
     /**
      * Inserts the record in the given table. If the record already exists it throws an exception. It finds the page
      * where it belongs, adds it in its proper location. If the page becomes overfull it will make a new page.
