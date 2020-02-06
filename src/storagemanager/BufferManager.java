@@ -81,8 +81,8 @@ public class BufferManager {
             ObjectInputStream objectIn = new ObjectInputStream(fileIn);
             Page page = (Page) objectIn.readObject();
             File pageFile = new File(path);
-            pageFile.delete();
             objectIn.close();
+            pageFile.delete();
             return page;
         } catch (FileNotFoundException e)   {
             System.err.println(e);
