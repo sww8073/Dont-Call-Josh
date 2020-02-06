@@ -24,7 +24,7 @@ public class BufferManager {
     public BufferManager(int pageSize, int bufferSize, String bufLoc) {
         this.pageSize = pageSize;
         //this.bufferSize = bufferSize;
-        this.bufferSize = 0; // TODO remove this, its for testing only
+        this.bufferSize = 1; // TODO remove this, its for testing only
         this.buffer = new ArrayList<>(bufferSize);
         this.bufLoc = bufLoc;
     }
@@ -65,9 +65,6 @@ public class BufferManager {
         }
 
         // look for page in memory
-        File file = new File(bufLoc);
-        File[] files = file.listFiles();
-        // TODO loop through all object in file and check to see if it what we want
         Page page = readPageFromMem(pageId);
 
         return null;

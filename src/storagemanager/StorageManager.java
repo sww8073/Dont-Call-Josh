@@ -106,7 +106,8 @@ public class StorageManager extends AStorageManager {
 
         ArrayList<Integer> pageIdsList = tablePages.get(table);
         for (Integer id: pageIdsList) {
-            Page page = getPageFromBuff(id); // gets ordered page // TODO eventually replace with buffer call
+            //Page page = getPageFromBuff(id); // gets ordered page // TODO eventually replace with buffer call
+            Page page = bufferManager.getPage(id);
 
             ArrayList<Object[]> records = page.getRecordList();
             for(Object[] record : records)  {
@@ -143,12 +144,14 @@ public class StorageManager extends AStorageManager {
             ArrayList<Integer> newPageList = new ArrayList<>();
             newPageList.add(page.getPageId());
             tablePages.put(table, newPageList); // add the ordered list of table ids to map
-            buffer.add(page); // add page to the buffer
+            //buffer.add(page); // add page to the buffer
+            bufferManager.addPage(page);
         }
         else {
             ArrayList<Integer> orderedPageIds = tablePages.get(table);
             for (int i = 0; i < orderedPageIds.size(); i++) {
-                Page page = getPageFromBuff(orderedPageIds.get(i)); // TODO eventually get this page from real buffer
+                //Page page = getPageFromBuff(orderedPageIds.get(i)); // TODO eventually get this page from real buffer
+                Page page = bufferManager.getPage(orderedPageIds.get(i));
 
                 // record exists between(inclusive) min and max record, if so add/split
                 if (page.isRecBetweenMaxAndMin(record)) {
@@ -156,7 +159,8 @@ public class StorageManager extends AStorageManager {
                     return;
                 } else {
                     if (i + 1 < orderedPageIds.size()) { // there is a next page
-                        Page nextPage = getPageFromBuff(orderedPageIds.get(i)); // TODO eventually get this page from real buffer
+                        // Page nextPage = getPageFromBuff(orderedPageIds.get(i)); // TODO eventually get this page from real buffer
+                        Page nextPage = bufferManager.getPage(orderedPageIds.get(i));
                         if (nextPage.smallerThanMinRecOnPg(record)) { // record is smaller than the smallest record in the next page
                             addRecOrSplitAndAddRec(table, page, record);
                             return;
@@ -217,7 +221,8 @@ public class StorageManager extends AStorageManager {
             topHalfPg.addRecordToPage(record);
 
         // add new page buffer
-        buffer.add(topHalfPg);
+        //buffer.add(topHalfPg); // TODO eventually get this page from real buffer
+        bufferManager.addPage(topHalfPg);
 
         // new page id to the tables ordered list of tables
         int botHalfPgIndex = tablePages.get(table).indexOf(pgToBeSplit.getPageId());
@@ -464,7 +469,7 @@ public class StorageManager extends AStorageManager {
         this.pageSize = pageSize;
         this.buffer = new ArrayList<>();
 
-        File file = new File(dbLoc + "buffer");
+        new File(dbLoc + "\\buffer").mkdirs(); // create a new folder where buffer pages will be stored
         this.bufferManager = new BufferManager(pageSize, pageBufferSize, dbLoc + "buffer");
     }
 

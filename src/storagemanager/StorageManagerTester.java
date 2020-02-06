@@ -125,7 +125,7 @@ public class StorageManagerTester {
             System.err.println("Inserted a record with duplicate key");
             System.exit(1);
         } catch (StorageManagerException e) {}
-
+/*
         System.out.println("Testing getRecords for all tables");
         // Getting all table entries
         // Table 1
@@ -146,7 +146,7 @@ public class StorageManagerTester {
             e.printStackTrace();
             System.exit(1);
         }
-
+        /*
         // Table 2
         try {
             Object[][] table1Data = sm.getRecords(2);
@@ -223,7 +223,7 @@ public class StorageManagerTester {
             e.printStackTrace();
             System.exit(1);
         }
-        ((StorageManager)sm).printBuff();
+
         System.out.println("Testing remove record");
 
         try {
@@ -239,7 +239,7 @@ public class StorageManagerTester {
             System.err.println("Removed non-existent record");
             System.exit(1);
         } catch (StorageManagerException e) {}
-        ((StorageManager)sm).printBuff();
+        //((StorageManager)sm).printBuff();
         /*
         System.out.println("Testing purge buffer and restart");
 
