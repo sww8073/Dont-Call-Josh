@@ -57,6 +57,11 @@ public class StorageManager extends AStorageManager {
      */
     @Override
     public Object[][] getRecords(int table) throws StorageManagerException {
+        Integer[] indicies = this.keyIndices.get(table);
+        if(indicies == null)    {
+            throw new StorageManagerException("The table does not exist");
+        }
+
         // TODO buffer management
         //TODO throw StorageManagerException
         ArrayList<Integer> pages = tablePages.get(table);
@@ -89,15 +94,18 @@ public class StorageManager extends AStorageManager {
             throw new StorageManagerException("The table does not exist");
         }
 
-        // TODO buffer management table check
-
-        // for now I'll assume that the table is in the buffer.
-
         ArrayList<Integer> pages = tablePages.get(table);
         Object[] record = null;
         for (Integer pageNum: pages) {
+            // attempt to get the page
             Page page = buffer.get(pageNum);
-            record = page.getRecordFromPage(keyValue);
+            if (page != null) {
+                // if the page is not null, we can look for the record in the page
+                record = page.getRecordFromPage(keyValue);
+            } else {
+                // we need to read the page into the buffer from memory
+                // TODO read in page to memory using BufferManager
+            }
         }
         return record;
     }
