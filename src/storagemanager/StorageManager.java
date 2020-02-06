@@ -310,7 +310,14 @@ public class StorageManager extends AStorageManager {
      */
     @Override
     public void dropTable(int table) throws StorageManagerException {
-
+        if(!doesTableExist(table)) {
+            throw new StorageManagerException("The table does not exist");
+        }
+        clearTable(table);
+        tablePages.remove(table);
+        dataTypes.remove(table);
+        keyIndices.remove(table);
+        maxRecordsPerPage.remove(table);
     }
 
     /**
@@ -321,7 +328,9 @@ public class StorageManager extends AStorageManager {
      */
     @Override
     public void clearTable(int table) throws StorageManagerException {
-
+        if(!doesTableExist(table)) {
+            throw new StorageManagerException("The table does not exist");
+        }
         ArrayList<Integer> pages = new ArrayList<>();
         ArrayList<Object[]> records;
         Integer[] keyInd = keyIndices.get(table);
