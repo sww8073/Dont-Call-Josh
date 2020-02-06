@@ -77,23 +77,13 @@ public class BufferManager {
     private Page readPageFromMem(Integer pageInt) {
         boolean cont = true;
         try {
-            FileInputStream fileIn = new FileInputStream(bufLoc + "\\" + pageInt + ".txt");
+            FileInputStream fileIn = new FileInputStream(bufLoc + "\\" + pageInt);
             ObjectInputStream objectIn = new ObjectInputStream(fileIn);
 
-            // loop through entire directory
-            while(cont) {
-                Page page = (Page) objectIn.readObject();
-                if(page != null && page.getPageId() == pageInt)    {
-                    objectIn.close();
-                    return page; // we found the page we are looking for
-                }
-                else    {
-                    cont = false; // all objects in directory have been read
-                }
-            }
+            Page page = (Page) objectIn.readObject();
 
             objectIn.close();
-            return null;
+            return page;
         } catch (FileNotFoundException e)   {
             System.err.println(e);
         } catch (IOException e) {
@@ -106,7 +96,7 @@ public class BufferManager {
 
     private void writePageToMem(Page page)  {
         try {
-            String path = bufLoc + "\\" + page.getPageId() + ".txt";
+            String path = bufLoc + "\\" + page.getPageId();
             FileOutputStream fileOut = new FileOutputStream(path);
             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
             objectOut.writeObject(page);
