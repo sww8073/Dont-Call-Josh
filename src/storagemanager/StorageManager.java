@@ -128,8 +128,7 @@ public class StorageManager extends AStorageManager {
     @Override
     public void insertRecord(int table, Object[] record) throws StorageManagerException {
         // check to see if the table exists
-        Integer[] indicies = this.keyIndices.get(table);
-        if(indicies == null)    {
+        if(!doesTableExist(table)) {
             throw new StorageManagerException("The table does not exist");
         }
 
@@ -348,8 +347,8 @@ public class StorageManager extends AStorageManager {
      */
     @Override
     public void addTable(int table, String[] dataTypes, Integer[] keyIndices) throws StorageManagerException {
-        if(this.dataTypes.containsKey(table))   { // check to see if table exists
-            throw new StorageManagerException("Table already exist");
+        if(doesTableExist(table)) {
+            throw new StorageManagerException("The table already exists");
         }
         this.dataTypes.put(table, dataTypes);
         this.keyIndices.put(table, keyIndices);
