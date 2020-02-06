@@ -312,7 +312,11 @@ public class StorageManager extends AStorageManager {
      */
     @Override
     public void dropTable(int table) throws StorageManagerException {
-
+        clearTable(table);
+        dataTypes.remove(table);
+        keyIndices.remove(table);
+        maxRecordsPerPage.remove(table);
+        tablePages.remove(table);
     }
 
     /**
@@ -389,6 +393,10 @@ public class StorageManager extends AStorageManager {
 
     }
 
+    /**
+     * Will purge the page buffer and write any needed data to the physical hardware needed to restart the database.
+     * @throws StorageManagerException any failure to write the buffer or database information to hardware
+     */
     @Override
     public void terminateDatabase() throws StorageManagerException {
         /**
@@ -398,11 +406,8 @@ public class StorageManager extends AStorageManager {
         purgeBuffer();
         try{
             FileOutputStream out = new FileOutputStream("Sizes.txt");
-//            Integer pbs = this.pageBufferSize;
             Integer ps = this.pageSize;
-//            byte pageBufferSize = pbs.byteValue();
             byte pageSize = ps.byteValue();
-//            out.write(pageBufferSize);
             out.write(pageSize);
             out.close();
         }catch(IOException e){
