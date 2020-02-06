@@ -102,12 +102,20 @@ public class StorageManager extends AStorageManager {
             if (page != null) {
                 // if the page is not null, we can look for the record in the page
                 record = page.getRecordFromPage(keyValue);
+                if (record != null) {
+                    return record;
+                }
             } else {
                 // we need to read the page into the buffer from memory
-                // TODO read in page to memory using BufferManager
+                bufferManager.addPage(pageNum);
+                page = buffer.get(pageNum);
+                record = page.getRecordFromPage(keyValue);
+                if (record != null) {
+                    return record;
+                }
             }
         }
-        return record;
+        return null;
     }
 
     /**

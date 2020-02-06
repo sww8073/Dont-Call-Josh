@@ -39,8 +39,9 @@ public class BufferManager {
      * @param pageInt
      */
     public void addPage(Integer pageInt)  {
-        Page page = readPageFromMem(pageInt);
+        Page page;
         if(buffer.size() < bufferSize)  { // there is room in the buffer
+            page = readPageFromMem(pageInt);
             buffer.add(page);
         }
         else    {
@@ -48,7 +49,7 @@ public class BufferManager {
             Page removePage = buffer.get(bufferSize - 1);
             writePageToMem(removePage);
             buffer.remove(bufferSize - 1);
-
+            page = readPageFromMem(pageInt);
             //add new page to buffer to first index
             buffer.add(0, page);
         }
