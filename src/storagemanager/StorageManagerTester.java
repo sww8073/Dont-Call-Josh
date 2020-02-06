@@ -93,11 +93,6 @@ public class StorageManagerTester {
             e.printStackTrace();
         }
 
-        ((StorageManager)sm).printBuff();
-        /*
-
-
-
         // Table 2
         try {
             BufferedReader br = new BufferedReader(new FileReader("inputs/data2.csv"));
@@ -131,6 +126,7 @@ public class StorageManagerTester {
             System.exit(1);
         } catch (StorageManagerException e) {}
 
+        //((StorageManager)sm).printBuff();
         /*
         System.out.println("Testing getRecords for all tables");
         // Getting all table entries

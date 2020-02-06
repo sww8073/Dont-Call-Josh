@@ -9,6 +9,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class StorageManager extends AStorageManager {
 
@@ -145,67 +146,6 @@ public class StorageManager extends AStorageManager {
         if(!this.tablePages.containsKey(table)) {
             // table does not have any pages, so ADD NEW PAGE
             pageId += 1; // increment page id each time
-            Page page = new Page(pageId, table, maxRecordsPerPage.get(table), record, dataTypes.get(table),
-                    keyIndices.get(table));
-            ArrayList<Integer> newPageList = new ArrayList<>();
-            newPageList.add(page.getPageId());
-            tablePages.put(table, newPageList); // add the ordered list of table ids to map
-            buffer.add(page); // add page to the buffer
-        }
-        else    {
-            ArrayList<Integer> pageIdList = this.tablePages.get(table); // get page ids of tables in order
-
-            if(pageIdList.size() == 1) {
-                // TODO get this from buffer manager in future
-                Page page = getPage(pageIdList.get(0));
-
-                if (page.pageFull()) {
-                    splitPageAndRec(table, page, record); // split table!!!!
-                } else {
-                    page.addRecordToPage(record);
-                }
-                return;
-            }
-            else    {
-                for(int i = 1;i < pageIdList.size();i++)    {
-                    // TODO get this from buffer manager in future
-                    Page curPage = getPage(pageIdList.get(i));
-                    Page prevPage = getPage(pageIdList.get(i - 1));
-
-                    if(prevPage.smallerThanMinRecOnPg(record))  { // smaller than smallest vale in next page
-                        if (curPage.pageFull()) {
-                            splitPageAndRec(table, curPage, record); // split table!!!!
-                        } else {
-                            curPage.addRecordToPage(record);
-                        }
-                        return;
-                    }
-                }
-                // record has not been inserted yet so it must belong on the last page
-                // TODO get this from buffer manager in future
-                int lastPageIndex = pageIdList.size() - 1;
-                Page lastPage = getPage(pageIdList.get(lastPageIndex));
-
-                if (lastPage.pageFull()) {
-                    splitPageAndRec(table, lastPage, record); // split table!!!!
-                } else {
-                    lastPage.addRecordToPage(record);
-                }
-                return;
-            }
-        }
-        /*
-
-        // check to see if the table exists
-        Integer[] indicies = this.keyIndices.get(table);
-        if(indicies == null)    {
-            throw new StorageManagerException("The table does not exist");
-        }
-
-        // check if table contains any pages
-        if(!this.tablePages.containsKey(table)) {
-            // table does not have any pages, so ADD NEW PAGE
-            pageId += 1; // increment page id each time
 
             // create new page and ADD record
             Page page = new Page(pageId, table, maxRecordsPerPage.get(table), record, dataTypes.get(table), keyIndices.get(table));
@@ -215,63 +155,56 @@ public class StorageManager extends AStorageManager {
             tablePages.put(table, newPageList); // add the ordered list of table ids to map
             buffer.add(page); // add page to the buffer
         }
-        // a page exists
-        else    {
-            // grab construct list of pages we need to look through to insert
-            ArrayList<Integer> pageIdList = this.tablePages.get(table); // get page ids of tables in order
-            ArrayList<Page> requiredPages = new ArrayList<>(); // list of all page for table
+        else {
+            ArrayList<Integer> orderedPageIds = tablePages.get(table);
+            for (int i = 0; i < orderedPageIds.size(); i++) {
+                Page page = getPageFromBuff(orderedPageIds.get(i)); // TODO eventually get this page from real buffer
 
-            // this for loop assumes all pages are in the buffer
-            for(int pageid : pageIdList)    {
-                for (Page pageRecord: this.buffer) { // grab all th pages form buffer
-                    if( pageRecord.getPageId() == pageid){
-                        requiredPages.add(pageRecord);
-                    }
-                }
-            }
-
-            // if there is only one page we must insert record on that page
-            if(requiredPages.size() == 1) {
-                if (requiredPages.get(0).pageFull()) {
-                    splitPageAndRec(table, requiredPages.get(0), record); // split table!!!!
+                // record exists between(inclusive) min and max record, if so add/split
+                if (page.isRecBetweenMaxAndMin(record)) {
+                    addRecOrSplitAndAddRec(table, page, record);
+                    return;
                 } else {
-                    requiredPages.get(0).addRecordToPage(record);
-                }
-            }
-            else {
-
-                int pgInTable = requiredPages.size();
-                for(int i = 0;i < pgInTable;i++)    {
-                    Page page = requiredPages.get(i); // get current page
-
-                     if(i == pgInTable - 1) { // last page in table
-                        // the last page has been reached so the record must belong in here
-                        if (page.pageFull()) {
-                            splitPageAndRec(table, page, record); // page is full so split!!!
-                        } // page is full so split!!!
-                        else {
-                            page.addRecordToPage(record);
-                        }
-                        return;
-                    }
-                    else    {
-                        Page nextPage = requiredPages.get(i + 1); // get next page
-
-                        // record is smaller than the smallest record in that table, thus it belongs in current table
-                        if(nextPage.smallerThanMinRecOnPg(record))  {
-                            if (page.pageFull()) {
-                                splitPageAndRec(table, page, record); // page is full so split!!!
-                            }
-                            else {
-                                page.addRecordToPage(record);
-                            }
+                    if (i + 1 < orderedPageIds.size()) { // there is a next page
+                        Page nextPage = getPageFromBuff(orderedPageIds.get(i)); // TODO eventually get this page from real buffer
+                        if (nextPage.smallerThanMinRecOnPg(record)) { // record is smaller than the smallest record in the next page
+                            addRecOrSplitAndAddRec(table, page, record);
                             return;
                         }
+                        // if reached here, record must exist on one of the next pages
+                    } else { // there is NOT a next page, record must belong in this page
+                        addRecOrSplitAndAddRec(table, page, record);
+                        return;
                     }
                 }
             }
         }
-        */
+    }
+
+    private Page getPageFromBuff(Integer pageId)    {
+        for(int i = 0;i < buffer.size();i++)    {
+            if(buffer.get(i).getPageId() == pageId) {
+                return buffer.get(i);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * this fucntion will add a record to a page and split the page if necessary
+     * @param table table id
+     * @param page page record is being added to
+     * @param record Object array representing record
+     * @throws StorageManagerException
+     */
+    private void addRecOrSplitAndAddRec(int table, Page page, Object[] record) throws StorageManagerException {
+        if (page.pageFull()) {
+            printBuff();
+            splitPageAndRec(table, page, record); // split table!!!!
+            printBuff();
+        } else {
+            page.addRecordToPage(record);
+        }
     }
 
     /**
@@ -282,7 +215,7 @@ public class StorageManager extends AStorageManager {
      * @param pgToBeSplit the full page that needs to be split
      * @param record the new record that needs to be added
      */
-    public void splitPageAndRec(int table, Page pgToBeSplit,  Object[] record) throws StorageManagerException   {
+    private void splitPageAndRec(int table, Page pgToBeSplit,  Object[] record) throws StorageManagerException   {
         // create new unique page id
         pageId += 1; // increment page id each time
 
@@ -299,7 +232,7 @@ public class StorageManager extends AStorageManager {
         buffer.add(topHalfPg);
 
         // new page id to the tables ordered list of tables
-        int botHalfPgIndex = tablePages.get(table).indexOf(table);
+        int botHalfPgIndex = tablePages.get(table).indexOf(pgToBeSplit.getPageId());
         tablePages.get(table).add(botHalfPgIndex + 1, pageId);
     }
 
@@ -523,23 +456,36 @@ public class StorageManager extends AStorageManager {
     }
 
     public void printBuff() {
-        int count = 0;
-        for (int i = 0; i < buffer.size(); i++) {
-            System.out.print("Page Id: " + buffer.get(i).getPageId() + "          ");
 
-            ArrayList<Object[]> recs = buffer.get(i).getRecordList();
-            for (int j = 0; j < recs.size(); j++) {
-                Object[] rec = recs.get(j);
-                System.out.print(" [ ");
-                for (int l = 0; l < rec.length; l++) {
-                    System.out.print(rec[l] + " ");
+        Set<Integer> tableIds = tablePages.keySet();
+        for (Integer tableId : tableIds) {
+            ArrayList<Integer> tableList = tablePages.get(tableId);
+            System.out.println("---------------------");
+            System.out.println("table: " + tableId);
+            for(int i = 0;i < tableList.size();i++) {
+
+                int count = 0;
+                Object[] v = new Object[10];
+                Page page = new Page(-1, -1, -1, v, new String[1], new Integer[1]);
+                for(int j = 0;j < buffer.size();j++)    {
+                    if(buffer.get(j).getPageId() == tableList.get(i))
+                        page = buffer.get(j);
                 }
-                System.out.print(" ] ");
-                count++;
-            }
-            System.out.println();
 
+                System.out.print("Page Id: " + buffer.get(i).getPageId() + "          ");
+                ArrayList<Object[]> recs = page.getRecordList();
+                for (int j = 0; j < recs.size(); j++) {
+                    Object[] rec = recs.get(j);
+                    System.out.print(" [ ");
+                    for (int l = 0; l < rec.length; l++) {
+                        System.out.print(rec[l] + " ");
+                    }
+                    System.out.print(" ] ");
+                    count++;
+                }
+                System.out.println("\n\t\tcount: " + count);
+            }
+            System.out.println("---------------------");
         }
-        System.out.println("count: " + count);
     }
 }

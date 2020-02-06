@@ -144,6 +144,24 @@ public class Page {
     }
 
     /**
+     * record see if the record exists between the max record and
+     * min record on the page
+     * @param record Object array
+     * @return
+     */
+    public boolean isRecBetweenMaxAndMin(Object[] record)  {
+        Object[] firstRec = recordList.get(0);
+        Object[] lastRec = recordList.get(recordList.size() - 1);
+
+        // record >= firstRec AND record <= lastRec
+        if(compareRecords(record, firstRec) > -1  && compareRecords(record, lastRec) < 1)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * this function compares records on a page. It compare the values of all indices
      * in order.
      * @param rec1 record on this page
