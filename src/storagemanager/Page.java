@@ -5,13 +5,14 @@
  */
 package storagemanager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Page {
+public class Page implements Serializable {
 
     private Integer pageId;
-    private int maxRecordsPerPage;
-    private int table;
+    private Integer maxRecordsPerPage;
+    private Integer table;
     private ArrayList<Object[]> recordList; // Array list of all the record stored on a page
     private String[] dataTypes;
     private Integer[] keyIndices;
