@@ -58,6 +58,7 @@ public class StorageManager extends AStorageManager {
     @Override
     public Object[][] getRecords(int table) throws StorageManagerException {
         // TODO buffer management
+        //TODO throw StorageManagerException
         ArrayList<Integer> pages = tablePages.get(table);
         Object[][] recordsOfTable = new Object[pages.size()][];
         ArrayList<Object[]> records;
@@ -298,7 +299,19 @@ public class StorageManager extends AStorageManager {
      */
     @Override
     public void clearTable(int table) throws StorageManagerException {
-
+        ArrayList<Integer> pages = new ArrayList<>();
+        ArrayList<Object[]> records;
+        Integer[] keyInd = keyIndices.get(table);
+        for (Integer pageNum: pages) {
+            records = buffer.get(pageNum).getRecordList();
+            for (Object[] record: records) {
+                Object[] keyValue = new Object[keyInd.length];
+                for (int i = 0; i < keyValue.length; i++) {
+                    keyValue[i] = record[keyInd[i]];
+                }
+                removeRecord(table, keyValue);
+            }
+        }
     }
 
     /**
