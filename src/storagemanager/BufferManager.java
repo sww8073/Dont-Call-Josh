@@ -77,7 +77,7 @@ public class BufferManager {
     private Page readPageFromMem(Integer pageInt) {
         boolean cont = true;
         try {
-            FileInputStream fileIn = new FileInputStream(bufLoc + "/" + pageInt + ".txt");
+            FileInputStream fileIn = new FileInputStream(bufLoc + "\\" + pageInt + ".txt");
             ObjectInputStream objectIn = new ObjectInputStream(fileIn);
 
             // loop through entire directory
@@ -106,7 +106,7 @@ public class BufferManager {
 
     private void writePageToMem(Page page)  {
         try {
-            String path = bufLoc + page.getPageId() + ".txt";
+            String path = bufLoc + "\\" + page.getPageId() + ".txt";
             FileOutputStream fileOut = new FileOutputStream(path);
             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
             objectOut.writeObject(page);
