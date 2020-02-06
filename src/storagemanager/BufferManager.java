@@ -79,7 +79,7 @@ public class BufferManager {
         try {
             FileInputStream fileIn = new FileInputStream(bufLoc + "\\" + pageInt);
             ObjectInputStream objectIn = new ObjectInputStream(fileIn);
-            
+
             Page page = (Page) objectIn.readObject();
             objectIn.close();
             return page;
