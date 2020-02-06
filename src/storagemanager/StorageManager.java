@@ -80,7 +80,7 @@ public class StorageManager extends AStorageManager {
 
         int index = 0;
         for(int i = 0;i < pageCount;i++)    {
-            Page page = getPageFromBuff(pageIdList.get(i)); // gets ordered page
+            Page page = getPageFromBuff(pageIdList.get(i)); // gets ordered page // TODO eventually replace with buffer call
             ArrayList<Object[]> records = page.getRecordList();
 
             for(Object[] record : records)    {
@@ -106,25 +106,14 @@ public class StorageManager extends AStorageManager {
             throw new StorageManagerException("The table does not exist");
         }
 
-        ArrayList<Integer> pages = tablePages.get(table);
-        Object[] record = null;
-        for (Integer pageNum: pages) {
-            // attempt to get the page
-            Page page = buffer.get(pageNum);
-            if (page != null) {
-                // if the page is not null, we can look for the record in the page
-                record = page.getRecordFromPage(keyValue);
-                if (record != null) {
+        ArrayList<Integer> pageIdsList = tablePages.get(table);
+        for (Integer id: pageIdsList) {
+            Page page = getPageFromBuff(id); // gets ordered page // TODO eventually replace with buffer call
+
+            ArrayList<Object[]> records = page.getRecordList();
+            for(Object[] record : records)  {
+                if(page.compareRecordToKeyIndices(record, keyValue) == 0)
                     return record;
-                }
-            } else {
-                // we need to read the page into the buffer from memory
-                bufferManager.addPage(pageNum);
-                page = buffer.get(pageNum);
-                record = page.getRecordFromPage(keyValue);
-                if (record != null) {
-                    return record;
-                }
             }
         }
         return null;

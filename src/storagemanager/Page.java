@@ -196,6 +196,35 @@ public class Page {
     }
 
     /**
+     * this function compares a record to search key indices
+     * @param rec record on this page
+     * @param searchKeyInd key indices to be compared
+     * @return 1 if rec1 > rec2
+     *         -1 if rec1 < rec2
+     *         0 if rec1 == rec2
+     *         -2 if error
+     */
+    public int compareRecordToKeyIndices(Object[] rec, Object[] searchKeyInd) {
+        // loop though and check each key indices
+        int searchKeyIndex = 0;
+        for(int i = 0;i < keyIndices.length;i++)    {
+            // compares key indices that corresponds to i
+            Object rec1Key = rec[keyIndices[i]];
+            Object rec2Key = searchKeyInd[searchKeyIndex];
+            searchKeyIndex++;
+
+            int result = compareIndices(rec1Key, rec2Key);
+
+            // a difference was found from compareIndices()
+            if(result != 0)
+                return result;
+        }
+
+        // no differences were found
+        return 0;
+    }
+
+    /**
      * this function check if a record exists between two records
      * @param midRec record on page
      * @param lowerRec record on page
