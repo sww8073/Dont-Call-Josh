@@ -58,22 +58,35 @@ public class StorageManager extends AStorageManager {
      */
     @Override
     public Object[][] getRecords(int table) throws StorageManagerException {
-
         // check if table exists
         if(!doesTableExist(table))    {
             throw new StorageManagerException("The table does not exist");
         }
 
-        ArrayList<Integer> pages = tablePages.get(table);
-        Object[][] recordsOfTable = new Object[pages.size()][]; // I dont know if this will work, would pages.size() just tell you how many pages there are?
-        ArrayList<Object[]> records;
-        int x = 0;
-        for (Integer pageNum: pages) {
-            records = buffer.get(pageNum).getRecordList();
-            for(int i =0; i < records.size(); i++){
-                recordsOfTable[x][i] = records.get(i);
+        ArrayList<Integer> pageIdList = tablePages.get(table); // ordered list of page ids
+        int pageCount = pageIdList.size();
+
+        // get total # of records in table
+        int totalRecordCount = 0;
+        for (Integer id: pageIdList) {
+            Page page  = getPageFromBuff(id);
+            totalRecordCount += page.getRecordList().size();
+        }
+
+        // get the amount of values in each record
+        int recordIndexCount = dataTypes.get(table).length;
+
+        Object[][] recordsOfTable = new Object[totalRecordCount][recordIndexCount];
+
+        int index = 0;
+        for(int i = 0;i < pageCount;i++)    {
+            Page page = getPageFromBuff(pageIdList.get(i)); // gets ordered page
+            ArrayList<Object[]> records = page.getRecordList();
+
+            for(Object[] record : records)    {
+                recordsOfTable[index] = record;
+                index++;
             }
-            x++;
         }
         return recordsOfTable;
     }

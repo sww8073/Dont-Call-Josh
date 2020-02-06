@@ -73,9 +73,15 @@ public class Page {
     public Integer getPageId(){
         return this.pageId;
     }
+
+    /**
+     * gets ArrayList of records
+     * @return
+     */
     public ArrayList<Object[]> getRecordList(){
         return this.recordList;
     }
+
 
     /**
      * Checks to see if the current page is full
