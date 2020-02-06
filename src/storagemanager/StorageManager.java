@@ -381,7 +381,7 @@ public class StorageManager extends AStorageManager {
      */
     @Override
     public void purgeBuffer() throws StorageManagerException {
-
+        bufferManager.purge();
     }
 
     /**

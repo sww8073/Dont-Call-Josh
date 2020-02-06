@@ -126,6 +126,10 @@ public class BufferManager {
         return null;
     }
 
+    /**
+     * This function will write a page to the specified
+     * @param page the page to be removed
+     */
     private void writePageToMem(Page page)  {
         try {
             String path = bufLoc + "\\" + page.getPageId();
@@ -138,6 +142,15 @@ public class BufferManager {
             System.err.println(e);
         } catch (IOException e) {
             System.err.println(e);
+        }
+    }
+
+    /**
+     * This function writes all the pages in the buffer to memory
+     */
+    public void purge() {
+        while(buffer.size() > 0)    {
+            deletePage(buffer.get(0).getPageId());
         }
     }
 }
