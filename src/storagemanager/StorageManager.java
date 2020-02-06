@@ -4,10 +4,12 @@
  * Members: Matthew Clements, Josh Tellier, Stone Warren, Josh Schenk
  */
 package storagemanager;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class StorageManager extends AStorageManager {
 
@@ -19,9 +21,9 @@ public class StorageManager extends AStorageManager {
     // key is table id, value is ArrayList pages sorted in order form lowest to highest
     private Map<Integer, ArrayList<Integer>> tablePages;
     
-    private ArrayList<Page> buffer; // TODO Initialize buffer, find way to add pages
+    public ArrayList<Page> buffer; // TODO Initialize buffer, find way to add pages
+    private BufferManager bufferManager;
 
-    private int pageBufferSize;
     private int pageSize;
 
     private final int INTSIZE = 4;
@@ -33,10 +35,10 @@ public class StorageManager extends AStorageManager {
 
     /**
      * Creates an instance of the database. Tries to restart, if requested, the database at the provided location.
-     * 
+     *
      * You can add code to this but cannot change the types and number of parameters. Testers will be called using
      * this constructor.
-     * 
+     *
      * @param dbLoc the location to start/restart the database in
      * @param pageBufferSize the size of the page buffer; max number of pages allowed in the buffer at any given time
      * @param pageSize the size of a page in bytes
@@ -56,9 +58,37 @@ public class StorageManager extends AStorageManager {
      */
     @Override
     public Object[][] getRecords(int table) throws StorageManagerException {
-        // TODO buffer management
+        // check if table exists
+        if(!doesTableExist(table))    {
+            throw new StorageManagerException("The table does not exist");
+        }
 
-        return new Object[0][];
+        ArrayList<Integer> pageIdList = tablePages.get(table); // ordered list of page ids
+        int pageCount = pageIdList.size();
+
+        // get total # of records in table
+        int totalRecordCount = 0;
+        for (Integer id: pageIdList) {
+            Page page  = getPageFromBuff(id);
+            totalRecordCount += page.getRecordList().size();
+        }
+
+        // get the amount of values in each record
+        int recordIndexCount = dataTypes.get(table).length;
+
+        Object[][] recordsOfTable = new Object[totalRecordCount][recordIndexCount];
+
+        int index = 0;
+        for(int i = 0;i < pageCount;i++)    {
+            Page page = getPageFromBuff(pageIdList.get(i)); // gets ordered page // TODO eventually replace with buffer call
+            ArrayList<Object[]> records = page.getRecordList();
+
+            for(Object[] record : records)    {
+                recordsOfTable[index] = record;
+                index++;
+            }
+        }
+        return recordsOfTable;
     }
 
     /**
@@ -70,11 +100,21 @@ public class StorageManager extends AStorageManager {
      */
     @Override
     public Object[] getRecord(int table, Object[] keyValue) throws StorageManagerException {
-        // TODO buffer management table check
+        if(!doesTableExist(table)) {
+            throw new StorageManagerException("The table does not exist");
+        }
 
-        // for now I'll assume that the table is in the buffer.
-        
-        return new Object[0];
+        ArrayList<Integer> pageIdsList = tablePages.get(table);
+        for (Integer id: pageIdsList) {
+            Page page = getPageFromBuff(id); // gets ordered page // TODO eventually replace with buffer call
+
+            ArrayList<Object[]> records = page.getRecordList();
+            for(Object[] record : records)  {
+                if(page.compareRecordToKeyIndices(record, keyValue) == 0)
+                    return record;
+            }
+        }
+        return null;
     }
 
     /**
@@ -86,7 +126,6 @@ public class StorageManager extends AStorageManager {
      */
     @Override
     public void insertRecord(int table, Object[] record) throws StorageManagerException {
-
         // check to see if the table exists
         Integer[] indicies = this.keyIndices.get(table);
         if(indicies == null)    {
@@ -106,61 +145,53 @@ public class StorageManager extends AStorageManager {
             tablePages.put(table, newPageList); // add the ordered list of table ids to map
             buffer.add(page); // add page to the buffer
         }
-        // a page exists
-        else    {
-            // grab construct list of pages we need to look through to insert
-            ArrayList<Integer> pageIdList = this.tablePages.get(table); // get page ids of tables in order
-            ArrayList<Page> requiredPages = new ArrayList<>(); // list of all page for table
+        else {
+            ArrayList<Integer> orderedPageIds = tablePages.get(table);
+            for (int i = 0; i < orderedPageIds.size(); i++) {
+                Page page = getPageFromBuff(orderedPageIds.get(i)); // TODO eventually get this page from real buffer
 
-            // this for loop assumes all pages are in the buffer
-            for(int pageid : pageIdList)    {
-                for (Page pageRecord: this.buffer) { // grab all th pages form buffer
-                    if( pageRecord.getPageId() == pageid){
-                        requiredPages.add(pageRecord);
-                    }
-                }
-            }
-
-            // if there is only one page we must insert record on that page
-            if(requiredPages.size() == 1) {
-                if (requiredPages.get(0).pageFull()) {
-                    splitPageAndRec(table, requiredPages.get(0), record); // split table!!!!
+                // record exists between(inclusive) min and max record, if so add/split
+                if (page.isRecBetweenMaxAndMin(record)) {
+                    addRecOrSplitAndAddRec(table, page, record);
+                    return;
                 } else {
-                    requiredPages.get(0).addRecordToPage(record);
-                }
-            }
-            else {
-
-                int pgInTable = requiredPages.size();
-                for(int i = 0;i < pgInTable;i++)    {
-                    Page page = requiredPages.get(i); // get current page
-
-                     if(i == pgInTable - 1) { // last page in table
-                        // the last page has been reached so the record must belong in here
-                        if (page.pageFull()) {
-                            splitPageAndRec(table, page, record); // page is full so split!!!
-                        } // page is full so split!!!
-                        else {
-                            page.addRecordToPage(record);
-                        };
-                        return;
-                    }
-                    else    {
-                        Page nextPage = requiredPages.get(i + 1); // get next page
-
-                        // record is smaller than the smallest record in that table, thus it belongs in current table
-                        if(nextPage.smallerThanMinRecOnPg(record))  {
-                            if (page.pageFull()) {
-                                splitPageAndRec(table, page, record); // page is full so split!!!
-                            }
-                            else {
-                                page.addRecordToPage(record);
-                            };
+                    if (i + 1 < orderedPageIds.size()) { // there is a next page
+                        Page nextPage = getPageFromBuff(orderedPageIds.get(i)); // TODO eventually get this page from real buffer
+                        if (nextPage.smallerThanMinRecOnPg(record)) { // record is smaller than the smallest record in the next page
+                            addRecOrSplitAndAddRec(table, page, record);
                             return;
                         }
+                        // if reached here, record must exist on one of the next pages
+                    } else { // there is NOT a next page, record must belong in this page
+                        addRecOrSplitAndAddRec(table, page, record);
+                        return;
                     }
                 }
             }
+        }
+    }
+
+    private Page getPageFromBuff(Integer pageId)    {
+        for(int i = 0;i < buffer.size();i++)    {
+            if(buffer.get(i).getPageId() == pageId) {
+                return buffer.get(i);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * this fucntion will add a record to a page and split the page if necessary
+     * @param table table id
+     * @param page page record is being added to
+     * @param record Object array representing record
+     * @throws StorageManagerException
+     */
+    private void addRecOrSplitAndAddRec(int table, Page page, Object[] record) throws StorageManagerException {
+        if (page.pageFull()) {
+            splitPageAndRec(table, page, record); // split table!!!!
+        } else {
+            page.addRecordToPage(record);
         }
     }
 
@@ -172,7 +203,7 @@ public class StorageManager extends AStorageManager {
      * @param pgToBeSplit the full page that needs to be split
      * @param record the new record that needs to be added
      */
-    public void splitPageAndRec(int table, Page pgToBeSplit,  Object[] record)   {
+    private void splitPageAndRec(int table, Page pgToBeSplit,  Object[] record) throws StorageManagerException   {
         // create new unique page id
         pageId += 1; // increment page id each time
 
@@ -180,7 +211,7 @@ public class StorageManager extends AStorageManager {
         Page topHalfPg = botHalfPg.splitPage(pageId);
 
         // add new record to page
-        if(botHalfPg.shouldRecordBeOnPage(record))
+        if(topHalfPg.smallerThanMinRecOnPg(record))
             botHalfPg.addRecordToPage(record);
         else
             topHalfPg.addRecordToPage(record);
@@ -189,28 +220,163 @@ public class StorageManager extends AStorageManager {
         buffer.add(topHalfPg);
 
         // new page id to the tables ordered list of tables
-        int botHalfPgIndex = tablePages.get(table).indexOf(table);
+        int botHalfPgIndex = tablePages.get(table).indexOf(pgToBeSplit.getPageId());
         tablePages.get(table).add(botHalfPgIndex + 1, pageId);
     }
 
+    /**
+     * Updates the record in the given table if the record already exists it overwrites it. If it does not
+     * exist it finds a page with a empty spot to add it to; makes new pages as needed.
+     * @param table the number of the table
+     * @param record the record to insert; an 1d array of objects representing the data in the record
+     * @throws StorageManagerException if the table does not exist
+     */
     @Override
     public void updateRecord(int table, Object[] record) throws StorageManagerException {
+        if(!doesTableExist(table)) {
+            throw new StorageManagerException("The table does not exist");
+        }
 
+        boolean recordUpdated = false;
+
+        ArrayList<Integer> pageIdsList = tablePages.get(table);
+        for (Integer id: pageIdsList) {
+            Page page = getPageFromBuff(id); // gets ordered page // TODO eventually replace with buffer call
+
+            // You can use this function with the record with the new values since
+            // only the key indices are being used to compare and search.
+            // KeyIndices will should never change.
+            if(page.isRecBetweenMaxAndMin(record))  {
+                page.updateRecord(record, record);
+                recordUpdated = true;
+            }
+        }
+
+        if(!recordUpdated)  {
+            throw new StorageManagerException("The records you are trying to update does not exist");
+        }
+        /*
+        else {
+            Integer[] keyInd = keyIndices.get(table); //the keyIndices from the table
+            Object[] recordKeyInd = new Object[keyInd.length]; //the keyValue pair based off the keyIndices
+            int keyIndValue;
+            //making the keyValue pair
+            for (int i = 0; i < keyInd.length; i++) {
+                keyIndValue = keyInd[i];
+                recordKeyInd[i] = record[keyIndValue];
+            }
+
+            if (getRecord(table, recordKeyInd) != null) {
+                // grab all pages so that we can look for our record
+                ArrayList<Integer> pageIdList = this.tablePages.get(table); // get page ids of tables in order
+
+                // this for loop assumes all pages are in the buffer
+                for(int pageid : pageIdList)    {
+                    for (Page pageRecord: this.buffer) { // grab all the pages from buffer
+                        if(pageRecord.getPageId() == pageid) {
+                            if (pageRecord.updateRecordFromPage(record, recordKeyInd) != null) {
+                                return; // this might not work and seems too complicated to me
+                                        // I'll test and work on this more tomorrow, right now I need to sleep.
+                            }
+                        }
+                    }
+                }
+
+            } else {
+                // call insert record
+                insertRecord(table, record);
+            }
+        }
+         */
     }
 
+    /**
+     * removes a record for the provided table name. If a page becomes empty it frees it.
+     * @param table the number of the table
+     * @param keyValue an array representing the key to find
+     * @throws StorageManagerException if the table or record does exist
+     */
     @Override
     public void removeRecord(int table, Object[] keyValue) throws StorageManagerException {
+        if(!doesTableExist(table)) {
+            throw new StorageManagerException("The table does not exist");
+        }
 
+        boolean recordDeleted = false;
+
+        ArrayList<Integer> pageIdsList = tablePages.get(table);
+        for (Integer id: pageIdsList) {
+            Page page = getPageFromBuff(id); // gets ordered page // TODO eventually replace with buffer call
+            ArrayList<Object[]> records = page.getRecordList();
+            for(int i = 0;i < records.size();i++)    {
+                if(page.compareRecordToKeyIndices(records.get(i), keyValue) == 0)   {
+                    page.removeRecord(keyValue);
+                    recordDeleted = true;
+
+                    if(page.isEmpty())  { // page is empty, it must be destroyed
+                        // remove page form id map
+                        ArrayList<Integer> pageIds = tablePages.get(table);
+                        pageIds.remove(page.getPageId());
+
+                        // remove page from buffer // TODO eventually replace with buffer call
+                        buffer.remove(page);
+                    }
+                }
+            }
+        }
+
+        if(!recordDeleted)  {
+            throw new StorageManagerException("The records you are trying to update does not exist");
+        }
+
+
+
+        /*
+        ArrayList<Integer> pages = tablePages.get(table);
+        boolean pageIsEmpty;
+        for (Integer pageNum: pages) {
+            Page page = buffer.get(pageNum);
+            pageIsEmpty = page.tryToRemoveRecord(keyValue);
+            if(pageIsEmpty){//page is empty and has to be removed
+                pages.remove(pageNum);
+            }
+        }
+         */
     }
 
+    /**
+     * Will delete all entries in this table. Including clearing and freeing all pages. Will also remove the table
+     * from the database
+     * @param table: the number of the table to delete
+     * @throws StorageManagerException if the table does not exist
+     */
     @Override
     public void dropTable(int table) throws StorageManagerException {
 
     }
 
+    /**
+     * Will delete all entries in this table. Including clearing and freeing all pages. Will not remove the
+     * table from the database
+     * @param table: the number of the table to clear
+     * @throws StorageManagerException if the table does not exist
+     */
     @Override
     public void clearTable(int table) throws StorageManagerException {
 
+        ArrayList<Integer> pages = new ArrayList<>();
+        ArrayList<Object[]> records;
+        Integer[] keyInd = keyIndices.get(table);
+        for (Integer pageNum: pages) {
+            records = buffer.get(pageNum).getRecordList();
+            for (Object[] record: records) {
+                Object[] keyValue = new Object[keyInd.length];
+                for (int i = 0; i < keyValue.length; i++) {
+                    keyValue[i] = record[keyInd[i]];
+                }
+                removeRecord(table, keyValue);
+            }
+        }
     }
 
     /**
@@ -295,10 +461,11 @@ public class StorageManager extends AStorageManager {
         this.keyIndices = new HashMap<Integer, Integer[]>();
         this.maxRecordsPerPage = new HashMap<Integer, Integer>();
         this.tablePages = new HashMap<Integer, ArrayList<Integer>>();
-
-        this.pageBufferSize = pageBufferSize;
         this.pageSize = pageSize;
         this.buffer = new ArrayList<>();
+
+        File file = new File(dbLoc + "buffer");
+        this.bufferManager = new BufferManager(pageSize, pageBufferSize, dbLoc + "buffer");
     }
 
     /**
@@ -320,4 +487,51 @@ public class StorageManager extends AStorageManager {
         }
     }
 
+    /**
+     * Checks to see if a given table exists.
+     * @param table the table to check.
+     * @return whether the table exists.
+     */
+    private boolean doesTableExist(int table) {
+        // check to see if the table exists
+        Integer[] indicies = this.keyIndices.get(table);
+        if(indicies == null) {
+            return false;
+        }
+        return true;
+    }
+
+    public void printBuff() {
+
+        Set<Integer> tableIds = tablePages.keySet();
+        for (Integer tableId : tableIds) {
+            ArrayList<Integer> tableList = tablePages.get(tableId);
+            System.out.println("---------------------");
+            System.out.println("table: " + tableId);
+            for(int i = 0;i < tableList.size();i++) {
+
+                int count = 0;
+                Object[] v = new Object[10];
+                Page page = new Page(-1, -1, -1, v, new String[1], new Integer[1]);
+                for(int j = 0;j < buffer.size();j++)    {
+                    if(buffer.get(j).getPageId() == tableList.get(i))
+                        page = buffer.get(j);
+                }
+
+                System.out.print("Page Id: " + buffer.get(i).getPageId() + "          ");
+                ArrayList<Object[]> recs = page.getRecordList();
+                for (int j = 0; j < recs.size(); j++) {
+                    Object[] rec = recs.get(j);
+                    System.out.print(" [ ");
+                    for (int l = 0; l < rec.length; l++) {
+                        System.out.print(rec[l] + " ");
+                    }
+                    System.out.print(" ] ");
+                    count++;
+                }
+                System.out.println("\n\t\tcount: " + count);
+            }
+            System.out.println("---------------------");
+        }
+    }
 }
