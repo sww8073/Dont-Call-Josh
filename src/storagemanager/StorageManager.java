@@ -57,6 +57,11 @@ public class StorageManager extends AStorageManager {
      */
     @Override
     public Object[][] getRecords(int table) throws StorageManagerException {
+        Integer[] indicies = this.keyIndices.get(table);
+        if(indicies == null)    {
+            throw new StorageManagerException("The table does not exist");
+        }
+
         // TODO buffer management
         ArrayList<Integer> pages = tablePages.get(table);
         Object[][] recordsOfTable = new Object[pages.size()][];
