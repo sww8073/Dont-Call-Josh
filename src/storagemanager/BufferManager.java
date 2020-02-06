@@ -5,13 +5,8 @@
  */
 package storagemanager;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.util.ArrayList;
-import java.io.FileInputStream;
-import java.io.ObjectInputStream;
 
 public class BufferManager {
 
@@ -28,7 +23,8 @@ public class BufferManager {
      */
     public BufferManager(int pageSize, int bufferSize, String bufLoc) {
         this.pageSize = pageSize;
-        this.bufferSize = bufferSize;
+        //this.bufferSize = bufferSize;
+        this.bufferSize = 0; // TODO remove this, its for testing only
         this.buffer = new ArrayList<>(bufferSize);
         this.bufLoc = bufLoc;
     }
@@ -36,23 +32,45 @@ public class BufferManager {
     /**
      * this function adds a page to the buffer. If the buffer is full it
      * write the LRU page to memory and the adds the page to the buffer.
-     * @param pageInt
+     * @param page Page object being added to buffer
      */
-    public void addPage(Integer pageInt)  {
-        Page page;
+    public void addPage(Page page)  {
         if(buffer.size() < bufferSize)  { // there is room in the buffer
-            page = readPageFromMem(pageInt);
-            buffer.add(page);
+            buffer.add(0, page);
         }
         else    {
             // remove lRU page and write to mem
             Page removePage = buffer.get(bufferSize - 1);
             writePageToMem(removePage);
             buffer.remove(bufferSize - 1);
-            page = readPageFromMem(pageInt);
             //add new page to buffer to first index
             buffer.add(0, page);
         }
+    }
+
+    /**
+     * This function retrieves a page, first checking the buffer, then checking memory
+     * @param pageId the unique id of a page
+     * @return Page Obejct or null if page does not exist
+     */
+    public Page getPage(Integer pageId) {
+        for(int i = 0;i < buffer.size();i++)    {
+            Page page = buffer.get(i);
+            if(page.getPageId() == pageId) { // page found in buffer
+                // move page to front of buffer
+                buffer.remove(i);
+                buffer.add(0, page);
+                return page;
+            }
+        }
+
+        // look for page in memory
+        File file = new File(bufLoc);
+        File[] files = file.listFiles();
+        // TODO loop through all object in file and check to see if it what we want
+        Page page = readPageFromMem(pageId);
+
+        return null;
     }
 
     /**
@@ -61,12 +79,24 @@ public class BufferManager {
      * @return the found page, null if the page was not found
      */
     private Page readPageFromMem(Integer pageInt) {
+        boolean cont = true;
         try {
             FileInputStream fileIn = new FileInputStream(bufLoc + "/" + pageInt + ".txt");
             ObjectInputStream objectIn = new ObjectInputStream(fileIn);
-            Page page = (Page) objectIn.readObject();
+
+            // loop through entire directory
+            while(cont) {
+                Page page = (Page) objectIn.readObject();
+                if(page != null && page.getPageId() == pageInt)    {
+                    return page; // we found the page we are looking for
+                }
+                else    {
+                    cont = false; // all objects in directory have been read
+                }
+            }
+
             objectIn.close();
-            return page;
+            return null;
         } catch (FileNotFoundException e)   {
             System.err.println(e);
         } catch (IOException e) {
