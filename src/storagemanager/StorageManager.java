@@ -456,7 +456,7 @@ public class StorageManager extends AStorageManager {
         this.buffer = new ArrayList<>();
 
         new File(dbLoc + "\\pages").mkdirs(); // create a new folder where buffer pages will be stored
-        this.bufferManager = new BufferManager(pageSize, pageBufferSize, dbLoc + "/pages");
+        this.bufferManager = new BufferManager(pageSize, pageBufferSize, dbLoc + "\\pages");
     }
 
     /**
