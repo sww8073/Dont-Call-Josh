@@ -126,8 +126,6 @@ public class StorageManagerTester {
             System.exit(1);
         } catch (StorageManagerException e) {}
 
-        ((StorageManager)sm).printBuff();
-
         System.out.println("Testing getRecords for all tables");
         // Getting all table entries
         // Table 1
@@ -225,7 +223,7 @@ public class StorageManagerTester {
             e.printStackTrace();
             System.exit(1);
         }
-
+        ((StorageManager)sm).printBuff();
         System.out.println("Testing remove record");
 
         try {
@@ -241,6 +239,7 @@ public class StorageManagerTester {
             System.err.println("Removed non-existent record");
             System.exit(1);
         } catch (StorageManagerException e) {}
+        ((StorageManager)sm).printBuff();
         /*
         System.out.println("Testing purge buffer and restart");
 

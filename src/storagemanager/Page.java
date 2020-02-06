@@ -150,6 +150,16 @@ public class Page {
     }
 
     /**
+     * This function checks to see if the page has no records
+     * @return
+     */
+    public boolean isEmpty()    {
+        if(recordList.size() == 0)
+            return true;
+        return false;
+    }
+
+    /**
      * record see if the record exists between the max record and
      * min record on the page
      * @param record Object array
@@ -366,6 +376,18 @@ public class Page {
                 recordList.remove(i);
                 recordList.add(i, newRec);
             }
+        }
+    }
+
+    /**
+     * This function removes a record.
+     * @precondition record being removes must be verified to exist
+     * @param keyValue key value to search by
+     */
+    public void removeRecord(Object[] keyValue) {
+        for(int i = 0;i < recordList.size();i++)    {
+            if(compareRecordToKeyIndices(recordList.get(i), keyValue) == 0)
+                recordList.remove(i);
         }
     }
 

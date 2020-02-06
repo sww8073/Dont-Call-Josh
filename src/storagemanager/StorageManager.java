@@ -298,6 +298,40 @@ public class StorageManager extends AStorageManager {
      */
     @Override
     public void removeRecord(int table, Object[] keyValue) throws StorageManagerException {
+        if(!doesTableExist(table)) {
+            throw new StorageManagerException("The table does not exist");
+        }
+
+        boolean recordDeleted = false;
+
+        ArrayList<Integer> pageIdsList = tablePages.get(table);
+        for (Integer id: pageIdsList) {
+            Page page = getPageFromBuff(id); // gets ordered page // TODO eventually replace with buffer call
+            ArrayList<Object[]> records = page.getRecordList();
+            for(int i = 0;i < records.size();i++)    {
+                if(page.compareRecordToKeyIndices(records.get(i), keyValue) == 0)   {
+                    page.removeRecord(keyValue);
+                    recordDeleted = true;
+
+                    if(page.isEmpty())  { // page is empty, it must be destroyed
+                        // remove page form id map
+                        ArrayList<Integer> pageIds = tablePages.get(table);
+                        pageIds.remove(page.getPageId());
+
+                        // remove page from buffer // TODO eventually replace with buffer call
+                        buffer.remove(page);
+                    }
+                }
+            }
+        }
+
+        if(!recordDeleted)  {
+            throw new StorageManagerException("The records you are trying to update does not exist");
+        }
+
+
+
+        /*
         ArrayList<Integer> pages = tablePages.get(table);
         boolean pageIsEmpty;
         for (Integer pageNum: pages) {
@@ -307,6 +341,7 @@ public class StorageManager extends AStorageManager {
                 pages.remove(pageNum);
             }
         }
+         */
     }
 
     /**
