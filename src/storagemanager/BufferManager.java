@@ -24,7 +24,7 @@ public class BufferManager {
     public BufferManager(int pageSize, int bufferSize, String bufLoc) {
         this.pageSize = pageSize;
         //this.bufferSize = bufferSize;
-        this.bufferSize = 1; // TODO remove this, its for testing only
+        this.bufferSize = bufferSize;
         this.buffer = new ArrayList<>(bufferSize);
         this.bufLoc = bufLoc;
     }

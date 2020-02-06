@@ -243,7 +243,7 @@ public class StorageManagerTester {
 
 
         // BufferManagerTester
-        BufferManager bufferManager = new BufferManager(pageSize, 4, dbLoc);
+        BufferManager bufferManager = new BufferManager(pageSize, 4, dbLoc + "\\pages");
         Object[] rec = new Object[5];
         Page page1 = new Page(1, 1, 40, rec, dataTypes1, keyIndices1);
         Page page2 = new Page(2, 1, 40, rec, dataTypes1, keyIndices1);
