@@ -20,7 +20,7 @@ public class StorageManager extends AStorageManager {
     // key is table id, value is ArrayList pages sorted in order form lowest to highest
     private Map<Integer, ArrayList<Integer>> tablePages;
     
-    public ArrayList<Page> buffer; // TODO Initialize buffer, find way to add pages
+    private ArrayList<Page> buffer; // TODO Initialize buffer, find way to add pages
     private BufferManager bufferManager;
 
     private int pageSize;
@@ -57,15 +57,14 @@ public class StorageManager extends AStorageManager {
      */
     @Override
     public Object[][] getRecords(int table) throws StorageManagerException {
-        Integer[] indicies = this.keyIndices.get(table);
-        if(indicies == null)    {
+        
+        // check if table exists
+        if(!doesTableExist(table))    {
             throw new StorageManagerException("The table does not exist");
         }
 
-        // TODO buffer management
-        //TODO throw StorageManagerException
         ArrayList<Integer> pages = tablePages.get(table);
-        Object[][] recordsOfTable = new Object[pages.size()][];
+        Object[][] recordsOfTable = new Object[pages.size()][]; // I dont know if this will work, would pages.size() just tell you how many pages there are?
         ArrayList<Object[]> records;
         int x = 0;
         for (Integer pageNum: pages) {
@@ -89,8 +88,7 @@ public class StorageManager extends AStorageManager {
     public Object[] getRecord(int table, Object[] keyValue) throws StorageManagerException {
         
         // check to see if table exists
-        Integer[] indicies = this.keyIndices.get(table);
-        if(indicies == null)    {
+        if(!doesTableExist(table)) {
             throw new StorageManagerException("The table does not exist");
         }
 
@@ -102,22 +100,20 @@ public class StorageManager extends AStorageManager {
             if (page != null) {
                 // if the page is not null, we can look for the record in the page
                 record = page.getRecordFromPage(keyValue);
+                if (record != null) {
+                    return record;
+                }
             } else {
                 // we need to read the page into the buffer from memory
-                // TODO read in page to memory using BufferManager
+                bufferManager.addPage(pageNum);
+                page = buffer.get(pageNum);
+                record = page.getRecordFromPage(keyValue);
+                if (record != null) {
+                    return record;
+                }
             }
         }
-        return record;
-    }
-
-    public Page getPage(Integer Id) {
-        Object[] v = new Object[10];
-        Page page = new Page(-1, -1, -1, v, new String[1], new Integer[1]);
-        for(int i = 0;i < buffer.size();i++)    {
-            if(buffer.get(i).getPageId() == Id)
-                page = buffer.get(i);
-        }
-        return page;
+        return null;
     }
 
     /**
@@ -129,66 +125,6 @@ public class StorageManager extends AStorageManager {
      */
     @Override
     public void insertRecord(int table, Object[] record) throws StorageManagerException {
-        // check to see if the table exists
-        Integer[] indicies = this.keyIndices.get(table);
-        if(indicies == null)    {
-            throw new StorageManagerException("The table does not exist");
-        }
-
-        // check if table contains any pages
-        if(!this.tablePages.containsKey(table)) {
-            // table does not have any pages, so ADD NEW PAGE
-            pageId += 1; // increment page id each time
-            Page page = new Page(pageId, table, maxRecordsPerPage.get(table), record, dataTypes.get(table),
-                    keyIndices.get(table));
-            ArrayList<Integer> newPageList = new ArrayList<>();
-            newPageList.add(page.getPageId());
-            tablePages.put(table, newPageList); // add the ordered list of table ids to map
-            buffer.add(page); // add page to the buffer
-        }
-        else    {
-            ArrayList<Integer> pageIdList = this.tablePages.get(table); // get page ids of tables in order
-
-            if(pageIdList.size() == 1) {
-                // TODO get this from buffer manager in future
-                Page page = getPage(pageIdList.get(0));
-
-                if (page.pageFull()) {
-                    splitPageAndRec(table, page, record); // split table!!!!
-                } else {
-                    page.addRecordToPage(record);
-                }
-                return;
-            }
-            else    {
-                for(int i = 1;i < pageIdList.size();i++)    {
-                    // TODO get this from buffer manager in future
-                    Page curPage = getPage(pageIdList.get(i));
-                    Page prevPage = getPage(pageIdList.get(i - 1));
-
-                    if(prevPage.smallerThanMinRecOnPg(record))  { // smaller than smallest vale in next page
-                        if (curPage.pageFull()) {
-                            splitPageAndRec(table, curPage, record); // split table!!!!
-                        } else {
-                            curPage.addRecordToPage(record);
-                        }
-                        return;
-                    }
-                }
-                // record has not been inserted yet so it must belong on the last page
-                // TODO get this from buffer manager in future
-                int lastPageIndex = pageIdList.size() - 1;
-                Page lastPage = getPage(pageIdList.get(lastPageIndex));
-
-                if (lastPage.pageFull()) {
-                    splitPageAndRec(table, lastPage, record); // split table!!!!
-                } else {
-                    lastPage.addRecordToPage(record);
-                }
-                return;
-            }
-        }
-        /*
 
         // check to see if the table exists
         Integer[] indicies = this.keyIndices.get(table);
@@ -265,7 +201,6 @@ public class StorageManager extends AStorageManager {
                 }
             }
         }
-        */
     }
 
     /**
@@ -378,7 +313,7 @@ public class StorageManager extends AStorageManager {
      */
     @Override
     public void clearTable(int table) throws StorageManagerException {
-        //TODO throw StorageManagerExecption
+        
         ArrayList<Integer> pages = new ArrayList<>();
         ArrayList<Object[]> records;
         Integer[] keyInd = keyIndices.get(table);
@@ -502,24 +437,17 @@ public class StorageManager extends AStorageManager {
         }
     }
 
-    public void printBuff() {
-        int count = 0;
-        for(int i = 0;i < buffer.size();i++)    {
-            System.out.print("Page Id: " + buffer.get(i).getPageId() + "          ");
-
-            ArrayList<Object[]> recs =  buffer.get(i).getRecordList();
-            for(int j = 0;j < recs.size();j++)  {
-                Object[] rec = recs.get(j);
-                System.out.print(" [ ");
-                for(int l = 0;l < rec.length;l++)   {
-                    System.out.print( rec[l] + " ");
-                }
-                System.out.print(" ] ");
-                count++;
-            }
-            System.out.println();
-
+    /**
+     * Checks to see if a given table exists.
+     * @param table the table to check.
+     * @return whether the table exists.
+     */
+    private boolean doesTableExist(int table) {
+        // check to see if the table exists
+        Integer[] indicies = this.keyIndices.get(table);
+        if(indicies == null) {
+            return false;
         }
-        System.out.println("count: " + count);
+        return true;
     }
 }
