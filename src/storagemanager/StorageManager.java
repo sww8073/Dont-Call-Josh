@@ -6,6 +6,9 @@
 package storagemanager;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -388,12 +391,43 @@ public class StorageManager extends AStorageManager {
 
     @Override
     public void terminateDatabase() throws StorageManagerException {
-
+        /**
+         * Calls purgeBuffer() and then writes out pageBufferSize and pageSize in bytes to a file called Sizes.txt
+         */
+        // TODO Implement throwing of StorageManagerException.
+        purgeBuffer();
+        try{
+            FileOutputStream out = new FileOutputStream("Sizes.txt");
+//            Integer pbs = this.pageBufferSize;
+            Integer ps = this.pageSize;
+//            byte pageBufferSize = pbs.byteValue();
+            byte pageSize = ps.byteValue();
+//            out.write(pageBufferSize);
+            out.write(pageSize);
+            out.close();
+        }catch(IOException e){
+            System.out.println("IMPLEMENT ERROR MESSAGE HERE");
+        }
     }
 
     @Override
     protected void restartDatabase(String dbLoc) throws StorageManagerException {
         //TODO use read object
+        /**
+         * My implementation implies a few things here,
+         * 1. pageBuffersize and pageSize are written out to a Sizes.txt file in order as bytes in terminateDatabase()
+         *
+         */
+        // TODO Implement throwing of StorageManagerException and read in buffer info
+        String sizes = dbLoc + "\\Sizes.txt";
+        try{
+            FileInputStream in = new FileInputStream(sizes);
+//            this.pageBufferSize = in.read();
+            this.pageSize = in.read();
+        }catch(IOException e){
+            System.out.println("IMPLEMENT ERROR MESSAGE HERE");
+        }
+        //TODO grab buffer info from file
     }
 
     /**
