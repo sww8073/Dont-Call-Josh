@@ -107,7 +107,8 @@ public class BufferManager {
 
     private void writePageToMem(Page page)  {
         try {
-            FileOutputStream fileOut = new FileOutputStream(bufLoc);
+            String path = bufLoc + page.getPageId() + ".txt";
+            FileOutputStream fileOut = new FileOutputStream(path);
             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
             objectOut.writeObject(page);
             objectOut.close();
