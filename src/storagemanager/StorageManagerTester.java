@@ -272,6 +272,7 @@ public class StorageManagerTester {
         Page page82 = bufferManager.getPage(page8.getPageId());
 
 
+
         /*
         System.out.println("Testing purge buffer and restart");
 
