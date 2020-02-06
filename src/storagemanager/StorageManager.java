@@ -101,6 +101,16 @@ public class StorageManager extends AStorageManager {
         return record;
     }
 
+    public Page getPage(Integer Id) {
+        Object[] v = new Object[10];
+        Page page = new Page(-1, -1, -1, v, new String[1], new Integer[1]);
+        for(int i = 0;i < buffer.size();i++)    {
+            if(buffer.get(i).getPageId() == Id)
+                page = buffer.get(i);
+        }
+        return page;
+    }
+
     /**
      * Inserts the record in the given table. If the record already exists it throws an exception. It finds the page
      * where it belongs, adds it in its proper location. If the page becomes overfull it will make a new page.
@@ -131,14 +141,25 @@ public class StorageManager extends AStorageManager {
             ArrayList<Integer> pageIdList = this.tablePages.get(table); // get page ids of tables in order
 
             if(pageIdList.size() == 1) {
-                int pageIndex = buffer.indexOf(pageId); // TODO get this from buffer manager
-                Page page = buffer.get(pageIndex);
+                // TODO get this from buffer manager in future
+                Page page = getPage(pageIdList.get(0));
 
-                page.addRecordToPage(record);
+                if (page.pageFull()) {
+                    splitPageAndRec(table, page, record); // split table!!!!
+                } else {
+                    page.addRecordToPage(record);
+                }
             }
             else    {
-                int i = 0;
-                i++;
+                for(int i = 1;i < pageIdList.size();i++)    {
+                    // TODO get this from buffer manager in future
+                    Page curPage = getPage(pageIdList.get(i));
+                    Page prevPage = getPage(pageIdList.get(i - 1));
+
+                    if(prevPage.smallerThanMinRecOnPg(record))  {
+                        
+                    }
+                }
             }
         }
 
