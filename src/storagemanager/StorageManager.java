@@ -57,15 +57,14 @@ public class StorageManager extends AStorageManager {
      */
     @Override
     public Object[][] getRecords(int table) throws StorageManagerException {
-        Integer[] indicies = this.keyIndices.get(table);
-        if(indicies == null)    {
+        
+        // check if table exists
+        if(!doesTableExist(table))    {
             throw new StorageManagerException("The table does not exist");
         }
 
-        // TODO buffer management
-        //TODO throw StorageManagerException
         ArrayList<Integer> pages = tablePages.get(table);
-        Object[][] recordsOfTable = new Object[pages.size()][];
+        Object[][] recordsOfTable = new Object[pages.size()][]; // I dont know if this will work, would pages.size() just tell you how many pages there are?
         ArrayList<Object[]> records;
         int x = 0;
         for (Integer pageNum: pages) {
@@ -89,8 +88,7 @@ public class StorageManager extends AStorageManager {
     public Object[] getRecord(int table, Object[] keyValue) throws StorageManagerException {
         
         // check to see if table exists
-        Integer[] indicies = this.keyIndices.get(table);
-        if(indicies == null)    {
+        if(!doesTableExist(table)) {
             throw new StorageManagerException("The table does not exist");
         }
 
@@ -315,7 +313,7 @@ public class StorageManager extends AStorageManager {
      */
     @Override
     public void clearTable(int table) throws StorageManagerException {
-        //TODO throw StorageManagerExecption
+        
         ArrayList<Integer> pages = new ArrayList<>();
         ArrayList<Object[]> records;
         Integer[] keyInd = keyIndices.get(table);
@@ -437,5 +435,19 @@ public class StorageManager extends AStorageManager {
                 }
             }
         }
+    }
+
+    /**
+     * Checks to see if a given table exists.
+     * @param table the table to check.
+     * @return whether the table exists.
+     */
+    private boolean doesTableExist(int table) {
+        // check to see if the table exists
+        Integer[] indicies = this.keyIndices.get(table);
+        if(indicies == null) {
+            return false;
+        }
+        return true;
     }
 }
