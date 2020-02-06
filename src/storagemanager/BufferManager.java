@@ -75,12 +75,13 @@ public class BufferManager {
      * @return the found page, null if the page was not found
      */
     private Page readPageFromMem(Integer pageInt) {
-        boolean cont = true;
+        String path = bufLoc + "\\" + pageInt;
         try {
-            FileInputStream fileIn = new FileInputStream(bufLoc + "\\" + pageInt);
+            FileInputStream fileIn = new FileInputStream(path);
             ObjectInputStream objectIn = new ObjectInputStream(fileIn);
-
             Page page = (Page) objectIn.readObject();
+            File pageFile = new File(path);
+            pageFile.delete();
             objectIn.close();
             return page;
         } catch (FileNotFoundException e)   {
