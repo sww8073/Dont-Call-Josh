@@ -85,6 +85,7 @@ public class BufferManager {
             while(cont) {
                 Page page = (Page) objectIn.readObject();
                 if(page != null && page.getPageId() == pageInt)    {
+                    objectIn.close();
                     return page; // we found the page we are looking for
                 }
                 else    {
