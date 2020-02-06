@@ -126,8 +126,8 @@ public class StorageManagerTester {
             System.exit(1);
         } catch (StorageManagerException e) {}
 
-        //((StorageManager)sm).printBuff();
-        /*
+        ((StorageManager)sm).printBuff();
+
         System.out.println("Testing getRecords for all tables");
         // Getting all table entries
         // Table 1
@@ -148,7 +148,7 @@ public class StorageManagerTester {
             e.printStackTrace();
             System.exit(1);
         }
-
+    /*
         // Table 2
         try {
             Object[][] table1Data = sm.getRecords(2);
@@ -175,7 +175,7 @@ public class StorageManagerTester {
 
         System.out.println("Testing getRecord");
         // Testing get record
-
+        /*
         try {
             Object[] rec1 = sm.getRecord(1, new Object[]{242, 43.29});
             if(!(rec1[0]).equals(242) || !(rec1[1]).equals("Prinz Deeney")

@@ -189,9 +189,7 @@ public class StorageManager extends AStorageManager {
      */
     private void addRecOrSplitAndAddRec(int table, Page page, Object[] record) throws StorageManagerException {
         if (page.pageFull()) {
-            printBuff();
             splitPageAndRec(table, page, record); // split table!!!!
-            printBuff();
         } else {
             page.addRecordToPage(record);
         }
