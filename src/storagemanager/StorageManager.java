@@ -4,6 +4,7 @@
  * Members: Matthew Clements, Josh Tellier, Stone Warren, Josh Schenk
  */
 package storagemanager;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,8 +58,18 @@ public class StorageManager extends AStorageManager {
     @Override
     public Object[][] getRecords(int table) throws StorageManagerException {
         // TODO buffer management
-
-        return new Object[0][];
+        ArrayList<Integer> pages = tablePages.get(table);
+        Object[][] recordsOfTable = new Object[pages.size()][];
+        ArrayList<Object[]> records;
+        int x = 0;
+        for (Integer pageNum: pages) {
+            records = buffer.get(pageNum).getRecordList();
+            for(int i =0; i < records.size(); i++){
+                recordsOfTable[x][i] = records.get(i);
+            }
+            x++;
+        }
+        return recordsOfTable;
     }
 
     /**
