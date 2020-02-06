@@ -93,6 +93,8 @@ public class StorageManagerTester {
             e.printStackTrace();
         }
 
+        ((StorageManager)sm).printBuff();
+        /*
 
 
 

@@ -20,7 +20,7 @@ public class StorageManager extends AStorageManager {
     // key is table id, value is ArrayList pages sorted in order form lowest to highest
     private Map<Integer, ArrayList<Integer>> tablePages;
     
-    private ArrayList<Page> buffer; // TODO Initialize buffer, find way to add pages
+    public ArrayList<Page> buffer; // TODO Initialize buffer, find way to add pages
     private BufferManager bufferManager;
 
     private int pageSize;
@@ -158,6 +158,7 @@ public class StorageManager extends AStorageManager {
                 } else {
                     page.addRecordToPage(record);
                 }
+                return;
             }
             else    {
                 for(int i = 1;i < pageIdList.size();i++)    {
@@ -165,14 +166,30 @@ public class StorageManager extends AStorageManager {
                     Page curPage = getPage(pageIdList.get(i));
                     Page prevPage = getPage(pageIdList.get(i - 1));
 
-                    if(prevPage.smallerThanMinRecOnPg(record))  {
-                        
+                    if(prevPage.smallerThanMinRecOnPg(record))  { // smaller than smallest vale in next page
+                        if (curPage.pageFull()) {
+                            splitPageAndRec(table, curPage, record); // split table!!!!
+                        } else {
+                            curPage.addRecordToPage(record);
+                        }
+                        return;
                     }
                 }
+                // record has not been inserted yet so it must belong on the last page
+                // TODO get this from buffer manager in future
+                int lastPageIndex = pageIdList.size() - 1;
+                Page lastPage = getPage(pageIdList.get(lastPageIndex));
+
+                if (lastPage.pageFull()) {
+                    splitPageAndRec(table, lastPage, record); // split table!!!!
+                } else {
+                    lastPage.addRecordToPage(record);
+                }
+                return;
             }
         }
-
         /*
+
         // check to see if the table exists
         Integer[] indicies = this.keyIndices.get(table);
         if(indicies == null)    {
@@ -248,7 +265,7 @@ public class StorageManager extends AStorageManager {
                 }
             }
         }
-         */
+        */
     }
 
     /**
@@ -483,5 +500,26 @@ public class StorageManager extends AStorageManager {
                 }
             }
         }
+    }
+
+    public void printBuff() {
+        int count = 0;
+        for(int i = 0;i < buffer.size();i++)    {
+            System.out.print("Page Id: " + buffer.get(i).getPageId() + "          ");
+
+            ArrayList<Object[]> recs =  buffer.get(i).getRecordList();
+            for(int j = 0;j < recs.size();j++)  {
+                Object[] rec = recs.get(j);
+                System.out.print(" [ ");
+                for(int l = 0;l < rec.length;l++)   {
+                    System.out.print( rec[l] + " ");
+                }
+                System.out.print(" ] ");
+                count++;
+            }
+            System.out.println();
+
+        }
+        System.out.println("count: " + count);
     }
 }
