@@ -100,8 +100,6 @@ public class StorageManager extends AStorageManager {
      */
     @Override
     public Object[] getRecord(int table, Object[] keyValue) throws StorageManagerException {
-
-        // check to see if table exists
         if(!doesTableExist(table)) {
             throw new StorageManagerException("The table does not exist");
         }
@@ -235,7 +233,29 @@ public class StorageManager extends AStorageManager {
      */
     @Override
     public void updateRecord(int table, Object[] record) throws StorageManagerException {
-        if(keyIndices.get(table) == null){throw new StorageManagerException("table " + table + " does not exist");}
+        if(!doesTableExist(table)) {
+            throw new StorageManagerException("The table does not exist");
+        }
+
+        boolean recordUpdated = false;
+
+        ArrayList<Integer> pageIdsList = tablePages.get(table);
+        for (Integer id: pageIdsList) {
+            Page page = getPageFromBuff(id); // gets ordered page // TODO eventually replace with buffer call
+
+            // You can use this function with the record with the new values since
+            // only the key indices are being used to compare and search.
+            // KeyIndices will should never change.
+            if(page.isRecBetweenMaxAndMin(record))  {
+                page.updateRecord(record, record);
+                recordUpdated = true;
+            }
+        }
+
+        if(!recordUpdated)  {
+            throw new StorageManagerException("The records you are trying to update does not exist");
+        }
+        /*
         else {
             Integer[] keyInd = keyIndices.get(table); //the keyIndices from the table
             Object[] recordKeyInd = new Object[keyInd.length]; //the keyValue pair based off the keyIndices
@@ -267,6 +287,7 @@ public class StorageManager extends AStorageManager {
                 insertRecord(table, record);
             }
         }
+         */
     }
 
     /**

@@ -353,6 +353,22 @@ public class Page {
         return null;
     }
 
+    /**
+     * Finds the old record and replaces it with the new record
+     * @param oldRec old record data.
+     * @param newRec new record data.
+     * @return The new record, null if the record wasn't found.
+     */
+    public void updateRecord(Object[] oldRec, Object[] newRec) {
+        // this class currently doesnt change the order of the records if any of the keyValues are changed
+        for(int i = 0;i < recordList.size();i++)    {
+            if(compareRecords(recordList.get(i), oldRec) == 0){
+                recordList.remove(i);
+                recordList.add(i, newRec);
+            }
+        }
+    }
+
     public boolean tryToRemoveRecord(Object[] keyValue){
         Object[] record;
         if((record = getRecordFromPage(keyValue)) != null){

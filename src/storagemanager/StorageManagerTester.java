@@ -204,7 +204,7 @@ public class StorageManagerTester {
             e.printStackTrace();
             System.exit(1);
         }
-        /*
+
         System.out.println("Testing update");
 
         try {
@@ -241,7 +241,7 @@ public class StorageManagerTester {
             System.err.println("Removed non-existent record");
             System.exit(1);
         } catch (StorageManagerException e) {}
-
+        /*
         System.out.println("Testing purge buffer and restart");
 
         AStorageManager restartedSM = null;
