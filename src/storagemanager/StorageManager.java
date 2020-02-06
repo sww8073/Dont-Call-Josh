@@ -382,11 +382,19 @@ public class StorageManager extends AStorageManager {
         this.maxRecordsPerPage.put(table, recordsPerPage);
     }
 
+    /**
+     * Will purge any pages in the buffer to the physical hardware.
+     * @throws StorageManagerException any failure to write the buffer to hardware
+     */
     @Override
     public void purgeBuffer() throws StorageManagerException {
 
     }
 
+    /**
+     * Will purge the page buffer and write any needed data to the physical hardware needed to restart the database.
+     * @throws StorageManagerException any failure to write the buffer or database information to hardware
+     */
     @Override
     public void terminateDatabase() throws StorageManagerException {
         purgeBuffer();
@@ -410,6 +418,12 @@ public class StorageManager extends AStorageManager {
         }
     }
 
+    /**
+     * Load in any needed data to restart the database; if not starting for the first time.
+     * @param dbLoc the location of the database to restart
+     * @throws StorageManagerException if there is no database at the location or database at that location fails
+     *                                 to restart.
+     */
     @Override
     protected void restartDatabase(String dbLoc) throws StorageManagerException {
         String sizes = dbLoc + "\\database.txt";
