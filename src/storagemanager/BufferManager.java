@@ -71,6 +71,27 @@ public class BufferManager {
     }
 
     /**
+     * This function deletes a page rom either the buffer of form
+     * its corresponding directory.
+     * @param pageId the unique page id of a Page
+     * @return true if page was deleted
+     */
+    public boolean deletePage(Integer pageId)  {
+        for(int i = 0;i < buffer.size();i++)    {
+            Page page = buffer.get(i);
+            if(page.getPageId() == pageId) { // page found in buffer
+                // move page to front of buffer
+                buffer.remove(i);
+                return true;
+            }
+        }
+
+        String path = bufLoc + "\\" + pageId;
+        File pageFile = new File(path);
+        return pageFile.delete();
+    }
+
+    /**
      * Reads in a page from memory using a given page number
      * @param pageInt page number to read in from memory
      * @return the found page, null if the page was not found
