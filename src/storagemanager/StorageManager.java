@@ -406,7 +406,7 @@ public class StorageManager extends AStorageManager {
 
     /**
      * Load in any needed data to restart the database; if not starting for the first time.
-     * @param dbLoc the location of the database to restart
+     * @param dbLoc the location of the database to restart.
      * @throws StorageManagerException if there is no database at the location or database at that location fails
      *                                 to restart.
      */
