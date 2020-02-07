@@ -448,7 +448,7 @@ public class StorageManager extends AStorageManager {
             throw new StorageManagerException("directory does not exist");
         }
         for (File file: dbDirectory.listFiles()) {
-            deleteFile(file.getAbsolutePath());//delete everything in file
+            deleteFile(dbLoc); //delete everything in file
         }
 
         this.dataTypes = new HashMap<Integer, String[]>();
