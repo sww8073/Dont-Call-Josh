@@ -223,7 +223,7 @@ public class StorageManagerTester {
             e.printStackTrace();
             System.exit(1);
         }
-        ((StorageManager)sm).printBuff();
+
         System.out.println("Testing remove record");
 
         try {
@@ -239,8 +239,8 @@ public class StorageManagerTester {
             System.err.println("Removed non-existent record");
             System.exit(1);
         } catch (StorageManagerException e) {}
-        ((StorageManager)sm).printBuff();
-        /*
+
+
         System.out.println("Testing purge buffer and restart");
 
         AStorageManager restartedSM = null;
@@ -262,7 +262,6 @@ public class StorageManagerTester {
             System.err.println("Failed to restart the database");
             System.exit(1);
         }
-
         System.out.println("Testing drop/clear tables");
         try {
             restartedSM.dropTable(2);
@@ -291,7 +290,6 @@ public class StorageManagerTester {
 
         System.out.println("There should be no pages in the db after completing these tests....");
 
-         */
         System.out.println("All tests passed!");
     }
 }

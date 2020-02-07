@@ -5,13 +5,14 @@
  */
 package storagemanager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Page {
+public class Page implements Serializable {
 
     private Integer pageId;
-    private int maxRecordsPerPage;
-    private int table;
+    private Integer maxRecordsPerPage;
+    private Integer table;
     private ArrayList<Object[]> recordList; // Array list of all the record stored on a page
     private String[] dataTypes;
     private Integer[] keyIndices;
@@ -347,23 +348,6 @@ public class Page {
     }
 
     /**
-     * Finds a record and updates it.
-     * @param record new record data.
-     * @param keyValue the keyValue of the record to update
-     * @return The new record, null if the record wasnt found.
-     */
-    public Object[] updateRecordFromPage(Object[] record, Object[] keyValue) {
-        // this class currently doesnt change the order of the records if any of the keyValues are changed
-        for (Object[] rec: recordList) {
-            if(areRecordsEqual(rec, keyValue)){
-                rec = record; // I don' think this is how I wan't to do this, but for now I'll keep it like this
-                return rec;
-            }
-        }
-        return null;
-    }
-
-    /**
      * Finds the old record and replaces it with the new record
      * @param oldRec old record data.
      * @param newRec new record data.
@@ -390,19 +374,4 @@ public class Page {
                 recordList.remove(i);
         }
     }
-
-    public boolean tryToRemoveRecord(Object[] keyValue){
-        Object[] record;
-        if((record = getRecordFromPage(keyValue)) != null){
-            //remove here
-            int indexOfRecord = recordList.indexOf(record);
-            recordList.remove(indexOfRecord);
-            //if page is empty now remove it from list
-            if(recordList.isEmpty()){
-                return true;
-            }
-        }
-        return false;
-    }
-
 }
