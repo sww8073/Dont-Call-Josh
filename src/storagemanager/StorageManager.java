@@ -86,6 +86,7 @@ public class StorageManager extends AStorageManager {
                 index++;
             }
         }
+
         return recordsOfTable;
     }
 
@@ -107,8 +108,10 @@ public class StorageManager extends AStorageManager {
             Page page = bufferManager.getPage(id);
             ArrayList<Object[]> records = page.getRecordList();
             for(Object[] record : records)  {
-                if(page.compareRecordToKeyIndices(record, keyValue) == 0)
+                if(page.compareRecordToKeyIndices(record, keyValue) == 0) {
+                    record = record;
                     return record;
+                }
             }
         }
         return null;
@@ -252,6 +255,7 @@ public class StorageManager extends AStorageManager {
      */
     @Override
     public void removeRecord(int table, Object[] keyValue) throws StorageManagerException {
+
         if(!doesTableExist(table)) {
             throw new StorageManagerException("The table does not exist");
         }
@@ -351,13 +355,13 @@ public class StorageManager extends AStorageManager {
                 recordSize += BOOLSIZE;
             else if(dataTypes[i].contains("varchar(")) {
                 int startIndex = dataTypes[i].indexOf("(") + 1;
-                int endIndex = dataTypes[i].indexOf(")") - 1;
+                int endIndex = dataTypes[i].indexOf(")");
                 String numString = dataTypes[i].substring(startIndex, endIndex);
                 recordSize += (Integer.parseInt(numString) * CHARSIZE);
             }
             else if(dataTypes[i].contains("char(")) {
                 int startIndex = dataTypes[i].indexOf("(") + 1;
-                int endIndex = dataTypes[i].indexOf(")") - 1;
+                int endIndex = dataTypes[i].indexOf(")");
                 String numString = dataTypes[i].substring(startIndex, endIndex);
                 recordSize += (Integer.parseInt(numString) * CHARSIZE);
             }

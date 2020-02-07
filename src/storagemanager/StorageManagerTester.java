@@ -17,7 +17,7 @@ public class StorageManagerTester {
     public static void main(String[] args) {
 
         // Modify based on your system and testing params
-        String dbLoc = "C:\\Users\\Matthew\\Desktop\\DBSIDataBase";
+        String dbLoc = "C:\\Users\\mclem\\OneDrive\\Desktop\\New folder";
         int pageBufferSize = 20;
         int pageSize = 4096;
         AStorageManager sm = null;
@@ -274,6 +274,7 @@ public class StorageManagerTester {
             e.printStackTrace();
             System.exit(1);
         }
+
 
         try {
             restartedSM.clearTable(1);

@@ -30,9 +30,9 @@ public class Page implements Serializable {
         this.pageId = pageId;
         this.recordList = new ArrayList<Object[]>();
         this.table = table;
-        this.recordList.add(record1); // add the first record to the beginning of the arrayList
-        this.maxRecordsPerPage = maxRecordsPerPage;
         this.dataTypes = dataTypes;
+        this.recordList.add(padRecord(record1)); // add the first record to the beginning of the arrayList
+        this.maxRecordsPerPage = maxRecordsPerPage;
         this.keyIndices = keyIndices;
     }
 
@@ -76,11 +76,15 @@ public class Page implements Serializable {
     }
 
     /**
-     * gets ArrayList of records
+     * gets ArrayList of records(unpadded)
      * @return
      */
     public ArrayList<Object[]> getRecordList(){
-        return this.recordList;
+        ArrayList<Object[]> unPaddedRecList = new ArrayList<>();
+        for(int i = 0;i < recordList.size();i++)    {
+            unPaddedRecList.add(unpadRecord(recordList.get(i)));
+        }
+        return unPaddedRecList;
     }
 
 
@@ -103,6 +107,8 @@ public class Page implements Serializable {
      */
     public boolean addRecordToPage(Object[] recordToAdd) throws StorageManagerException
     {
+        recordToAdd = padRecord(recordToAdd);
+
         Object[] firstRec = recordList.get(0);
         Object[] lastRec = recordList.get(recordList.size() - 1); // last value in record
 
@@ -136,12 +142,66 @@ public class Page implements Serializable {
         return false;
     }
 
+
+
+    /**
+     * This function checks to see if a record has a char type, and
+     * pads that char type;
+     * @param record the record to be added
+     * @return
+     */
+    public Object[] padRecord(Object[] record)   {
+
+        for(int j = 0;j < dataTypes.length;j++)    {
+            String type = dataTypes[j];
+            String subType = type.substring(0, 4);
+            if(subType.compareTo("char") == 0)  {
+                int startIndex = type.indexOf("(") + 1;
+                int endIndex = type.indexOf(")");
+                String numString = type.substring(startIndex, endIndex);
+                int stringSize = Integer.parseInt(numString);
+                char paddedS[] = new char[stringSize];
+                for(int i = 0;i < stringSize;i++)   {
+                    paddedS[i] = '*';
+                }
+                for(int i = 0;i < ((String)record[j]).length();i++)    {
+                    paddedS[i] = ((String)record[j]).charAt(i);
+                }
+                record[j] = new String(paddedS);
+            }
+        }
+        return record;
+    }
+
+    /**
+     * this function removes the padding of any char types
+     * @param record
+     * @return record no padding
+     */
+    public Object[] unpadRecord(Object[] record)   {
+        for(int j = 0;j < dataTypes.length;j++)    {
+            String type = dataTypes[j];
+            String subType = type.substring(0, 4);
+            if(subType.compareTo("char") == 0)  {
+                String unpadS = (String)record[j];
+                for(int i = ((String)record[j]).length() - 1; i >= 0;i--)   {
+                    if(unpadS.charAt(i) == '*') {
+                        unpadS = unpadS.substring(0, i);
+                    }
+                }
+                record[j] = new String(unpadS);
+            }
+        }
+        return record;
+    }
+
     /**
      * record to be added is smaller than 1st rec on page
      * @param record Object array
      * @return
      */
     public boolean smallerThanMinRecOnPg(Object[] record)  {
+        record = padRecord(record);
         // insert record between 2 values
         Object[] firstRec = recordList.get(0);
         if(compareRecords(record, firstRec) == -1) { // record is smaller than first val on this page
@@ -167,6 +227,8 @@ public class Page implements Serializable {
      * @return
      */
     public boolean isRecBetweenMaxAndMin(Object[] record)  {
+        record = padRecord(record);
+
         Object[] firstRec = recordList.get(0);
         Object[] lastRec = recordList.get(recordList.size() - 1);
 
@@ -189,6 +251,7 @@ public class Page implements Serializable {
      *         -2 if error
      */
     public int compareRecords(Object[] rec1, Object[] rec2) {
+
         // loop though and check each key indices
         for(int i = 0;i < keyIndices.length;i++)    {
             // compares key indices that corresponds to i
@@ -354,11 +417,14 @@ public class Page implements Serializable {
      * @return The new record, null if the record wasn't found.
      */
     public void updateRecord(Object[] oldRec, Object[] newRec) {
+        oldRec = padRecord(oldRec);
+        newRec = padRecord(newRec);
+
         // this class currently doesnt change the order of the records if any of the keyValues are changed
         for(int i = 0;i < recordList.size();i++)    {
             if(compareRecords(recordList.get(i), oldRec) == 0){
                 recordList.remove(i);
-                recordList.add(i, newRec);
+                recordList.add(i, padRecord(newRec));
             }
         }
     }

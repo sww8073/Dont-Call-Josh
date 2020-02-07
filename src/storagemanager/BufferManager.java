@@ -65,7 +65,7 @@ public class BufferManager {
     public Page getPage(Integer pageId) {
         for(int i = 0;i < buffer.size();i++)    {
             Page page = buffer.get(i);
-            if(page.getPageId() == pageId) { // page found in buffer
+            if((int)page.getPageId() == (int)pageId) { // page found in buffer
                 // move page to front of buffer
                 buffer.remove(i);
                 buffer.add(0, page);
@@ -110,7 +110,9 @@ public class BufferManager {
         try {
             FileInputStream fileIn = new FileInputStream(path);
             ObjectInputStream objectIn = new ObjectInputStream(fileIn);
+
             Page page = (Page) objectIn.readObject();
+
             File pageFile = new File(path);
             objectIn.close();
             pageFile.delete();
