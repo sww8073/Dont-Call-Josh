@@ -150,7 +150,8 @@ public class BufferManager {
      */
     public void purge() {
         while(buffer.size() > 0)    {
-            deletePage(buffer.get(0).getPageId());
+            writePageToMem(buffer.get(0));
+            buffer.remove(0);
         }
     }
 }
