@@ -314,19 +314,13 @@ public class StorageManager extends AStorageManager {
         if(!doesTableExist(table)) {
             throw new StorageManagerException("The table does not exist");
         }
-        ArrayList<Integer> pages = new ArrayList<>();
-        ArrayList<Object[]> records;
-        Integer[] keyInd = keyIndices.get(table);
-        for (Integer pageNum: pages) {
-            records = bufferManager.getPage(pageNum).getRecordList();
-            for (Object[] record: records) {
-                Object[] keyValue = new Object[keyInd.length];
-                for (int i = 0; i < keyValue.length; i++) {
-                    keyValue[i] = record[keyInd[i]];
-                }
-                removeRecord(table, keyValue);
-            }
+
+        ArrayList<Integer> pageIds = tablePages.get(table);
+        for(Integer id : pageIds)   {
+            bufferManager.deletePage(id);
+            pageIds.remove(id);
         }
+        tablePages.replace(table,  new ArrayList<Integer>());
     }
 
     /**
