@@ -433,13 +433,6 @@ public class StorageManager extends AStorageManager {
             String dbloc = (String) ois.readObject();
             this.bufferManager = new BufferManager(pageSize, pageBufferSize, dbloc);
             ois.close();
-            for (Map.Entry<Integer, ArrayList<Integer>> entry : tablePages.entrySet()) {
-                Integer key = entry.getKey();
-                ArrayList<Integer> value = entry.getValue();
-                for(int i = 0; i<value.size(); i++){
-                    System.out.println ("Key: " + key + " Value: " + value.get(i));
-                }
-            }
         }catch(IOException e){
             System.out.println("File not found");
         } catch (ClassNotFoundException e) {
