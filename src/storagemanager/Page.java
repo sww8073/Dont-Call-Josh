@@ -179,7 +179,11 @@ public class Page implements Serializable {
      * @return record no padding
      */
     public Object[] unpadRecord(Object[] record)   {
+        Object[] unpaddedRec = new Object[record.length];
+
         for(int j = 0;j < dataTypes.length;j++)    {
+            unpaddedRec[j] = record[j];
+
             String type = dataTypes[j];
             String subType = type.substring(0, 4);
             if(subType.compareTo("char") == 0)  {
@@ -189,10 +193,10 @@ public class Page implements Serializable {
                         unpadS = unpadS.substring(0, i);
                     }
                 }
-                record[j] = new String(unpadS);
+                unpaddedRec[j] = new String(unpadS);
             }
         }
-        return record;
+        return unpaddedRec;
     }
 
     /**
