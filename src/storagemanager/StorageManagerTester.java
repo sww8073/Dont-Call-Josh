@@ -17,7 +17,7 @@ public class StorageManagerTester {
     public static void main(String[] args) {
 
         // Modify based on your system and testing params
-        String dbLoc = "C:\\Users\\wyatt\\Desktop\\Directory";
+        String dbLoc = "C:\\Users\\Matthew\\Desktop\\DBSIDataBase";
         int pageBufferSize = 20;
         int pageSize = 4096;
         AStorageManager sm = null;
@@ -294,7 +294,7 @@ public class StorageManagerTester {
 //            System.exit(1);
 //        }
 
-        /*
+
         System.out.println("Testing drop/clear tables");
         try {
             restartedSM.dropTable(2);
@@ -323,7 +323,7 @@ public class StorageManagerTester {
 
         System.out.println("There should be no pages in the db after completing these tests....");
 
-         */
+
         System.out.println("All tests passed!");
     }
 }
