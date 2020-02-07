@@ -239,37 +239,6 @@ public class StorageManagerTester {
             System.err.println("Removed non-existent record");
             System.exit(1);
         } catch (StorageManagerException e) {}
-        //((StorageManager)sm).printBuff(); // TODO remove this printLine
-
-        // BufferManagerTester
-        BufferManager bufferManager = new BufferManager(pageSize, 4, dbLoc + "\\pages");
-        Object[] rec = new Object[5];
-        Page page1 = new Page(1, 1, 40, rec, dataTypes1, keyIndices1);
-        Page page2 = new Page(2, 1, 40, rec, dataTypes1, keyIndices1);
-        Page page3 = new Page(3, 1, 40, rec, dataTypes1, keyIndices1);
-        Page page4 = new Page(4, 1, 40, rec, dataTypes1, keyIndices1);
-        Page page5 = new Page(5, 1, 40, rec, dataTypes1, keyIndices1);
-        Page page6 = new Page(7, 1, 40, rec, dataTypes1, keyIndices1);
-        Page page7 = new Page(8, 1, 40, rec, dataTypes1, keyIndices1);
-        Page page8 = new Page(9, 1, 40, rec, dataTypes1, keyIndices1);
-
-        bufferManager.addPage(page1);
-        bufferManager.addPage(page2);
-        bufferManager.addPage(page3);
-        bufferManager.addPage(page4);
-        bufferManager.addPage(page5);
-        bufferManager.addPage(page6);
-        bufferManager.addPage(page7);
-        bufferManager.addPage(page8);
-
-        Page page12 = bufferManager.getPage(page1.getPageId());
-        Page page22 = bufferManager.getPage(page2.getPageId());
-        Page page32 = bufferManager.getPage(page3.getPageId());
-        Page page42 = bufferManager.getPage(page4.getPageId());
-        Page page52 = bufferManager.getPage(page5.getPageId());
-        Page page62 = bufferManager.getPage(page6.getPageId());
-        Page page72 = bufferManager.getPage(page7.getPageId());
-        Page page82 = bufferManager.getPage(page8.getPageId());
 
 
         System.out.println("Testing purge buffer and restart");
@@ -288,14 +257,11 @@ public class StorageManagerTester {
         } catch (StorageManagerException e) {
             e.printStackTrace();
         }
-//
-//        if(restartedSM == null){
-//            System.err.println("Failed to restart the database");
-//            System.exit(1);
-//        }
 
-
-        /*
+        if(restartedSM == null){
+            System.err.println("Failed to restart the database");
+            System.exit(1);
+        }
         System.out.println("Testing drop/clear tables");
         try {
             restartedSM.dropTable(2);
@@ -324,7 +290,6 @@ public class StorageManagerTester {
 
         System.out.println("There should be no pages in the db after completing these tests....");
 
-*/
         System.out.println("All tests passed!");
     }
 }
