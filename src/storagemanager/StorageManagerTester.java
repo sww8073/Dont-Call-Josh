@@ -17,7 +17,7 @@ public class StorageManagerTester {
     public static void main(String[] args) {
 
         // Modify based on your system and testing params
-        String dbLoc = "C:\\Users\\Matthew\\Desktop\\DBSIDataBase";
+        String dbLoc = "C:\\Users\\wyatt\\Desktop\\Directory";
         int pageBufferSize = 20;
         int pageSize = 4096;
         AStorageManager sm = null;
@@ -272,8 +272,6 @@ public class StorageManagerTester {
         Page page82 = bufferManager.getPage(page8.getPageId());
 
 
-
-        /*
         System.out.println("Testing purge buffer and restart");
 
         AStorageManager restartedSM = null;
@@ -290,12 +288,13 @@ public class StorageManagerTester {
         } catch (StorageManagerException e) {
             e.printStackTrace();
         }
+//
+//        if(restartedSM == null){
+//            System.err.println("Failed to restart the database");
+//            System.exit(1);
+//        }
 
-        if(restartedSM == null){
-            System.err.println("Failed to restart the database");
-            System.exit(1);
-        }
-
+        /*
         System.out.println("Testing drop/clear tables");
         try {
             restartedSM.dropTable(2);

@@ -106,7 +106,6 @@ public class StorageManager extends AStorageManager {
         ArrayList<Integer> pageIdsList = tablePages.get(table);
         for (Integer id: pageIdsList) {
             Page page = bufferManager.getPage(id);
-
             ArrayList<Object[]> records = page.getRecordList();
             for(Object[] record : records)  {
                 if(page.compareRecordToKeyIndices(record, keyValue) == 0)
@@ -393,7 +392,7 @@ public class StorageManager extends AStorageManager {
         purgeBuffer();
         try{
 
-            FileOutputStream out = new FileOutputStream("database.txt");
+            FileOutputStream out = new FileOutputStream(this.dbLoc + "\\database.txt");
             ObjectOutputStream objectOut = new ObjectOutputStream(out);
             objectOut.writeObject(this.dataTypes);
             objectOut.writeObject(this.keyIndices);
@@ -405,9 +404,10 @@ public class StorageManager extends AStorageManager {
             objectOut.writeObject(this.bufferManager.getPageSize());
             objectOut.writeObject(this.bufferManager.getBufLoc());
 
+            objectOut.flush();
             objectOut.close();
         }catch(IOException e){
-            System.out.println("IMPLEMENT ERROR MESSAGE HERE");
+            System.out.println("File not found");
         }
     }
 
@@ -428,13 +428,20 @@ public class StorageManager extends AStorageManager {
             this.maxRecordsPerPage = (HashMap<Integer, Integer>) ois.readObject();
             this.tablePages = (HashMap<Integer, ArrayList<Integer>>) ois.readObject();
             this.pageId = (Integer) ois.readObject();
-
             int pageSize = (int) ois.readObject();
             int pageBufferSize = (int) ois.readObject();
             String dbloc = (String) ois.readObject();
             this.bufferManager = new BufferManager(pageSize, pageBufferSize, dbloc);
+            ois.close();
+            for (Map.Entry<Integer, ArrayList<Integer>> entry : tablePages.entrySet()) {
+                Integer key = entry.getKey();
+                ArrayList<Integer> value = entry.getValue();
+                for(int i = 0; i<value.size(); i++){
+                    System.out.println ("Key: " + key + " Value: " + value.get(i));
+                }
+            }
         }catch(IOException e){
-            System.out.println("IMPLEMENT ERROR MESSAGE HERE");
+            System.out.println("File not found");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
