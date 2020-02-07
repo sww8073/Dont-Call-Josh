@@ -390,7 +390,6 @@ public class StorageManager extends AStorageManager {
      */
     @Override
     public void terminateDatabase() throws StorageManagerException {
-        purgeBuffer();
         try{
 
             FileOutputStream out = new FileOutputStream(this.dbLoc + "\\database.txt");
