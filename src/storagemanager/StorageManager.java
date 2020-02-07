@@ -316,10 +316,11 @@ public class StorageManager extends AStorageManager {
         }
 
         ArrayList<Integer> pageIds = tablePages.get(table);
+
         for(Integer id : pageIds)   {
             bufferManager.deletePage(id);
-            pageIds.remove(id);
         }
+
         tablePages.replace(table,  new ArrayList<Integer>());
     }
 
