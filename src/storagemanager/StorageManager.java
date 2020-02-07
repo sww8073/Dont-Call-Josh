@@ -411,6 +411,7 @@ public class StorageManager extends AStorageManager {
      *                                 to restart.
      */
     @Override
+    @SuppressWarnings("unchecked")
     protected void restartDatabase(String dbLoc) throws StorageManagerException {
         String sizes = dbLoc + "\\database.txt";
         try{
