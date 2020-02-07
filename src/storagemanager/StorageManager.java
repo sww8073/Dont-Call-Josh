@@ -272,7 +272,7 @@ public class StorageManager extends AStorageManager {
                         ArrayList<Integer> pageIds = tablePages.get(table);
                         pageIds.remove(page.getPageId());
 
-                        // remove page from buffer // TODO eventually replace with buffer call
+                        // remove page from buffer
                         bufferManager.deletePage(page.getPageId());
                     }
                 }
