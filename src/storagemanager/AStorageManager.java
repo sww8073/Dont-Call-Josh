@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public abstract class AStorageManager {
 
     /**
-     * Creates an instance of the database. Tries to restart, if requested, the database at the provided location.
+     * Creates an instance of the database. Tries to restart, and if requested, the database at the provided location.
      * @param dbLoc the location to start/restart the database in
      * @param pageBufferSize the size of the page buffer; max number of pages allowed in the buffer at any given time
      * @param pageSize the size of a page in bytes
