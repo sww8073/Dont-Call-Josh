@@ -69,6 +69,7 @@ public class DDLParser implements IDDLParser {
             //name is primarykey(...), foreignkey(...), or unique(...)
             if(name.contains("(")){
                 name = new String(name.substring(0,name.indexOf("(")));
+                //TODO get keys and references
             }
 
             //is a var(x) or varchar(x)
