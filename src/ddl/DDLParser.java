@@ -31,6 +31,9 @@ public class DDLParser implements IDDLParser {
             case "alter":
                 alterTable(tableName);
                 break;
+
+            default:
+                break;
         }
     }
 
