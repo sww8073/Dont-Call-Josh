@@ -1,3 +1,8 @@
+import storagemanager.StorageManager;
+import storagemanager.StorageManagerException;
+
+import java.io.File;
+
 /**
  * Class to create and access a database.
  */
@@ -11,8 +16,16 @@ public class Database implements IDatabase{
      * @param pageSize the size of a page in bytes
      * @return an instance of an IDatabase.
      */
-    public static IDatabase getConnection(String dbLoc, int pageBufferSize, int pageSize ){
-        return null;
+    public static IDatabase getConnection(String dbLoc, int pageBufferSize, int pageSize ) throws StorageManagerException {
+        String temp = dbLoc + "\\database.txt";
+        File restart = new File(temp);
+        if(restart.exists()){
+            StorageManager storageManager = new StorageManager(dbLoc, pageBufferSize, pageSize, true);
+        }
+        else{
+            StorageManager storageManager = new StorageManager(dbLoc, pageBufferSize, pageSize, false);
+        }
+        return new Database();
     }
 
     /**
