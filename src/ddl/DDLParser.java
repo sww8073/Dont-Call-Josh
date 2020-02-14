@@ -15,6 +15,34 @@ public class DDLParser implements IDDLParser {
     }
 
     public void parseDDLstatement(String statement) throws DDLParserException {
+        String[] wordsInStatement = statement.split(" ");
+        String option = wordsInStatement[0];
+        String tableName = wordsInStatement[1];
+
+        switch(option){
+            case "create":
+                createTable(tableName);
+                break;
+
+            case "drop":
+                dropTable(tableName);
+                break;
+
+            case "alter":
+                alterTable(tableName);
+                break;
+        }
+    }
+
+    public void createTable(String tableName){
+
+    }
+
+    public void dropTable(String tableName){
+
+    }
+
+    public void alterTable(String tableName){
 
     }
 }

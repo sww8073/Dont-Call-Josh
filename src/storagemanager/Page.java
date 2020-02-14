@@ -26,7 +26,8 @@ public class Page implements Serializable {
      * @param dataTypes data type that belong in each record
      * @param keyIndices key indices of each record
      */
-    public Page(Integer pageId, int table, int maxRecordsPerPage, Object[] record1, String[] dataTypes, Integer[] keyIndices) {
+    public Page(Integer pageId, int table, int maxRecordsPerPage, Object[] record1, String[] dataTypes,
+                Integer[] keyIndices) {
         this.pageId = pageId;
         this.recordList = new ArrayList<Object[]>();
         this.table = table;
