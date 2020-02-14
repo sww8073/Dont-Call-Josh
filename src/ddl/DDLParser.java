@@ -21,15 +21,15 @@ public class DDLParser implements IDDLParser {
 
         switch(option){
             case "create":
-                createTable(tableName);
+                createTable(statement);
                 break;
 
             case "drop":
-                dropTable(tableName);
+                dropTable(statement);
                 break;
 
             case "alter":
-                alterTable(tableName);
+                alterTable(statement);
                 break;
 
             default:
@@ -37,15 +37,20 @@ public class DDLParser implements IDDLParser {
         }
     }
 
-    public void createTable(String tableName){
+    /**
+     * This function will parse create table arguments, and use the storage manager
+     * @param statement
+     */
+    public void createTable(String statement) throws DDLParserException {
+        String[] wordsInStatement = statement.split(" ");
+        String tableName = wordsInStatement[3];
+    }
+
+    public void dropTable(String statement){
 
     }
 
-    public void dropTable(String tableName){
-
-    }
-
-    public void alterTable(String tableName){
+    public void alterTable(String statement){
 
     }
 }
