@@ -1,7 +1,7 @@
 package ddl;
 
 /**
- * This a a parser for DDL statements
+ * This a a parser for DDL statements, Phase2
  */
 
 public class DDLParser implements IDDLParser {
