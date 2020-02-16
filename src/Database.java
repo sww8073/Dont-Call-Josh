@@ -1,3 +1,4 @@
+import ddl.DDLParser;
 import storagemanager.StorageManager;
 import storagemanager.StorageManagerException;
 
@@ -9,6 +10,7 @@ import java.io.File;
 
 public class Database implements IDatabase{
 
+    private static StorageManager storageManager;
     /**
      * Static function that will create/restart and return a database
      * @param dbLoc the location to start/restart the database in
@@ -20,10 +22,10 @@ public class Database implements IDatabase{
         String temp = dbLoc + "\\database.txt";
         File restart = new File(temp);
         if(restart.exists()){
-            StorageManager storageManager = new StorageManager(dbLoc, pageBufferSize, pageSize, true);
+            storageManager = new StorageManager(dbLoc, pageBufferSize, pageSize, true);
         }
         else{
-            StorageManager storageManager = new StorageManager(dbLoc, pageBufferSize, pageSize, false);
+            storageManager = new StorageManager(dbLoc, pageBufferSize, pageSize, false);
         }
         return new Database();
     }
