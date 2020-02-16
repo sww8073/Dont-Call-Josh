@@ -1,4 +1,5 @@
 import ddl.DDLParser;
+import ddl.IDDLParser;
 import storagemanager.StorageManager;
 import storagemanager.StorageManagerException;
 
@@ -11,6 +12,7 @@ import java.io.File;
 public class Database implements IDatabase{
 
     private static StorageManager storageManager;
+    private static IDDLParser iddlParser;
     /**
      * Static function that will create/restart and return a database
      * @param dbLoc the location to start/restart the database in
@@ -27,6 +29,7 @@ public class Database implements IDatabase{
         else{
             storageManager = new StorageManager(dbLoc, pageBufferSize, pageSize, false);
         }
+        iddlParser = DDLParser.createParser();
         return new Database();
     }
 

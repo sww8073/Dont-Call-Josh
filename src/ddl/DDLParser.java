@@ -11,7 +11,7 @@ public class DDLParser implements IDDLParser {
      * @return an instance of a IDDLParser
      */
     public static IDDLParser createParser(){
-        return null;
+        return new DDLParser();
     }
 
     public void parseDDLstatement(String statement) throws DDLParserException {
