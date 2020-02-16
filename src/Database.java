@@ -1,5 +1,7 @@
 import ddl.DDLParser;
+import ddl.DDLParserException;
 import ddl.IDDLParser;
+import storagemanager.AStorageManager;
 import storagemanager.StorageManager;
 import storagemanager.StorageManagerException;
 
@@ -11,7 +13,7 @@ import java.io.File;
 
 public class Database implements IDatabase{
 
-    private static StorageManager storageManager;
+    private static AStorageManager storageManager;
     private static IDDLParser iddlParser;
     /**
      * Static function that will create/restart and return a database
@@ -39,7 +41,13 @@ public class Database implements IDatabase{
      * @param statement the statement to execute
      */
     public void executeNonQuery(String statement) {
+        try{
+            iddlParser.parseDDLstatement(statement);
 
+        }catch(DDLParserException e){
+            //TODO change this exception maybe?
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -47,6 +55,7 @@ public class Database implements IDatabase{
      *
      * @param query the query to execute
      * @return the table of data returned. Size zero if empty
+     * THIS SHOULD NOT BE IMPLEMENTED IN PHASE2 KEEP THIS EMPTY
      */
     public Object[][] executeQuery(String query) {
         return new Object[0][];
