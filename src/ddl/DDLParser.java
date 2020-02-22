@@ -10,6 +10,8 @@ import java.util.List;
 
 public class DDLParser implements IDDLParser {
 
+    public static int tableIdIncrement = 0; // this will be used to generate new table ids
+
     /**
      * This will create an instance of this parser and return it.
      * @return an instance of a IDDLParser
@@ -55,8 +57,6 @@ public class DDLParser implements IDDLParser {
             throw new DDLParserException("Invalid create table query");
 
         String tableName = wordsInPrefix[2];
-        ArrayList<String> dataTypes = new ArrayList<>(); // list that contains data types
-        ArrayList<String> keyIndices = new ArrayList<>(); // list that contains data types
 
         //splits statement into attributes
         String attributes = statement.substring(statement.indexOf("(") + 1, statement.indexOf(");"));
@@ -64,10 +64,6 @@ public class DDLParser implements IDDLParser {
 
         String[] keyWords = {"primarykey", "foreignkey"};
         List<String> keyWordsList = Arrays.asList(keyWords);
-        String[] constraints = {"unique", "notnull", "primarykey"};
-        List<String> constraintList = Arrays.asList(constraints);
-        String[] types = {"double", "integer", "char", "varchar"};
-        List<String> typesList = Arrays.asList(types);
 
         boolean keyConstraintsFirst = false;
         for (String attribute : attributesSplit) {
@@ -80,12 +76,15 @@ public class DDLParser implements IDDLParser {
             }
         }
 
+        tableIdIncrement++;
+        Table table = new Table(tableIdIncrement, tableName);
         if(keyConstraintsFirst) {
-            createTableKeysFirst(attributesSplit);
+            table = createTableKeysFirst(attributesSplit, table);
         }
         else    {
-            createTableKeysLast(attributesSplit);
+            table = createTableKeysLast(attributesSplit, table);
         }
+        // TODO add table to database
     }
 
     /**
@@ -101,7 +100,7 @@ public class DDLParser implements IDDLParser {
 
         Attribute attribute = new Attribute(elements[0], elements[1]);
         for(int i = 2;i < elements.length;i++)  {
-            attribute.addConstraint(elements[i]);
+            attribute.addConstraintNoPrimary(elements[i]); // checks for primary keys and errors if there is one
         }
         return attribute;
     }
@@ -110,8 +109,10 @@ public class DDLParser implements IDDLParser {
      * Create a table with the key constraints listed separately than data type.
      * ex: primarykey( bar baz )
      * @param attributes List of attributes
+     * @param table
+     * @return updated Table object
      */
-    public void createTableKeysFirst(String[] attributes) throws DDLParserException   {
+    public Table createTableKeysFirst(String[] attributes, Table table) throws DDLParserException   {
         for (String attr : attributes)    {
             String[] elements = attr.split("[(\\(\\)]");
             switch (elements[0].toLowerCase())  {
@@ -134,15 +135,19 @@ public class DDLParser implements IDDLParser {
                     break;
             }
         }
+        return null;
     }
 
     /**
      * Create a table with the key constraints on the same line as data types.
      * ex: foo char(5) primarykey
      * @param attributes List of attributes
+     * @param table
+     * @return updated Table object
      */
-    public void createTableKeysLast(String[] attributes)   {
+    public Table createTableKeysLast(String[] attributes, Table table)   {
         // TODO Josh T
+        return null;
     }
 
 
