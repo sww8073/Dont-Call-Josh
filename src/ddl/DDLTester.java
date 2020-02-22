@@ -9,7 +9,7 @@ public class DDLTester {
             parser.parseDDLstatement("create table foo(" +
                     "baz integer," +
                     "bar Double notnull," +
-                    "foo char(5) primarykey," +
+                    "foo char(5)," +
                     "foo2 varchar(10) unique," +
                     "primarykey( bar baz )," +
                     "foreignkey( bar ) references bazzle( baz )" +

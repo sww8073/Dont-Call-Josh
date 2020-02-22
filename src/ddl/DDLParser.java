@@ -44,7 +44,8 @@ public class DDLParser implements IDDLParser {
      * This function will parse create table arguments, and use the storage manager
      * @param statement create table statement
      */
-    public void createTable(String statement) throws DDLParserException {String prefix = statement.substring(0, statement.indexOf("("));
+    public void createTable(String statement) throws DDLParserException {
+        String prefix = statement.substring(0, statement.indexOf("("));
         String[] wordsInPrefix = prefix.split("\\s+");
 
         // check for incorrect create table statement
@@ -69,7 +70,6 @@ public class DDLParser implements IDDLParser {
         List<String> typesList = Arrays.asList(types);
 
         boolean keyConstraintsFirst = false;
-        //get things for each attribute
         for (String attribute : attributesSplit) {
             String[] attributeTypes = attribute.split("\\s+");
             String first = attributeTypes[0].toLowerCase();
@@ -93,8 +93,25 @@ public class DDLParser implements IDDLParser {
      * ex: primarykey( bar baz )
      * @param attributes List of attributes
      */
-    public void createTableKeysFirst(String[] attributes)   {
-
+    public void createTableKeysFirst(String[] attributes) throws DDLParserException   {
+        for (String attr : attributes)    {
+            String[] elements = attr.split("[(\\(\\)]");
+            switch (elements[0].toLowerCase())  {
+                case "notnull":
+                    System.out.println("notnull");
+                    break;
+                case "unique":
+                    System.out.println("unique");
+                    break;
+                case "primarykey":
+                    System.out.println("unique");
+                    break;
+                case "foriegnkey":
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     /**
