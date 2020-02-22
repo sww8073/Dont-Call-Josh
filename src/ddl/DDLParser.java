@@ -89,6 +89,24 @@ public class DDLParser implements IDDLParser {
     }
 
     /**
+     * This function takes a attribute string parses it and creates an attribute
+     * @param attr attr string
+     * @return a populated Attribute object
+     */
+    public Attribute parseAttributeNoPrimary(String attr) throws DDLParserException   {
+        String[] elements = attr.split("\\s+");
+        if(elements.length < 2) {
+            throw new DDLParserException("Invalid attribute");
+        }
+
+        Attribute attribute = new Attribute(elements[0], elements[1]);
+        for(int i = 2;i < elements.length;i++)  {
+            attribute.addConstraint(elements[i]);
+        }
+        return attribute;
+    }
+
+    /**
      * Create a table with the key constraints listed separately than data type.
      * ex: primarykey( bar baz )
      * @param attributes List of attributes
@@ -104,11 +122,15 @@ public class DDLParser implements IDDLParser {
                     System.out.println("unique");
                     break;
                 case "primarykey":
-                    System.out.println("unique");
+                    System.out.println("primarykey");
                     break;
-                case "foriegnkey":
+                case "foreignkey":
+                    System.out.println("foriegnkey");
                     break;
                 default:
+                    Attribute attribute = parseAttributeNoPrimary(attr);
+                    int i = 0;
+                    i++;
                     break;
             }
         }

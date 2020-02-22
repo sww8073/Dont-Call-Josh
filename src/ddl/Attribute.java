@@ -11,15 +11,26 @@ public class Attribute {
     private String type;
     private ArrayList<String> constraints;
 
-    public Attribute(String name, String type) {
-        this.name = name;
-        this.type = type;
-        this.constraints = new ArrayList<>();
+    public Attribute(String name, String type) throws DDLParserException {
+        type = type.toLowerCase();
+        type = type.replaceAll("[^a-zA-Z0-9]", ""); // remove special characters
+        type = type.replaceAll("\\d", ""); // remove digits
+        String[] typeArr = {"double", "integer", "char", "varchar"};
+        List<String> typeList = Arrays.asList(typeArr);
+
+        if(typeList.contains(type)) { // checks for valid type
+            this.name = name;
+            this.type = type;
+            this.constraints = new ArrayList<>();
+        }
+        else {
+            throw new DDLParserException("Invalid type");
+        }
     }
 
     /**
      * This function adds a constraint to an attribute. If an invalid constraint is added
-     * an exception will be thrown. A primary constaint will be considered in valid
+     * an exception will be thrown. A primary constraint will be considered in valid
      * @param constraint
      * @throws DDLParserException
      */
