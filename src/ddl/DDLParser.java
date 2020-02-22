@@ -130,12 +130,11 @@ public class DDLParser implements IDDLParser {
                     break;
                 default:
                     Attribute attribute = parseAttributeNoPrimary(attr);
-                    int i = 0;
-                    i++;
+                    table.addAttribute(attribute);
                     break;
             }
         }
-        return null;
+        return table;
     }
 
     /**
@@ -147,7 +146,7 @@ public class DDLParser implements IDDLParser {
      */
     public Table createTableKeysLast(String[] attributes, Table table)   {
         // TODO Josh T
-        return null;
+        return table;
     }
 
 
