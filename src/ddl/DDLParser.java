@@ -68,49 +68,44 @@ public class DDLParser implements IDDLParser {
         String[] types = {"double", "integer", "char", "varchar"};
         List<String> typesList = Arrays.asList(types);
 
-
+        boolean keyConstraintsFirst = false;
         //get things for each attribute
         for (String attribute : attributesSplit) {
             String[] attributeTypes = attribute.split("\\s+");
-            int attrSize = attributeTypes.length;
+            String first = attributeTypes[0].toLowerCase();
+            first = first.replaceAll("[^a-zA-Z0-9]", ""); // remove all special characters
 
-            String name = attributeTypes[0];
-            if (name.contains("(")) {
-                name = new String(name.substring(0, name.indexOf("(")));
-            }
-            if (keyWordsList.contains(name.toLowerCase())) { // contains a key
-                switch (attributeTypes[attrSize - 1].toLowerCase()) {
-                    case "primarykey":
-                        System.out.println("primarykey");
-                        break;
-
-                    case "unique":
-                        System.out.println("foriegnkey");
-                        break;
-                }
-            } else { //
-                if (constraintList.contains(attributeTypes[attrSize - 1].toLowerCase())) { // contains special constraints
-                    for (int i = 0; i < attrSize; i++) {
-                        switch (attributeTypes[i].toLowerCase()) {
-                            case "notnull":
-                                System.out.println("notnull");
-                                break;
-                            case "unique":
-                                System.out.println("unique");
-                                break;
-                            case "primarykey":
-                                System.out.println("unique");
-                                break;
-                        }
-                    }
-                } else if (attrSize > 2)
-                    throw new DDLParserException("Invalid constraint");
-                else if (!typesList.contains(attributeTypes[1].toLowerCase()))
-                    throw new DDLParserException("Invalid data type");
-                dataTypes.add(attributeTypes[1].toLowerCase());
+            if(keyWordsList.contains(first))    {
+                keyConstraintsFirst = true;
             }
         }
+
+        if(keyConstraintsFirst) {
+            createTableKeysFirst(attributesSplit);
+        }
+        else    {
+            createTableKeysLast(attributesSplit);
+        }
     }
+
+    /**
+     * Create a table with the key constraints listed separately than data type.
+     * ex: primarykey( bar baz )
+     * @param attributes List of attributes
+     */
+    public void createTableKeysFirst(String[] attributes)   {
+
+    }
+
+    /**
+     * Create a table with the key constraints on the same line as data types.
+     * ex: foo char(5) primarykey
+     * @param attributes List of attributes
+     */
+    public void createTableKeysLast(String[] attributes)   {
+        // TODO Josh T
+    }
+
 
     public void dropTable(String statement){
 
