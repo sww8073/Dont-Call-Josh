@@ -34,9 +34,9 @@ public class Attribute {
      * @param constraint
      * @throws DDLParserException
      */
-    public void addConstraintNoPrimary(String constraint) throws DDLParserException  {
+    public void addConstraintNoForeign(String constraint) throws DDLParserException  {
         constraint = constraint.toLowerCase();
-        if(constraint.equals("primarykey"))    { // valid constraint
+        if(constraint.equals("foreignkey"))    { // valid constraint
             throw new DDLParserException("Invalid constraint");
         }
         else {
@@ -52,7 +52,7 @@ public class Attribute {
      */
     public void addConstraint(String constraint) throws DDLParserException  {
         constraint = constraint.toLowerCase();
-        String[] allValidConstraintsArr = {"unique", "notnull", "primarykey"};
+        String[] allValidConstraintsArr = {"unique", "notnull", "primarykey", "foreignkey"};
         List<String> allValidConstraintsList = Arrays.asList(allValidConstraintsArr);
 
         if(constraint.contains(constraint))    { // valid constraint
