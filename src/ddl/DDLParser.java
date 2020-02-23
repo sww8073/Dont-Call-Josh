@@ -84,17 +84,28 @@ public class DDLParser implements IDDLParser {
         String[] elements = attribute.split("[\\(\\)\\s+]");
         switch (elements[0].toLowerCase()) {
             case "unique":
-                System.out.println("unique");
+                table = prefixConstraint(attribute, table);
                 break;
             case "primarykey":
-                System.out.println("primarykey");
+                table = prefixConstraint(attribute, table);
                 break;
             case "foreignkey":
-                System.out.println("foriegnkey");
+                table = prefixConstraint(attribute, table);
                 break;
             default:
+                table = postfixConstraint(attribute, table);
                 break;
         }
+        return null;
+    }
+
+    public Table prefixConstraint(String attribute, Table table)    {
+        // TODO Josh T
+        return null;
+    }
+
+    public Table postfixConstraint(String attribute, Table table)   {
+        // TODO Matt C
         return null;
     }
 
