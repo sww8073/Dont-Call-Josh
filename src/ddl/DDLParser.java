@@ -109,10 +109,28 @@ public class DDLParser implements IDDLParser {
         }
         String name = elements[0];
         String type = elements[1];
-
+        if(!isValidType(type))      {
+            throw new DDLParserException("Invalid type");
+        }
 
         return null;
     }
+
+    /**
+     * This function removes the () and nnumber from a taype and checks to see if it is a valid type
+     * @param type a type string. ex varchar(4), integer
+     * @return true if type is valid
+     */
+    private boolean isValidType(String type)    {
+        type = type.toLowerCase();
+        type = type.replaceAll("[^a-zA-Z0-9]", ""); // remove special characters
+        type = type.replaceAll("\\d", ""); // removes numbers
+        if(types.contains(type))
+            return true;
+        else
+            return false;
+    }
+
 
     /**
      * This function takes a attribute string parses it and creates an attribute
