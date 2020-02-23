@@ -41,9 +41,9 @@ public class Database implements IDatabase{
      * @param statement the statement to execute
      */
     public void executeNonQuery(String statement) {
+        // TODO In later phases this needs to be updated to differentiate between ddl and dml
         try{
             iddlParser.parseDDLstatement(statement);
-
         }catch(DDLParserException e){
             //TODO change this exception maybe?
             e.printStackTrace();
@@ -66,6 +66,13 @@ public class Database implements IDatabase{
      * It will store any needed data needed to restart the database to physical hardware.
      */
     public void terminateDatabase() {
-
+        try {
+            storageManager.purgeBuffer();
+            storageManager.terminateDatabase();
+        }
+        catch(StorageManagerException e){
+            //TODO change this exception maybe?
+            e.printStackTrace();
+        }
     }
 }
