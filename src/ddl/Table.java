@@ -39,6 +39,6 @@ public class Table {
 
     public void addUnqiueAttribute(String name){
         Attribute uniqueAttr = attributes.get(attributes.indexOf(name));
-
+        unique.add(uniqueAttr);
     }
 }

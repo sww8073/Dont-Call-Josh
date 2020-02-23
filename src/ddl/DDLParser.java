@@ -112,7 +112,6 @@ public class DDLParser implements IDDLParser {
                 System.out.println(option);
                 for (int i = 1; i < elements.length; i++){
                     if(!elements[i].equals(" ")){
-                        Attribute uniqueAttr = new Attribute();
                         table.addUnqiueAttribute(elements[i]);
                     }
                 }
