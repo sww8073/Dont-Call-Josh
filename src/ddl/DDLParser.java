@@ -144,6 +144,14 @@ public class DDLParser implements IDDLParser {
             throw new DDLParserException("Invalid type");
         }
 
+        //Attribute attribute =
+
+        for(int i = 2;i < elements.length;i++)  {
+            if(!isConstraintValid(elements[i])) {
+                throw new DDLParserException("Invalid constraint");
+            }
+        }
+
         return null;
     }
 
@@ -162,6 +170,19 @@ public class DDLParser implements IDDLParser {
             return false;
     }
 
+    /**
+     * This Function checks if a constraint is valid
+     * @param constraint constraint to be tested
+     * @return true if constraint is valid
+     */
+    private boolean isConstraintValid(String constraint)  {
+        List<String> constraints = Arrays.asList("primarykey", "foriegnkey", "unique", "notnull");
+        constraint = constraint.toLowerCase();
+        if(constraints.contains(constraint))
+            return true;
+        else
+            return false;
+    }
 
     /**
      * This function takes a attribute string parses it and creates an attribute
