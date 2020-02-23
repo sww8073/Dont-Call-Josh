@@ -1,6 +1,7 @@
 package ddl;
 
-import java.util.ArrayList;
+import storagemanager.StorageManager;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -163,8 +164,40 @@ public class DDLParser implements IDDLParser {
         }
     }
 
-    public void alterTable(String statement){
+    public void alterTable(String statement) throws DDLParserException{
+        String[] wordsInStatement = statement.split(" ");
 
+        //if the word after alter is "table" continue, else throw an error
+        if(wordsInStatement[1].toLowerCase().equals("table")) {
+
+            String tableName = wordsInStatement[2];
+
+            //table exists
+            if (true) {
+
+                //TODO get table from DB
+
+                String addDropOption = wordsInStatement[3];
+
+                switch (addDropOption){
+
+                    case "add":
+                        break;
+
+                    case "drop":
+                        break;
+
+                    default:
+                        throw new DDLParserException("Unknown option for alter table.");
+                }
+            }
+            else{
+                throw new DDLParserException("Table does not exist.");
+            }
+        }
+        else{
+            throw new DDLParserException("Incorrect syntax for alter statement.");
+        }
     }
 
 }
