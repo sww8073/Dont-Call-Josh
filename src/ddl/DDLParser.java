@@ -1,4 +1,9 @@
 package ddl;
+
+import javafx.scene.control.ScrollBar;
+import javafx.scene.control.Tab;
+import storagemanager.StorageManager;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -9,6 +14,7 @@ import java.util.List;
 public class DDLParser implements IDDLParser {
 
     public static int tableIdIncrement = 0; // this will be used to generate new table ids
+    private static StorageManager storageManager;
     private List<String> types = Arrays.asList("integer", "char", "varchar", "double");
 
     /**
@@ -96,8 +102,33 @@ public class DDLParser implements IDDLParser {
         return null;
     }
 
-    public Table prefixConstraint(String attribute, Table table)    {
-        // TODO Josh T
+    public Table prefixConstraint(String attribute, Table table) throws DDLParserException  {
+
+        String[] elements = attribute.split("[\\(\\)\\,\\s]");
+        String option = elements[0];
+
+        switch(option){
+            case "unique":
+                System.out.println(option);
+                for (int i = 1; i < elements.length; i++){
+                    if(!elements[i].equals(" ")){
+                        table.addUnqiueAttribute(elements[i]);
+                    }
+                }
+                break;
+
+            case "primarykey":
+                System.out.println(option);
+                break;
+
+            case "foreignkey":
+                System.out.println(option);
+                break;
+
+            default:
+                throw new DDLParserException("Prefix constraint does not exist.");
+        }
+
         return null;
     }
 

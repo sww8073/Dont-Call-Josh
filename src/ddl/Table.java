@@ -7,6 +7,7 @@ public class Table {
     private String name;
     private ArrayList<Attribute> attributes;
     private ArrayList<Attribute> primaryKeys;
+    private ArrayList<Attribute> unique;
     // TODO foreign key tbd
 
     public Table(int id, String name) {
@@ -34,5 +35,10 @@ public class Table {
      */
     public void addAttribute(Attribute attribute) {
         attributes.add(attribute);
+    }
+
+    public void addUnqiueAttribute(String name){
+        Attribute uniqueAttr = attributes.get(attributes.indexOf(name));
+        unique.add(uniqueAttr);
     }
 }

@@ -7,10 +7,7 @@ public class DDLTester {
         DDLParser parser = new DDLParser();
         try {
             parser.parseDDLstatement("create table foo(" +
-                    "baz integer," +
-                    "bar Double notnull," +
-                    "foo char(5)," +
-                    "foo2 varchar(10) unique," +
+                    "unique (bar baz )," +
                     "primarykey( bar baz )," +
                     "foreignkey( bar ) references bazzle( baz )" +
                     ");");
