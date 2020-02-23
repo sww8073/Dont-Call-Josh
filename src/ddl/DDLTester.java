@@ -7,9 +7,14 @@ public class DDLTester {
         DDLParser parser = new DDLParser();
         try {
             parser.parseDDLstatement("create table foo(" +
+<<<<<<< Updated upstream
                     "baz integer," +
                     "bar Double notnull," +
                     "foo char(5)," +
+=======
+                    "bar Integer," +
+                    "baz Integer," +
+>>>>>>> Stashed changes
                     "unique (bar baz )," +
                     "primarykey( bar baz )," +
                     "foreignkey( bar ) references bazzle( baz )" +

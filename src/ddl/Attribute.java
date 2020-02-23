@@ -63,4 +63,19 @@ public class Attribute {
         }
     }
 
+    public String getName(){
+        return this.name;
+    }
+
+    @Override
+    public boolean equals(Object o){
+        if(o == this){
+            Attribute attr = (Attribute) o;
+            if(attr.name.equals(this.name)){
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

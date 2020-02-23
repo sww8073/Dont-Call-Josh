@@ -111,18 +111,17 @@ public class DDLParser implements IDDLParser {
             case "unique":
                 System.out.println(option);
                 for (int i = 1; i < elements.length; i++){
-                    if(!elements[i].equals(" ")){
+                    if(!elements[i].equals(" ") && elements[i] != null){
                         table.addUnqiueAttribute(elements[i]);
                     }
                 }
+                table.printUniqueAttrs();
                 break;
 
             case "primarykey":
-                System.out.println(option);
                 break;
 
             case "foreignkey":
-                System.out.println(option);
                 break;
 
             default:
@@ -156,7 +155,7 @@ public class DDLParser implements IDDLParser {
     }
 
     /**
-     * This function removes the () and nnumber from a taype and checks to see if it is a valid type
+     * This function removes the () and number from a type and checks to see if it is a valid type
      * @param type a type string. ex varchar(4), integer
      * @return true if type is valid
      */

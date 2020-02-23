@@ -15,6 +15,7 @@ public class Table {
         this.name = name;
         this.attributes = new ArrayList<>();
         this.primaryKeys = new ArrayList<>();
+        this.unique = new ArrayList<>();
     }
 
     public int getId(){
@@ -37,8 +38,22 @@ public class Table {
         attributes.add(attribute);
     }
 
-    public void addUnqiueAttribute(String name){
-        Attribute uniqueAttr = attributes.get(attributes.indexOf(name));
-        unique.add(uniqueAttr);
+    public void addUnqiueAttribute(String name) {
+        Attribute uniqueAttr = null;
+        for (Attribute attr : attributes) {
+            if (attr.equals(name)) {
+                uniqueAttr = attr;
+            }
+        }
+
+        if (uniqueAttr != null) {
+            unique.add(uniqueAttr);
+        }
+    }
+
+    public void printUniqueAttrs(){
+        for (Attribute attr: unique) {
+            System.out.println(attr.getName());
+        }
     }
 }
