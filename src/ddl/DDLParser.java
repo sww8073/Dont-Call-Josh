@@ -1,5 +1,6 @@
 package ddl;
 
+import javafx.scene.control.Tab;
 import storagemanager.StorageManager;
 
 import java.util.Arrays;
@@ -63,29 +64,25 @@ public class DDLParser implements IDDLParser {
         String attributes = statement.substring(statement.indexOf("(") + 1, statement.indexOf(");"));
         String[] attributesSplit = attributes.split(",");
 
-        String[] keyWords = {"primarykey", "foreignkey"};
-        List<String> keyWordsList = Arrays.asList(keyWords);
-
-        boolean keyConstraintsFirst = false;
-        for (String attribute : attributesSplit) {
-            String[] attributeTypes = attribute.split("\\s+");
-            String first = attributeTypes[0].toLowerCase();
-            first = first.replaceAll("[^a-zA-Z0-9]", ""); // remove all special characters
-
-            if(keyWordsList.contains(first))    {
-                keyConstraintsFirst = true;
-            }
-        }
-
         tableIdIncrement++;
         Table table = new Table(tableIdIncrement, tableName);
-        if(keyConstraintsFirst) {
-            table = createTableKeysFirst(attributesSplit, table);
+        for (String attribute : attributesSplit)    {
+            table = parseAttribute(attribute, table);
         }
-        else    {
-            table = createTableKeysLast(attributesSplit, table);
-        }
-        // TODO add table to database
+
+        //TODO add table to storage manager
+    }
+
+    /**
+     * This function parses a attribute string. The attribute is added to the table with all of its constraints
+     * @param attribute the string
+     * @param table the Table in which the attribute will be added
+     * @return the Table with the added attribute
+     * @throws DDLParserException
+     */
+    private Table parseAttribute(String attribute, Table table) throws DDLParserException  {
+
+        return null;
     }
 
     /**
