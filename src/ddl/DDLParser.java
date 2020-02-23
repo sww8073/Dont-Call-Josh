@@ -82,6 +82,19 @@ public class DDLParser implements IDDLParser {
      */
     private Table parseAttribute(String attribute, Table table) throws DDLParserException  {
         String[] elements = attribute.split("[\\(\\)\\s+]");
+        switch (elements[0].toLowerCase()) {
+            case "unique":
+                System.out.println("unique");
+                break;
+            case "primarykey":
+                System.out.println("primarykey");
+                break;
+            case "foreignkey":
+                System.out.println("foriegnkey");
+                break;
+            default:
+                break;
+        }
         return null;
     }
 
