@@ -16,6 +16,10 @@ public class Table {
         this.primaryKeys = new ArrayList<>();
     }
 
+    public int getId(){
+        return this.id;
+    }
+
     /**
      * Adds a attribute to the primary key in order. Order matters.
      * @param attribute primary key Attribute Object

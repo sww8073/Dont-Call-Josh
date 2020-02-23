@@ -14,6 +14,7 @@ public class DDLTester {
                     "primarykey( bar baz )," +
                     "foreignkey( bar ) references bazzle( baz )" +
                     ");");
+            parser.parseDDLstatement("drop table foo;");
         }
         catch (DDLParserException e){
             System.out.println(e.toString());

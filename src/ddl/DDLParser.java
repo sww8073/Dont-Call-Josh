@@ -150,8 +150,17 @@ public class DDLParser implements IDDLParser {
     }
 
 
-    public void dropTable(String statement){
-
+    public void dropTable(String statement) throws DDLParserException {
+        String[] wordsInStatement = statement.split(" ");
+        if(wordsInStatement.length != 3){
+            throw new DDLParserException("Invalid Drop Table Statement");
+        }
+        else{
+            String table = wordsInStatement[2];
+            String tableName = table.substring(0, table.length() - 1);
+            //TODO Given table name, get ID and call storagemanager
+            //Integer tableID =
+        }
     }
 
     public void alterTable(String statement){
