@@ -148,11 +148,9 @@ public class DDLParser implements IDDLParser {
         String type = elements[1];
 
         Attribute attribute = new Attribute(name, type);
-
         for(int i = 2;i < elements.length;i++)  {
             attribute.addConstraint(elements[i]);
         }
-
         return table;
     }
 
