@@ -81,7 +81,7 @@ public class DDLParser implements IDDLParser {
      * @throws DDLParserException
      */
     private Table parseAttribute(String attribute, Table table) throws DDLParserException  {
-
+        String[] elements = attribute.split("[\\(\\)\\s+]");
         return null;
     }
 
