@@ -99,7 +99,7 @@ public class DDLParser implements IDDLParser {
                 table = postfixConstraint(attribute, table);
                 break;
         }
-        return null;
+        return table;
     }
 
     public Table prefixConstraint(String attribute, Table table) throws DDLParserException  {
@@ -128,7 +128,7 @@ public class DDLParser implements IDDLParser {
                 throw new DDLParserException("Prefix constraint does not exist.");
         }
 
-        return null;
+        return table;
     }
 
     public Table postfixConstraint(String attribute, Table table) throws DDLParserException   {
@@ -147,11 +147,11 @@ public class DDLParser implements IDDLParser {
 
         for(int i = 2;i < elements.length;i++)  {
             if(!isConstraintValid(elements[i])) {
-                throw new DDLParserException("Invalid constraint");
+                //throw new DDLParserException("Invalid constraint");
             }
         }
 
-        return null;
+        return table;
     }
 
     /**
