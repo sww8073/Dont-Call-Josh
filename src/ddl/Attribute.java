@@ -12,6 +12,7 @@ public class Attribute {
     private ArrayList<String> constraints;
 
     public Attribute(String name, String type) throws DDLParserException {
+        name = name.toLowerCase();
         type = type.toLowerCase();
         type = type.replaceAll("[^a-zA-Z0-9]", ""); // remove special characters
         type = type.replaceAll("\\d", ""); // remove digits

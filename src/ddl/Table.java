@@ -56,4 +56,8 @@ public class Table {
             System.out.println(attr.getName());
         }
     }
+
+    public boolean isInPrimaryKey(String name)  {
+
+    }
 }
