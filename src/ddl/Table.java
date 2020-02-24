@@ -18,6 +18,7 @@ public class Table {
         this.unique = new ArrayList<>();
     }
 
+
     public int getId(){
         return this.id;
     }
