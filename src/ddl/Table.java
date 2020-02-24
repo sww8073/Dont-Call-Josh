@@ -28,6 +28,7 @@ public class Table {
      * @param name primary key Attribute name
      */
     public void addPrimaryKey(String name) {
+        name = name.toLowerCase();
         primaryKeys.add(name);
     }
 
@@ -40,6 +41,7 @@ public class Table {
     }
 
     public void addUnqiueAttribute(String name) {
+        name = name.toLowerCase();
         unique.add(name);
     }
 
@@ -53,9 +55,5 @@ public class Table {
         for (Attribute attr: attributes) {
             System.out.println(attr.getName());
         }
-    }
-
-    public boolean isInPrimaryKey(String name)  {
-
     }
 }
