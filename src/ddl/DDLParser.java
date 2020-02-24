@@ -119,17 +119,13 @@ public class DDLParser implements IDDLParser {
                 break;
 
             case "primarykey":
-                for (int i = 1; i < elements.length; i++){
-                    if(!elements[i].equals(" ") && elements[i] != null){
-                    }
-                }
                 break;
 
             case "foreignkey":
                 break;
 
             default:
-                throw new DDLParserException("Prefix constraint '" + option + "' does not exist.");
+                throw new DDLParserException("Prefix constraint does not exist.");
         }
 
         return table;
@@ -150,105 +146,11 @@ public class DDLParser implements IDDLParser {
         }
         String name = elements[0];
         String type = elements[1];
-        if(!isValidType(type))      {
-            throw new DDLParserException("Invalid type");
-        }
-
-        //Attribute attribute =
 
         Attribute attribute = new Attribute(name, type);
-
-        return table;
-    }
-
-    /**
-     * This function removes the () and number from a type and checks to see if it is a valid type
-     * @param type a type string. ex varchar(4), integer
-     * @return true if type is valid
-     */
-    private boolean isValidType(String type)    {
-        type = type.toLowerCase();
-        type = type.replaceAll("[^a-zA-Z0-9]", ""); // remove special characters
-        type = type.replaceAll("\\d", ""); // removes numbers
-        if(types.contains(type))
-            return true;
-        else
-            return false;
-    }
-
-    /**
-     * This Function checks if a constraint is valid
-     * @param constraint constraint to be tested
-     * @return true if constraint is valid
-     */
-    private boolean isConstraintValid(String constraint)  {
-        List<String> constraints = Arrays.asList("primarykey", "foriegnkey", "unique", "notnull");
-        constraint = constraint.toLowerCase();
-        if(constraints.contains(constraint))
-            return true;
-        else
-            return false;
-    }
-
-    /**
-     * This function takes a attribute string parses it and creates an attribute
-     * @param attr attr string
-     * @return a populated Attribute object
-     */
-    public Attribute parseAttributeNoPrimary(String attr) throws DDLParserException   {
-        String[] elements = attr.split("\\s+");
-        if(elements.length < 2) {
-            throw new DDLParserException("Invalid attribute");
-        }
-
-        Attribute attribute = new Attribute(elements[0], elements[1]);
         for(int i = 2;i < elements.length;i++)  {
             attribute.addConstraint(elements[i]);
         }
-        return attribute;
-    }
-
-    /**
-     * Create a table with the key constraints listed separately than data type.
-     * ex: primarykey( bar baz )
-     * @param attributes List of attributes
-     * @param table
-     * @return updated Table object
-     */
-    public Table createTableKeysFirst(String[] attributes, Table table) throws DDLParserException   {
-        for (String attr : attributes)    {
-            String[] elements = attr.split("[(\\(\\)]");
-            switch (elements[0].toLowerCase())  {
-                case "notnull":
-                    System.out.println("notnull");
-                    break;
-                case "unique":
-                    System.out.println("unique");
-                    break;
-                case "primarykey":
-                    System.out.println("primarykey");
-                    break;
-                case "foreignkey":
-                    System.out.println("foriegnkey");
-                    break;
-                default:
-                    Attribute attribute = parseAttributeNoPrimary(attr);
-                    table.addAttribute(attribute);
-                    break;
-            }
-        }
-        return table;
-    }
-
-    /**
-     * Create a table with the key constraints on the same line as data types.
-     * ex: foo char(5) primarykey
-     * @param attributes List of attributes
-     * @param table
-     * @return updated Table object
-     */
-    public Table createTableKeysLast(String[] attributes, Table table)   {
-        // TODO Josh T
         return table;
     }
 
