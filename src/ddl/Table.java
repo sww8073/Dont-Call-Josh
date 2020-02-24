@@ -28,8 +28,10 @@ public class Table {
      * @param name primary key Attribute name
      */
     public void addPrimaryKey(String name) {
-        name = name.toLowerCase();
-        primaryKeys.add(name);
+        if(!primaryKeys.contains(name)) {
+            name = name.toLowerCase();
+            primaryKeys.add(name);
+        }
     }
 
     /**
@@ -41,8 +43,10 @@ public class Table {
     }
 
     public void addUnqiueAttribute(String name) {
-        name = name.toLowerCase();
-        unique.add(name);
+        if(!unique.contains(name)) {
+            name = name.toLowerCase();
+            unique.add(name);
+        }
     }
 
     public void printUniqueAttrs(){
