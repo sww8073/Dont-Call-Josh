@@ -27,10 +27,13 @@ public class Table {
      * Adds a attribute to the primary key in order. Order matters.
      * @param name primary key Attribute name
      */
-    public void addPrimaryKey(String name) {
+    public void addPrimaryKey(String name) throws DDLParserException {
         if(!primaryKeys.contains(name)) {
             name = name.toLowerCase();
             primaryKeys.add(name);
+        }
+        else    {
+            throw new DDLParserException(name + " is already primary key");
         }
     }
 
@@ -42,10 +45,13 @@ public class Table {
         attributes.add(attribute);
     }
 
-    public void addUnqiueAttribute(String name) {
+    public void addUnqiueAttribute(String name) throws DDLParserException {
         if(!unique.contains(name)) {
             name = name.toLowerCase();
             unique.add(name);
+        }
+        else {
+            throw new DDLParserException(name + " is already unique");
         }
     }
 
