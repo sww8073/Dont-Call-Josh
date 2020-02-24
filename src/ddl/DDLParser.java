@@ -153,7 +153,18 @@ public class DDLParser implements IDDLParser {
 
         Attribute attribute = new Attribute(name, type);
         for(int i = 2;i < elements.length;i++)  {
-            attribute.addConstraint(elements[i]);
+            attribute.addConstraint(elements[i]); // all constraints are added
+
+            // check for special constraint and add them to the table
+            String elementStr = elements[i];
+            elementStr = elementStr.toLowerCase();
+            if(elementStr.equals("foreignkey")) {
+                table.addPrimaryKey(name);
+            }
+            else if(elementStr.equals("unique"))    {
+                table.addUnqiueAttribute(name);
+            }
+
         }
         return table;
     }

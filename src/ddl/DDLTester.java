@@ -9,7 +9,7 @@ public class DDLTester {
             parser.parseDDLstatement("create table foo(" +
                     "baz integer," +
                     "bar Double notnull," +
-                    "bar Integer," +
+                    "bar Integer unique," +
                     "baz Integer," +
                     "unique (bar baz )," +
                     "primarykey( bar baz )," +
