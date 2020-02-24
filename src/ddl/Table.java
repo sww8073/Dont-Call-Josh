@@ -6,8 +6,8 @@ public class Table {
     private int id;
     private String name;
     private ArrayList<Attribute> attributes;
-    private ArrayList<Attribute> primaryKeys;
-    private ArrayList<Attribute> unique;
+    private ArrayList<String> primaryKeys;
+    private ArrayList<String> unique;
     // TODO foreign key tbd
 
     public Table(int id, String name) {
@@ -24,10 +24,10 @@ public class Table {
 
     /**
      * Adds a attribute to the primary key in order. Order matters.
-     * @param attribute primary key Attribute Object
+     * @param name primary key Attribute name
      */
-    public void addPrimaryKey(Attribute attribute) {
-        primaryKeys.add(attribute);
+    public void addPrimaryKey(String name) {
+        primaryKeys.add(name);
     }
 
     /**
@@ -39,20 +39,17 @@ public class Table {
     }
 
     public void addUnqiueAttribute(String name) {
-        Attribute uniqueAttr = null;
-        for (Attribute attr : attributes) {
-            if (attr.equals(name)) {
-                uniqueAttr = attr;
-            }
-        }
-
-        if (uniqueAttr != null) {
-            unique.add(uniqueAttr);
-        }
+        unique.add(name);
     }
 
     public void printUniqueAttrs(){
-        for (Attribute attr: unique) {
+        for (String attr: unique) {
+            System.out.println(attr);
+        }
+    }
+
+    public void printAttrs(){
+        for (Attribute attr: attributes) {
             System.out.println(attr.getName());
         }
     }
