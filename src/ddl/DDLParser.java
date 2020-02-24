@@ -115,10 +115,14 @@ public class DDLParser implements IDDLParser {
                         table.addUnqiueAttribute(elements[i]);
                     }
                 }
-                table.printUniqueAttrs();
                 break;
 
             case "primarykey":
+                for (int i = 1; i < elements.length; i++){
+                    if(!elements[i].equals(" ") && elements[i] != null){
+                        table.addPrimaryKey(elements[i]);
+                    }
+                }
                 break;
 
             case "foreignkey":
