@@ -27,7 +27,7 @@ public class StorageManagerTester {
             // Create a new database at the provided location
             sm = new StorageManager(dbLoc, pageBufferSize, pageSize, false);
         } catch (Exception e) {
-            System.err.println("Database could not be created");
+            System.err.println("database.Database could not be created");
             e.printStackTrace();
             System.exit(1);
         }

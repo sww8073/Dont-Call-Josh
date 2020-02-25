@@ -1,3 +1,5 @@
+package database;
+
 /**
  * Interface representing a database
  */

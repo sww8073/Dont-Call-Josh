@@ -1,7 +1,7 @@
+package database;
+
 import ddl.DDLParser;
 import ddl.DDLParserException;
-import ddl.IDDLParser;
-import storagemanager.AStorageManager;
 import storagemanager.StorageManager;
 import storagemanager.StorageManagerException;
 
@@ -11,16 +11,17 @@ import java.io.File;
  * Class to create and access a database.
  */
 
-public class Database implements IDatabase{
+public class Database implements IDatabase {
 
     private static StorageManager storageManager;
     private static DDLParser iddlParser;
+    private static Catalog catalog;
     /**
      * Static function that will create/restart and return a database
      * @param dbLoc the location to start/restart the database in
      * @param pageBufferSize the size of the page buffer; max number of pages allowed in the buffer at any given time
      * @param pageSize the size of a page in bytes
-     * @return an instance of an IDatabase.
+     * @return an instance of an database.IDatabase.
      */
     public static IDatabase getConnection(String dbLoc, int pageBufferSize, int pageSize ) throws StorageManagerException {
         String temp = dbLoc + "\\database.txt";
@@ -31,7 +32,14 @@ public class Database implements IDatabase{
         else{
             storageManager = new StorageManager(dbLoc, pageBufferSize, pageSize, false);
         }
-        iddlParser = new DDLParser(storageManager);
+        File f = new File("PUT CATALOG PATH HERE.. IE dbLoc\\catalog.txt");
+        if( f.exists() && !f.isDirectory()){
+            //TODO Read in catalog data into catalog
+        }
+        else{
+            catalog = new Catalog();
+        }
+        iddlParser = new DDLParser(storageManager, catalog);
         return new Database();
     }
 
