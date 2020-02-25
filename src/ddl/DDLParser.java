@@ -2,7 +2,6 @@ package ddl;
 
 import database.Catalog;
 import storagemanager.StorageManager;
-
 import java.util.Arrays;
 import java.util.List;
 

@@ -66,4 +66,8 @@ public class Table {
             System.out.println(attr.getName());
         }
     }
+
+    public String getName() {
+        return name;
+    }
 }
