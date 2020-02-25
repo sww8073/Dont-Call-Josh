@@ -17,6 +17,11 @@ public class DDLParser implements IDDLParser {
     private static StorageManager storageManager;
     private List<String> types = Arrays.asList("integer", "char", "varchar", "double");
 
+    public DDLParser(){}
+
+    public DDLParser(StorageManager storageManager1){
+        storageManager = storageManager1;
+    }
     /**
      * This will create an instance of this parser and return it.
      * @return an instance of a IDDLParser

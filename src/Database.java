@@ -13,8 +13,8 @@ import java.io.File;
 
 public class Database implements IDatabase{
 
-    private static AStorageManager storageManager;
-    private static IDDLParser iddlParser;
+    private static StorageManager storageManager;
+    private static DDLParser iddlParser;
     /**
      * Static function that will create/restart and return a database
      * @param dbLoc the location to start/restart the database in
@@ -31,7 +31,7 @@ public class Database implements IDatabase{
         else{
             storageManager = new StorageManager(dbLoc, pageBufferSize, pageSize, false);
         }
-        iddlParser = DDLParser.createParser();
+        iddlParser = new DDLParser(storageManager);
         return new Database();
     }
 
