@@ -1,8 +1,6 @@
 package ddl;
 
 import database.Catalog;
-import javafx.scene.control.ScrollBar;
-import javafx.scene.control.Tab;
 import storagemanager.StorageManager;
 
 import java.util.Arrays;
