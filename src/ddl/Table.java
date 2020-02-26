@@ -100,6 +100,20 @@ public class Table {
     }
 
     /**
+     * Returns the attribute of a given name
+     * @param attrName name of the attribute to return
+     * @return the attribute
+     */
+    public Attribute getAttribute(String attrName) {
+        for (Attribute attribute: attributes) {
+            if(attribute.getName().equals(attrName)){
+                return attribute;
+            }
+        }
+        return null;
+    }
+
+    /**
      * returns a true if the table has this attribute
      * @param attrName
      */
