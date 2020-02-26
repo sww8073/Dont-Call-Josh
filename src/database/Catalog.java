@@ -9,16 +9,23 @@ import ddl.Table;
  */
 public class Catalog {
     private Map<String, Table> tables;
-    private Map<String, Integer> tableSizes;
     
     /**
      * Adds a table to the catalog
      * @param table Table to add to the catalog
      * @param tableSize size of the table
      */
-    public void addTable(Table table, Integer tableSize) {
+    public void addTable(Table table) {
         tables.put(table.getName(), table);
-        tableSizes.put(table.getName(), tableSize);
+    }
+
+    /**
+     * Checks to see if the table is in the catalog
+     * @param table the table to check
+     * @return whether the table exists
+     */
+    public boolean tableExists(String table) {
+        return tables.containsKey(table);
     }
 
     /**
@@ -31,21 +38,11 @@ public class Catalog {
     }
 
     /**
-     * Gets the size of the table based on the given ID
-     * @param tableID 
-     * @return the size of the table
-     */
-    public int getTableSize(String tableName) {
-        return tableSizes.get(tableName);
-    }
-
-    /**
      * Removes the given table from the catalog
      * @param tableName 
      * @return
      */
     public void dropTable(String tableName) {
         tables.remove(tableName);
-        tableSizes.remove(tableName);
     }
 }
