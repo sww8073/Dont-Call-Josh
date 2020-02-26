@@ -246,6 +246,10 @@ public class DDLParser implements IDDLParser {
                         Table oldTable = catalog.getTable(tableName);
                         String attr = wordsInStatement[4];
                         // TODO if the attribute is a primary key, thow an error
+                        Attribute oldAttr = oldTable.getAttribute(attr);
+                        if (oldAttr.isPrimary()) {
+                            throw new DDLParserException("Attribute " + attr + " is a primary key and cannot be dropped.");
+                        }
                         oldTable.dropAttribute(attr);
                         // TODO read in values
                         // TODO delete table from storage manager
