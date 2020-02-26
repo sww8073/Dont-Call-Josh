@@ -224,6 +224,9 @@ public class DDLParser implements IDDLParser {
                             }
                         }
                         table.addAttribute(attribute);
+
+                        catalog.dropTable(tableName); // drop old table
+                        catalog.addTable(table); // add new table
                         break;
 
                     case "drop":
