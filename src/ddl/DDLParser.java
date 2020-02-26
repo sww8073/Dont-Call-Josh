@@ -76,11 +76,13 @@ public class DDLParser implements IDDLParser {
 
         tableIdIncrement++;
         Table table = new Table(tableIdIncrement, tableName);
-        for (String attribute : attributesSplit)    {
-            table = parseAttribute(attribute, table);
-        }
+//        for (String attribute : attributesSplit)    {
+//            table = parseAttribute(attribute, table);
+//        }
 
-        //TODO add table to storage manager
+        catalog.addTable(table);
+        int i = 0;
+        i++;
     }
 
     /**

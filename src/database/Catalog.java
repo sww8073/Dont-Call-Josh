@@ -1,5 +1,6 @@
 package database;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import ddl.Table;
@@ -9,7 +10,14 @@ import ddl.Table;
  */
 public class Catalog {
     private Map<String, Table> tables;
-    
+
+    /**
+     * default constructor
+     */
+    public Catalog() {
+        this.tables = new HashMap<String, Table>();
+    }
+
     /**
      * Adds a table to the catalog
      * @param table Table to add to the catalog
