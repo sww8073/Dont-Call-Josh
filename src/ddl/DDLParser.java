@@ -76,9 +76,9 @@ public class DDLParser implements IDDLParser {
 
         tableIdIncrement++;
         Table table = new Table(tableIdIncrement, tableName);
-//        for (String attribute : attributesSplit)    {
-//            table = parseAttribute(attribute, table);
-//        }
+        for (String attribute : attributesSplit)    {
+            table = parseAttribute(attribute, table);
+        }
 
         catalog.addTable(table);
         int i = 0;
@@ -173,7 +173,7 @@ public class DDLParser implements IDDLParser {
      * @throws DDLParserException
      */
     public Table postfixConstraint(String attributeStr, Table table) throws DDLParserException   {
-        String[] elements = attributeStr.split("[\\(\\)\\s+]");
+        String[] elements = attributeStr.split("[\\s+]");
 
         if(elements.length < 2)     {
             throw new DDLParserException("Not enough attribute elements");
@@ -196,6 +196,8 @@ public class DDLParser implements IDDLParser {
             }
 
         }
+
+        table.addAttribute(attribute);
         return table;
     }
 
