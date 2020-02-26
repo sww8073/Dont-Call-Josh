@@ -78,5 +78,16 @@ public class Attribute {
         }
         return false;
     }
+    
+    /**
+     * Checks to see if the attribute is a primary key
+     * @return Whether the attribute is a primary key
+     */
+    public boolean isPrimary() {
+        if (constraints.contains("primarykey")) {
+            return true;
+        }
+        return false;
+    }
 
 }
