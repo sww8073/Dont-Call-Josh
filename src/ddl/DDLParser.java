@@ -228,6 +228,7 @@ public class DDLParser implements IDDLParser {
 
                     case "drop":
                         catalog.dropTable(tableName);
+
                         break;
 
                     default:
