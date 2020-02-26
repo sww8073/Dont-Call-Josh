@@ -2,6 +2,8 @@ package ddl;
 
 import database.Catalog;
 import storagemanager.StorageManager;
+import storagemanager.StorageManagerException;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -183,8 +185,14 @@ public class DDLParser implements IDDLParser {
         else{
             String table = wordsInStatement[2];
             String tableName = table.substring(0, table.length() - 1);
-            //TODO Given table name, get ID and call storagemanager
-            //Integer tableID =
+            Table table1 = catalog.getTable(tableName);
+            int tableIndex = table1.getId();
+            try{
+                storageManager.dropTable(tableIndex);
+            }catch(StorageManagerException e){
+                throw new DDLParserException("Error dropping table from storage manager");
+            }
+            catalog.dropTable(tableName);
         }
     }
 
