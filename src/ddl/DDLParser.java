@@ -243,7 +243,7 @@ public class DDLParser implements IDDLParser {
                         catalog.dropTable(tableName); // drop old table
                         table.addAttribute(attribute); // 
                         catalog.addTable(table); // add new table
-                        addAttr(table, attrType);
+                        //addAttr(table, attrType);
                         break;
                     case "drop":
                         Table oldTable = catalog.getTable(tableName);
@@ -288,13 +288,35 @@ public class DDLParser implements IDDLParser {
     }
 
 
-    public Object isValidType(String type, String value) {
+    /**
+     * This function check if a tape is valid and returns the corresponding object form of the type/
+     * @param type the type if the attribute
+     * @param value the value of the attribute
+     * @return an Object of the corresponding value
+     * @throws DDLParserException
+     */
+    public Object isValidType(String type, String value) throws DDLParserException {
         String[] typeArr = {"double", "integer", "char", "varchar"};
         List<String> typeList = Arrays.asList(typeArr);
+
         type = type.toLowerCase();
+        type = type.replaceAll("[^a-zA-Z0-9]", ""); // remove special characters
+        type = type.replaceAll("\\d", ""); // remove digits
 
-        if(!typeList.contains(type))    {
-
+        try {
+            if(type.equals("double"))
+                return Double.parseDouble(value);
+            else if(type.equals("integer"))
+                return Integer.parseInt(value);
+            else if(type.equals("char"))
+                return value;
+            else if(type.equals("varchar"))
+                return value;
+            else
+                throw new DDLParserException(type + " is an invalid type");
+        }
+        catch (Exception e) {
+            throw new DDLParserException("unable to add attribute " + value + " as a type");
         }
     }
 
