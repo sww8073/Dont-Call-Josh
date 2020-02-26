@@ -13,7 +13,6 @@ public class Catalog {
     /**
      * Adds a table to the catalog
      * @param table Table to add to the catalog
-     * @param tableSize size of the table
      */
     public void addTable(Table table) {
         tables.put(table.getName(), table);

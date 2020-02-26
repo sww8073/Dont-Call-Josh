@@ -205,18 +205,29 @@ public class DDLParser implements IDDLParser {
             String tableName = wordsInStatement[2];
 
             //table exists
-            if (true) {
+            if (catalog.tableExists(tableName)) {
 
-                //TODO get table from DB
+                Table table = catalog.getTable(tableName);
 
                 String addDropOption = wordsInStatement[3];
 
                 switch (addDropOption){
 
                     case "add":
+                        String attrName = wordsInStatement[4];
+                        String attrType = wordsInStatement[5];
+                        Attribute attribute = new Attribute(attrName, attrType);
+                        if(wordsInStatement.length > 5){
+                            if(wordsInStatement[6].toLowerCase().equals("default")){
+                                String value = wordsInStatement[7];
+                                //TODO add default value
+                            }
+                        }
+                        table.addAttribute(attribute);
                         break;
 
                     case "drop":
+                        catalog.dropTable(tableName);
                         break;
 
                     default:
