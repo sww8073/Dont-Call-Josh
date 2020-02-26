@@ -46,6 +46,18 @@ public class Table {
         attributes.add(attribute);
     }
 
+    /**
+     * drops an attribute to the attribute list. Order matters.
+     * @param attribute Attribute Object
+     */
+    public void dropAttribute(String attribute) {
+        for (Attribute atr : attributes) {
+            if (atr.getName() == attribute) {
+                attributes.remove(atr);
+            }
+        }
+    }
+
     public void addUnqiueAttribute(String name) throws DDLParserException {
         if(!unique.contains(name)) {
             name = name.toLowerCase();

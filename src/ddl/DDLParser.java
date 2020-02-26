@@ -251,6 +251,15 @@ public class DDLParser implements IDDLParser {
                         break;
 
                     case "drop":
+                        Table oldTable = catalog.getTable(tableName);
+                        String attr = wordsInStatement[4];
+                        // TODO if the attribute is a primary key, thow an error
+                        oldTable.dropAttribute(attr);
+                        // TODO read in values
+                        // TODO delete table from storage manager
+                        // TODO modify table
+                        // TODO create new table
+                        // TODO add modified records
                         catalog.dropTable(tableName);
                         break;
 
