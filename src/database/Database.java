@@ -23,14 +23,18 @@ public class Database implements IDatabase {
      * @param pageSize the size of a page in bytes
      * @return an instance of an database.IDatabase.
      */
-    public static IDatabase getConnection(String dbLoc, int pageBufferSize, int pageSize ) throws StorageManagerException {
+    public static IDatabase getConnection(String dbLoc, int pageBufferSize, int pageSize ) {
         String temp = dbLoc + "\\database.txt";
         File restart = new File(temp);
-        if(restart.exists()){
-            storageManager = new StorageManager(dbLoc, pageBufferSize, pageSize, true);
-        }
-        else{
-            storageManager = new StorageManager(dbLoc, pageBufferSize, pageSize, false);
+        try{
+            if(restart.exists()){
+                storageManager = new StorageManager(dbLoc, pageBufferSize, pageSize, true);
+            }
+            else{
+                storageManager = new StorageManager(dbLoc, pageBufferSize, pageSize, false);
+            }
+        }catch(StorageManagerException e){
+            e.printStackTrace();
         }
         File f = new File("PUT CATALOG PATH HERE.. IE dbLoc\\catalog.txt");
         if( f.exists() && !f.isDirectory()){
@@ -75,11 +79,11 @@ public class Database implements IDatabase {
      */
     public void terminateDatabase() {
         try {
+            //TODO WRite out catalog
             storageManager.purgeBuffer();
             storageManager.terminateDatabase();
         }
         catch(StorageManagerException e){
-            //TODO change this exception maybe?
             e.printStackTrace();
         }
     }
