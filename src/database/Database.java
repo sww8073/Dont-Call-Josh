@@ -5,7 +5,7 @@ import ddl.DDLParserException;
 import storagemanager.StorageManager;
 import storagemanager.StorageManagerException;
 
-import java.io.File;
+import java.io.*;
 
 /**
  * Class to create and access a database.
@@ -16,6 +16,7 @@ public class Database implements IDatabase {
     private static StorageManager storageManager;
     private static DDLParser iddlParser;
     private static Catalog catalog;
+    private static String db;
     /**
      * Static function that will create/restart and return a database
      * @param dbLoc the location to start/restart the database in
@@ -23,9 +24,12 @@ public class Database implements IDatabase {
      * @param pageSize the size of a page in bytes
      * @return an instance of an database.IDatabase.
      */
+    @SuppressWarnings("unchecked")
     public static IDatabase getConnection(String dbLoc, int pageBufferSize, int pageSize ) {
         String temp = dbLoc + "\\database.txt";
         File restart = new File(temp);
+        db = dbLoc;
+        String catalogLoc = dbLoc + "\\catalog.txt";
         try{
             if(restart.exists()){
                 storageManager = new StorageManager(dbLoc, pageBufferSize, pageSize, true);
@@ -36,9 +40,19 @@ public class Database implements IDatabase {
         }catch(StorageManagerException e){
             e.printStackTrace();
         }
-        File f = new File("PUT CATALOG PATH HERE.. IE dbLoc\\catalog.txt");
+        File f = new File("catalog.txt");
         if( f.exists() && !f.isDirectory()){
-            //TODO Read in catalog data into catalog
+            try{
+                FileInputStream in = new FileInputStream(catalogLoc);
+                ObjectInputStream ois = new ObjectInputStream(in);
+                catalog = (Catalog) ois.readObject();
+            }
+            catch(IOException e){
+                System.out.println("File not found");
+            }
+            catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
         }
         else{
             catalog = new Catalog();
@@ -79,12 +93,19 @@ public class Database implements IDatabase {
      */
     public void terminateDatabase() {
         try {
-            //TODO WRite out catalog
+            FileOutputStream out = new FileOutputStream(db + "\\catalog.txt");
+            ObjectOutputStream objectOut = new ObjectOutputStream(out);
+            objectOut.writeObject(catalog);
+            objectOut.flush();
+            objectOut.close();
             storageManager.purgeBuffer();
             storageManager.terminateDatabase();
         }
         catch(StorageManagerException e){
             e.printStackTrace();
+        }
+        catch(IOException e){
+            System.out.println("File cannot be created");
         }
     }
 }
