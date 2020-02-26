@@ -16,7 +16,7 @@ public class Attribute {
         type = type.toLowerCase();
         type = type.replaceAll("[^a-zA-Z0-9]", ""); // remove special characters
         type = type.replaceAll("\\d", ""); // remove digits
-        String[] typeArr = {"double", "integer", "char", "varchar"};
+        String[] typeArr = {"double", "integer", "char", "varchar", "boolean"};
         List<String> typeList = Arrays.asList(typeArr);
 
         if(typeList.contains(type)) { // checks for valid type
