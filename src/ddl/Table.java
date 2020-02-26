@@ -8,6 +8,7 @@ public class Table {
     private ArrayList<Attribute> attributes;
     private ArrayList<String> primaryKeys;
     private ArrayList<String> unique;
+    private int size;
     // TODO foreign key tbd
 
     public Table(int id, String name) {
@@ -16,10 +17,10 @@ public class Table {
         this.attributes = new ArrayList<>();
         this.primaryKeys = new ArrayList<>();
         this.unique = new ArrayList<>();
+        this.setSize(0);
     }
 
-
-    public int getId(){
+    public int getId() {
         return this.id;
     }
 
@@ -69,5 +70,20 @@ public class Table {
 
     public String getName() {
         return name;
+    }
+
+    /**
+     * Gets the size of the table.
+     */
+    public int getSize() {
+        return size;
+    }
+
+    /**
+     * Sets the size of the table.
+     * @param size the size of the table.
+     */
+    public void setSize(int size) {
+        this.size = size;
     }
 }
