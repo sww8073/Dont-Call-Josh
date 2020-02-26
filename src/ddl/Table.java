@@ -33,7 +33,7 @@ public class Table {
             name = name.toLowerCase();
             primaryKeys.add(name);
         }
-        else    {
+        else{
             throw new DDLParserException(name + " is already primary key");
         }
     }
@@ -44,6 +44,18 @@ public class Table {
      */
     public void addAttribute(Attribute attribute) {
         attributes.add(attribute);
+    }
+
+    /**
+     * drops an attribute to the attribute list. Order matters.
+     * @param attribute Attribute Object
+     */
+    public void dropAttribute(String attribute) {
+        for (Attribute atr : attributes) {
+            if (atr.getName() == attribute) {
+                attributes.remove(atr);
+            }
+        }
     }
 
     public void addUnqiueAttribute(String name) throws DDLParserException {
@@ -85,5 +97,23 @@ public class Table {
      */
     public void setSize(int size) {
         this.size = size;
+    }
+
+    /**
+     * returns a true if the table has this attribute
+     * @param attrName
+     */
+    public boolean attributeExists(String attrName){
+        for (Attribute attribute: attributes) {
+            if(attribute.getName().equals(attrName)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public String toString(){
+        return this.name;
     }
 }

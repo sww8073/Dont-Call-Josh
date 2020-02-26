@@ -133,6 +133,27 @@ public class DDLParser implements IDDLParser {
                 break;
 
             case "foreignkey":
+                if(catalog.tableExists(table.getName())){
+                    if (elements[2].toLowerCase().equals("references")) {
+                        if(catalog.tableExists(elements[3])){
+                            Table referenceTable = catalog.getTable(elements[3]);
+                            String referenceAttr = elements[4];
+                            if(referenceTable.attributeExists(referenceAttr)){
+                                //TODO add foreign key to table here
+                            }
+                            else{
+                                throw new DDLParserException("Reference attribute " + referenceAttr + " does not" +
+                                        "exist in the table " + referenceTable.toString() + ".");
+                            }
+                        }
+                        else{
+                            throw new DDLParserException("Reference table " + elements[3] + " does not exist.");
+                        }
+                    }
+                    else{
+                        throw new DDLParserException("Syntax error for foreign key statement, missing reference.");
+                    }
+                }
                 break;
 
             default:
@@ -201,21 +222,16 @@ public class DDLParser implements IDDLParser {
 
         //if the word after alter is "table" continue, else throw an error
         if(wordsInStatement[1].toLowerCase().equals("table")) {
-
             String tableName = wordsInStatement[2];
-
             //table exists
             if (catalog.tableExists(tableName)) {
-
                 Table table = catalog.getTable(tableName);
-
                 String addDropOption = wordsInStatement[3];
-
                 switch (addDropOption){
-
                     case "add":
                         String attrName = wordsInStatement[4];
                         String attrType = wordsInStatement[5];
+                        Object def = null;
                         Attribute attribute = new Attribute(attrName, attrType);
                         if(wordsInStatement.length > 5){
                             if(wordsInStatement[6].toLowerCase().equals("default")){
@@ -223,17 +239,24 @@ public class DDLParser implements IDDLParser {
                                 //TODO add default value
                             }
                         }
-                        table.addAttribute(attribute);
 
                         catalog.dropTable(tableName); // drop old table
+                        table.addAttribute(attribute); // 
                         catalog.addTable(table); // add new table
+                        //addAttr(table, attrType);
                         break;
-
                     case "drop":
+                        Table oldTable = catalog.getTable(tableName);
+                        String attr = wordsInStatement[4];
+                        // TODO if the attribute is a primary key, thow an error
+                        oldTable.dropAttribute(attr);
+                        // TODO read in values
+                        // TODO delete table from storage manager
+                        // TODO modify table
+                        // TODO create new table
+                        // TODO add modified records
                         catalog.dropTable(tableName);
-
                         break;
-
                     default:
                         throw new DDLParserException("Unknown option for alter table.");
                 }
@@ -244,6 +267,56 @@ public class DDLParser implements IDDLParser {
         }
         else{
             throw new DDLParserException("Incorrect syntax for alter statement.");
+        }
+    }
+
+    /**
+     * This function gets all the records from the table being altered. Inserts the new record
+     * into the relations. Drops the old table and creates a new
+     * @param table Table being changed
+     * @param type the type being added
+     * @param def the default value, possibly null
+     */
+    public void addAttr(Table table, String type, Object def) throws DDLParserException {
+        try {
+            Object[][] records = storageManager.getRecords(table.getId());
+
+        }
+        catch (StorageManagerException  e)      {
+            throw new DDLParserException("unable to add attribute to table");
+        }
+    }
+
+
+    /**
+     * This function check if a tape is valid and returns the corresponding object form of the type/
+     * @param type the type if the attribute
+     * @param value the value of the attribute
+     * @return an Object of the corresponding value
+     * @throws DDLParserException
+     */
+    public Object isValidType(String type, String value) throws DDLParserException {
+        String[] typeArr = {"double", "integer", "char", "varchar"};
+        List<String> typeList = Arrays.asList(typeArr);
+
+        type = type.toLowerCase();
+        type = type.replaceAll("[^a-zA-Z0-9]", ""); // remove special characters
+        type = type.replaceAll("\\d", ""); // remove digits
+
+        try {
+            if(type.equals("double"))
+                return Double.parseDouble(value);
+            else if(type.equals("integer"))
+                return Integer.parseInt(value);
+            else if(type.equals("char"))
+                return value;
+            else if(type.equals("varchar"))
+                return value;
+            else
+                throw new DDLParserException(type + " is an invalid type");
+        }
+        catch (Exception e) {
+            throw new DDLParserException("unable to add attribute " + value + " as a type");
         }
     }
 
