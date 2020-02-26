@@ -183,7 +183,22 @@ public class DDLParser implements IDDLParser {
 
         Attribute attribute = new Attribute(name, type);
         for(int i = 2;i < elements.length;i++)  {
-            attribute.addConstraint(elements[i]); // all constraints are added
+            // this check fore the "notnull" constraint written as "not null"
+            if(elements[i].toLowerCase().equals("not")) {
+                if(i + 1 < elements.length) {
+                    if(elements[i+1].toLowerCase().equals("null"))  {
+                        attribute.addConstraint("notnull"); // all constraints are added
+                        i++;
+                    }
+                    else
+                        throw new DDLParserException(elements[i] + " is an invalid constraint");
+                }
+                else
+                    throw new DDLParserException(elements[i] + " is an invalid constraint");
+            }
+            else {
+                attribute.addConstraint(elements[i]); // all constraints are added
+            }
 
             // check for special constraint and add them to the table
             String elementStr = elements[i];
