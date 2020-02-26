@@ -235,15 +235,10 @@ public class DDLParser implements IDDLParser {
                         Attribute attribute = new Attribute(attrName, attrType);
                         if(wordsInStatement.length > 5){
                             if(wordsInStatement[6].toLowerCase().equals("default")){
-                                String value = wordsInStatement[7];
-                                //TODO add default value
+                                def = wordsInStatement[7];
                             }
                         }
 
-                        catalog.dropTable(tableName); // drop old table
-                        table.addAttribute(attribute); // 
-                        catalog.addTable(table); // add new table
-                        //addAttr(table, attrType);
                         break;
                     case "drop":
                         Table oldTable = catalog.getTable(tableName);
@@ -319,5 +314,4 @@ public class DDLParser implements IDDLParser {
             throw new DDLParserException("unable to add attribute " + value + " as a type");
         }
     }
-
 }
