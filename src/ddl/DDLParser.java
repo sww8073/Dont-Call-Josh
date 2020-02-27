@@ -128,7 +128,7 @@ public class DDLParser implements IDDLParser {
 
             case "primarykey":
                 for (int i = 1; i < elements.length; i++){
-                    if(!elements[i].equals(" ") && elements[i] != null){
+                    if(!elements[i].equals("") && elements[i] != null){
                         table.addPrimaryKey(elements[i]);
                     }
                 }
