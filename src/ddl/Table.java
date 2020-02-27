@@ -1,10 +1,11 @@
 package ddl;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Table {
+public class Table implements Serializable {
     private int id;
     private String name;
     private ArrayList<Attribute> attributes;

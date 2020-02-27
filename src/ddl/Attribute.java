@@ -1,4 +1,5 @@
 package ddl;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -6,7 +7,7 @@ import java.util.List;
 /**
  * this class represents an attribute within a relation
  */
-public class Attribute {
+public class Attribute implements Serializable {
     private String name;
     private String type;
     private ArrayList<String> constraints;

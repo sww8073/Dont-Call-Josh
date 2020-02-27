@@ -1,18 +1,17 @@
 package database;
 
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 import ddl.DDLParserException;
 import ddl.ForeignKey;
 import ddl.Table;
-import javafx.scene.control.Tab;
 
 /**
  * Catalog class manages table data for the database
  */
-public class Catalog {
+public class Catalog implements Serializable {
     private Map<String, Table> tables;
 
     /**

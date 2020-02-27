@@ -17,7 +17,7 @@ public class Phase2Tester {
     public static void main(String[] args) {
 
         // You may need to modify some values to test on your system
-        String dbLoc = "C:\\Users\\Matthew\\Desktop\\db";
+        String dbLoc = "C:\\Users\\jtell\\Desktop\\RIT_SPRING_2020\\DBSI\\Database";
         int pageBufferSize = 20;
         int pageSize = 4096;
         AStorageManager sm;
@@ -225,8 +225,8 @@ public class Phase2Tester {
 //        System.out.println("Altering table 1. this may take a moment...");
 //        System.out.println("Three failures should be reported.");
 //
-//        String alterAddNull = "alter table foo add gar double;";
-//        String alterAddDefault = "alter table foo add another integer default 10;";
+//
+//        String alterAddNull = "alter table foo add gar double;";//       String alterAddDefault = "alter table foo add another integer default 10;";
 //        String alterExists = "alter table foo add id double;";
 //        String alterDropAttr = "alter table baz drop department;";
 //        String alterNonexistentTable = "alter table bazzle drop attr;";

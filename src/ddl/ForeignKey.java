@@ -1,12 +1,13 @@
 package ddl;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Team: Don't Tell Josh
  * Members: Matthew Clements, Josh Tellier, Stone Warren, Josh Schenk
  */
-public class ForeignKey {
+public class ForeignKey implements Serializable {
     private String tableName; // name of the table that has the foreign key
     private ArrayList<String> keyIndices;
 
