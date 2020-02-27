@@ -141,4 +141,18 @@ public class Table {
     public String toString(){
         return this.name;
     }
+
+    public Integer[] getKeyIndices(){
+        int[] keyIndices = new int[primaryKeys.size()];
+        int index = 0;
+        for (String keyName: primaryKeys) {
+            for (Attribute attribute : attributes) {
+                if(keyName.equals(attribute.getName())){
+                    keyIndices[index] = attributes.indexOf(attribute);
+                    index++;
+                }
+            }
+        }
+        return null;
+    }
 }
