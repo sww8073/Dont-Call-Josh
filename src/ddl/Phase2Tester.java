@@ -171,7 +171,6 @@ public class Phase2Tester {
                 System.err.println("Inserted a record with duplicate key");
                 System.exit(1);
             } catch (StorageManagerException e) {}
-
             System.out.println("Testing getRecords for all tables");
             // Getting all table entries
             // Table 1
