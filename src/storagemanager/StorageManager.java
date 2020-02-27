@@ -428,6 +428,7 @@ public class StorageManager extends AStorageManager {
             this.pageId = (Integer) ois.readObject();
             int pageSize = (int) ois.readObject();
             int pageBufferSize = (int) ois.readObject();
+            this.pageSize = pageBufferSize;
             String buffloc = (String) ois.readObject();
             this.bufferManager = new BufferManager(pageSize, pageBufferSize, buffloc);
             ois.close();

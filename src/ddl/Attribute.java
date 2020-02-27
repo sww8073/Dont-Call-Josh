@@ -26,7 +26,7 @@ public class Attribute implements Serializable {
             this.constraints = new ArrayList<>();
         }
         else {
-            throw new DDLParserException("Invalid type");
+            throw new DDLParserException("Invalid type: " + type);
         }
     }
 
