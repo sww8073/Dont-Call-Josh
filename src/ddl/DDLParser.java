@@ -316,7 +316,7 @@ public class DDLParser implements IDDLParser {
         }
     }
 
-    private Object[][] makeNewTable(Table table, String value, String attrType){
+    private void makeNewTable(Table table, String value, String attrType){
         try{
 
             Object[][] oldtable = readTable(table);
@@ -331,7 +331,7 @@ public class DDLParser implements IDDLParser {
             int relationNum = oldtable.length;
             Object[][] newTable = new Object[relationNum][newAttrNum];
 
-            if(value != null) {//has a default value
+            if(value == null) {//has no default value
                 switch(attrType){
                     case "double":
                         Double doubleVal = null;
@@ -410,10 +410,17 @@ public class DDLParser implements IDDLParser {
                 }
             }
 
+            try {
+                storageManager.addTable(tableID, dataTypes, keyIndices);
+                for (Object[] record: newTable) {
+                    storageManager.insertRecord(tableID, record);
+                }
+            }
+            catch(StorageManagerException e){}
+
         }
         catch (DDLParserException e){}
 
-        return null;
     }
 
     /**
