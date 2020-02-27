@@ -112,7 +112,6 @@ public class DDLParser implements IDDLParser {
     }
 
     public Table prefixConstraint(String attribute, Table table) throws DDLParserException  {
-
         String[] elements = attribute.split("[\\(\\)\\,\\s]");
         String option = elements[0];
 
@@ -125,7 +124,6 @@ public class DDLParser implements IDDLParser {
                     }
                 }
                 break;
-
             case "primarykey":
                 for (int i = 1; i < elements.length; i++){
                     if(!elements[i].equals("") && elements[i] != null){
@@ -133,7 +131,6 @@ public class DDLParser implements IDDLParser {
                     }
                 }
                 break;
-
             case "foreignkey":
                 if(catalog.tableExists(table.getName())){
                     if (elements[2].toLowerCase().equals("references")) {
@@ -157,11 +154,9 @@ public class DDLParser implements IDDLParser {
                     }
                 }
                 break;
-
             default:
                 throw new DDLParserException("Prefix constraint does not exist.");
         }
-
         return table;
     }
 
@@ -204,6 +199,10 @@ public class DDLParser implements IDDLParser {
             String elementStr = elements[i];
             elementStr = elementStr.toLowerCase();
             if(elementStr.equals("foreignkey")) {
+                // table.addPrimaryKey(name);
+                // TODO add forignkey
+            }
+            else if(elementStr.equals("primarykey")) {
                 table.addPrimaryKey(name);
             }
             else if(elementStr.equals("unique"))    {
