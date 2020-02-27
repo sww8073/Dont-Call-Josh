@@ -1,4 +1,6 @@
 package ddl;
+
+import com.sun.corba.se.impl.io.TypeMismatchException;
 import database.Catalog;
 import storagemanager.StorageManager;
 import storagemanager.StorageManagerException;
@@ -8,10 +10,9 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Storage Manager: Phase 2
- * Team: Don't Tell Josh
- * Members: Matthew Clements, Josh Tellier, Stone Warren, Josh Schenk
+ * This a a parser for DDL statements
  */
+
 public class DDLParser implements IDDLParser {
 
     public static int tableIdIncrement = 0; // this will be used to generate new table ids
@@ -172,9 +173,6 @@ public class DDLParser implements IDDLParser {
             foreignKeyAttr.add(elements[i].toLowerCase());
             i++;
         }
-
-        ForeignKey foreignKey = new ForeignKey(table.getName(), keyAttr, foreignTableName, foreignKeyAttr);
-        table.addForeignKey(foreignKey);
         return table;
     }
 
@@ -261,21 +259,58 @@ public class DDLParser implements IDDLParser {
             String tableName = wordsInStatement[2];
             //table exists
             if (catalog.tableExists(tableName)) {
+
                 Table table = catalog.getTable(tableName);
-                String addDropOption = wordsInStatement[3];
+
+                String addDropOption = wordsInStatement[3].toLowerCase();
+
                 switch (addDropOption){
                     case "add":
-                        String attrName = wordsInStatement[4];
-                        String attrType = wordsInStatement[5];
-                        Object def = null;
-                        Attribute attribute = new Attribute(attrName, attrType);
+
+                        String attrName = wordsInStatement[4].toLowerCase();
+                        String attrType = wordsInStatement[5].toLowerCase();
+
+                        Attribute attribute = new Attribute(attrName, attrType);//new attr to add
+
                         if(wordsInStatement.length > 5){
                             if(wordsInStatement[6].toLowerCase().equals("default")){
-                                def = wordsInStatement[7];
+
+                                String defaultValue = wordsInStatement[7].toLowerCase();// the default value
+
+                                try {
+                                    switch(attrType) {
+                                        case "double":
+                                            Double doubleValue = Double.parseDouble(defaultValue);
+                                            makeNewTable(table, doubleValue);
+                                            break;
+
+                                        case "integer":
+                                            Integer intValue = Integer.parseInt(defaultValue);
+                                            makeNewTable(table, intValue);
+                                            break;
+
+                                        case "char":
+                                            String charValue = defaultValue;
+                                            makeNewTable(table, charValue);
+                                            break;
+
+                                        case "varchar":
+                                            String varchar = defaultValue;
+                                            makeNewTable(table, varchar);
+                                            break;
+
+                                        default:
+                                            throw new DDLParserException(attrType + " is an invalid type");
+                                    }
+                                }
+                                catch (Exception e) {
+                                    throw new DDLParserException("unable to add attribute " + defaultValue);
+                                }
+
                             }
                         }
-
                         break;
+
                     case "drop":
                         Table oldTable = catalog.getTable(tableName);
                         String attr = wordsInStatement[4];
@@ -291,6 +326,7 @@ public class DDLParser implements IDDLParser {
                         // TODO add modified records
                         catalog.dropTable(tableName);
                         break;
+
                     default:
                         throw new DDLParserException("Unknown option for alter table.");
                 }
@@ -302,6 +338,28 @@ public class DDLParser implements IDDLParser {
         else{
             throw new DDLParserException("Incorrect syntax for alter statement.");
         }
+    }
+
+    private Object[][] makeNewTable(Table table, Object o){
+        try{
+            Object[][] oldtable = readTable(table);
+            dropTable(table);
+
+            Integer[] keyIndices = table.getKeyIndices();
+            int newAttrNum = oldtable[0].length + 1;
+            int relationNum = oldtable.length;
+            Object [][] newTable = new Object[relationNum][newAttrNum];
+
+            for (int i = 0; i < relationNum; i++) {
+                for (int j = 0; j < newAttrNum-1; j++) {
+                    newTable[i][j] = oldtable[i][j];
+                }
+                newTable[i][newAttrNum] = o;
+            }
+        }
+        catch (DDLParserException e){}
+
+        return null;
     }
 
     /**

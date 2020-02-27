@@ -90,4 +90,8 @@ public class Attribute {
         return false;
     }
 
+    public String getType(){
+        return type;
+    }
+
 }

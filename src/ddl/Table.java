@@ -147,4 +147,36 @@ public class Table {
     public String toString(){
         return this.name;
     }
+
+    /**
+     * gives the keyIndices of the table
+     * @return
+     */
+    public Integer[] getKeyIndices(){
+        Integer[] keyIndices = new Integer[primaryKeys.size()];
+        int index = 0;
+        for (String keyName: primaryKeys) {
+            for (Attribute attribute : attributes) {
+                if(keyName.equals(attribute.getName())){
+                    keyIndices[index] = attributes.indexOf(attribute);
+                    index++;
+                }
+            }
+        }
+        return keyIndices;
+    }
+
+    /**
+     * gives the dataTypes of the table
+     * @return
+     */
+    public String[] getDataTypes(){
+        String[] dataTypes = new String[attributes.size()];
+        int index = 0;
+        for (Attribute attribute: attributes) {
+            dataTypes[index] = attribute.getType();
+            index++;
+        }
+        return dataTypes;
+    }
 }
