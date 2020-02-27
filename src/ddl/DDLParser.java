@@ -269,14 +269,13 @@ public class DDLParser implements IDDLParser {
                     case "drop":
                         Table oldTable = catalog.getTable(tableName);
                         String attr = wordsInStatement[4];
-                        // TODO if the attribute is a primary key, thow an error
                         Attribute oldAttr = oldTable.getAttribute(attr);
                         if (oldAttr.isPrimary()) {
                             throw new DDLParserException("Attribute " + attr + " is a primary key and cannot be dropped.");
                         }
                         oldTable.dropAttribute(attr);
-                        // TODO read in values
-                        // TODO delete table from storage manager
+                        Object[][] records = readTable(oldTable);
+                        dropTable(oldTable);
                         // TODO modify table
                         // TODO create new table
                         // TODO add modified records
@@ -342,6 +341,34 @@ public class DDLParser implements IDDLParser {
         }
         catch (Exception e) {
             throw new DDLParserException("unable to add attribute " + value + " as a type");
+        }
+    }
+
+    /**
+     *  Drops a table from the database using the storage manager
+     * @param table the table to drop
+     * @throws DDLParserException the table does not exist
+     */
+    private void dropTable(Table table) throws DDLParserException {
+        try {
+            storageManager.dropTable(table.getId());
+        } catch (Exception e) {
+            throw new DDLParserException("Table does not exist");
+        }
+    }
+
+    /**
+     * Gets all records from a table
+     * @param table the table to get records from
+     * @return the records
+     * @throws DDLParserException the table does not exist
+     */
+    private Object[][] readTable(Table table) throws DDLParserException {
+        int tableID = table.getId();
+        try {
+            return storageManager.getRecords(tableID);
+        } catch (Exception e) {
+            throw new DDLParserException("Table does not exist");
         }
     }
 }
