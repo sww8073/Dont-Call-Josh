@@ -13,7 +13,7 @@ import java.io.*;
 
 public class Database implements IDatabase {
 
-    public static StorageManager storageManager;
+    private static StorageManager storageManager;
     private static DDLParser iddlParser;
     private static Catalog catalog;
     private static String db;
@@ -57,7 +57,7 @@ public class Database implements IDatabase {
         else{
             catalog = new Catalog();
         }
-        iddlParser = new DDLParser(catalog);
+        iddlParser = new DDLParser(catalog, storageManager);
         return new Database();
     }
 
@@ -93,13 +93,13 @@ public class Database implements IDatabase {
      */
     public void terminateDatabase() {
         try {
+            storageManager.purgeBuffer();
+            storageManager.terminateDatabase();
             FileOutputStream out = new FileOutputStream(db + "\\catalog.txt");
             ObjectOutputStream objectOut = new ObjectOutputStream(out);
             objectOut.writeObject(catalog);
             objectOut.flush();
             objectOut.close();
-            storageManager.purgeBuffer();
-            storageManager.terminateDatabase();
         }
         catch(StorageManagerException e){
             e.printStackTrace();

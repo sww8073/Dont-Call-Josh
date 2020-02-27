@@ -1,7 +1,7 @@
 package ddl;
 
 import database.Catalog;
-import static database.Database.storageManager;
+import storagemanager.StorageManager;
 import storagemanager.StorageManagerException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,12 +15,14 @@ public class DDLParser implements IDDLParser {
 
     public static int tableIdIncrement = 0; // this will be used to generate new table ids
     private static Catalog catalog;
+    private static StorageManager storageManager;
     private List<String> types = Arrays.asList("integer", "char", "varchar", "double");
 
     public DDLParser(){}
 
-    public DDLParser(Catalog catalog1)  {
-        catalog = catalog1;
+    public DDLParser(Catalog catalog, StorageManager storageManager)  {
+        this.catalog = catalog;
+        this.storageManager = storageManager;
     }
     /**
      * This will create an instance of this parser and return it.
@@ -83,8 +85,6 @@ public class DDLParser implements IDDLParser {
         // create table in storage manager
         try {
             storageManager.addTable(table.getId(), table.getDataTypes(), table.getKeyIndices());
-            int i = 0;
-            i++;
         }
         catch (StorageManagerException e) {
             throw new DDLParserException(e.getMessage());
