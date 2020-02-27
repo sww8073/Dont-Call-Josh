@@ -132,30 +132,37 @@ public class DDLParser implements IDDLParser {
                 }
                 break;
             case "foreignkey":
-                if(catalog.tableExists(table.getName())){
-                    if (elements[2].toLowerCase().equals("references")) {
-                        if(catalog.tableExists(elements[3])){
-                            Table referenceTable = catalog.getTable(elements[3]);
-                            String referenceAttr = elements[4];
-                            if(referenceTable.attributeExists(referenceAttr)){
-                                //TODO add foreign key to table here
-                            }
-                            else{
-                                throw new DDLParserException("Reference attribute " + referenceAttr + " does not" +
-                                        "exist in the table " + referenceTable.toString() + ".");
-                            }
-                        }
-                        else{
-                            throw new DDLParserException("Reference table " + elements[3] + " does not exist.");
-                        }
-                    }
-                    else{
-                        throw new DDLParserException("Syntax error for foreign key statement, missing reference.");
-                    }
-                }
+                table = addForeignKey(attribute, table);
                 break;
             default:
                 throw new DDLParserException("Prefix constraint does not exist.");
+        }
+        return table;
+    }
+
+    public Table addForeignKey(String attribute, Table table) throws DDLParserException  {
+        String[] elements = attribute.split("[\\(\\)\\s]");
+
+        if(catalog.tableExists(table.getName())){
+            if (elements[2].toLowerCase().equals("references")) {
+                if(catalog.tableExists(elements[3])){
+                    Table referenceTable = catalog.getTable(elements[3]);
+                    String referenceAttr = elements[4];
+                    if(referenceTable.attributeExists(referenceAttr)){
+                        //TODO add foreign key to table here
+                    }
+                    else{
+                        throw new DDLParserException("Reference attribute " + referenceAttr + " does not" +
+                                "exist in the table " + referenceTable.toString() + ".");
+                    }
+                }
+                else{
+                    throw new DDLParserException("Reference table " + elements[3] + " does not exist.");
+                }
+            }
+            else{
+                throw new DDLParserException("Syntax error for foreign key statement, missing reference.");
+            }
         }
         return table;
     }
