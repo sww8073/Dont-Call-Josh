@@ -83,8 +83,14 @@ public class DDLParser implements IDDLParser {
         }
 
         catalog.addTable(table);
-        int i = 0;
-        i++;
+
+        // create table in storage manager
+        try {
+            storageManager.addTable(table.getId(), table.getDataTypes(), table.getKeyIndices());
+        }
+        catch (StorageManagerException e) {
+            throw new DDLParserException(e.getMessage());
+        }
     }
 
     /**
