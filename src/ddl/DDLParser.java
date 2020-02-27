@@ -141,7 +141,7 @@ public class DDLParser implements IDDLParser {
     }
 
     public Table addForeignKey(String attribute, Table table) throws DDLParserException  {
-        String[] elements = attribute.split("[\\(\\)\\s]");
+        String[] elements = attribute.split("[\\s\\(\\s]+ | [\\s\\)\\s]+");
 
         if(catalog.tableExists(table.getName())){
             if (elements[2].toLowerCase().equals("references")) {
