@@ -13,7 +13,7 @@ import java.io.*;
 
 public class Database implements IDatabase {
 
-    private static StorageManager storageManager;
+    public static StorageManager storageManager;
     private static DDLParser iddlParser;
     private static Catalog catalog;
     private static String db;
@@ -57,7 +57,7 @@ public class Database implements IDatabase {
         else{
             catalog = new Catalog();
         }
-        iddlParser = new DDLParser(storageManager, catalog);
+        iddlParser = new DDLParser(catalog);
         return new Database();
     }
 

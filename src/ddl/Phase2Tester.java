@@ -104,42 +104,42 @@ public class Phase2Tester {
         database.executeNonQuery(createErrorFK3);
         database.executeNonQuery(createErrorU1);
 
-        System.out.println("Shutting down the database...");
-        database.terminateDatabase();
+        //System.out.println("Shutting down the database...");
+        //database.terminateDatabase();
 
-//        System.out.println("Restarting just storage manager...");
-//        try {
-//            sm = new StorageManager(dbLoc, pageBufferSize, pageSize, true);
-//
-//            System.out.println("Trying to populate created tables...");
-//
-//            try {
-//                BufferedReader br = new BufferedReader(new FileReader("inputs/data1.csv"));
-//
-//                // Reading in lines and shuffling them
-//                ArrayList<String> lines = new ArrayList<>();
-//                String line;
-//                while((line = br.readLine()) != null) {
-//                    lines.add(line);
-//                }
-//                Collections.shuffle(lines);
-//
-//                System.out.println("Inserting into Table 1: this may take a moment");
-//
-//                // Populating the table to table
-//                for(String line2: lines){
-//                    String[] elems = line2.split(",");
-//                    Object[] record = {Integer.parseInt(elems[0]),
-//                            elems[1],
-//                            Double.parseDouble(elems[2]),
-//                            Boolean.valueOf(elems[3])};
-//                    sm.insertRecord(table1Id, record);
-//                }
-//            } catch(Exception e) {
-//                System.err.println("Failed to insert record.");
-//                e.printStackTrace();
-//            }
-//
+        //System.out.println("Restarting just storage manager...");
+        try {
+            sm = new StorageManager(dbLoc, pageBufferSize, pageSize, true);
+
+            System.out.println("Trying to populate created tables...");
+
+            try {
+                BufferedReader br = new BufferedReader(new FileReader("inputs/data1.csv"));
+
+                // Reading in lines and shuffling them
+                ArrayList<String> lines = new ArrayList<>();
+                String line;
+                while((line = br.readLine()) != null) {
+                    lines.add(line);
+                }
+                Collections.shuffle(lines);
+
+                System.out.println("Inserting into Table 1: this may take a moment");
+
+                // Populating the table to table
+                for(String line2: lines){
+                    String[] elems = line2.split(",");
+                    Object[] record = {Integer.parseInt(elems[0]),
+                            elems[1],
+                            Double.parseDouble(elems[2]),
+                            Boolean.valueOf(elems[3])};
+                    sm.insertRecord(table1Id, record);
+                }
+            } catch(Exception e) {
+                System.err.println("Failed to insert record.");
+                e.printStackTrace();
+            }
+
 //            // Table 2
 //            try {
 //                BufferedReader br = new BufferedReader(new FileReader("inputs/data2.csv"));
@@ -214,10 +214,10 @@ public class Phase2Tester {
 //
 //            System.out.println("Shutting down the storage manager...");
 //            sm.terminateDatabase();
-//        } catch (StorageManagerException e) {
-//            e.printStackTrace();
-//            System.exit(1);
-//        }
+        } catch (StorageManagerException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
 //
 //        System.out.println("Restarting the database...");
 //

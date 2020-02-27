@@ -1,10 +1,8 @@
 package ddl;
 
-import com.sun.corba.se.impl.io.TypeMismatchException;
 import database.Catalog;
-import storagemanager.StorageManager;
+import static database.Database.storageManager;
 import storagemanager.StorageManagerException;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,14 +14,12 @@ import java.util.List;
 public class DDLParser implements IDDLParser {
 
     public static int tableIdIncrement = 0; // this will be used to generate new table ids
-    private static StorageManager storageManager;
     private static Catalog catalog;
     private List<String> types = Arrays.asList("integer", "char", "varchar", "double");
 
     public DDLParser(){}
 
-    public DDLParser(StorageManager storageManager1, Catalog catalog1){
-        storageManager = storageManager1;
+    public DDLParser(Catalog catalog1)  {
         catalog = catalog1;
     }
     /**
