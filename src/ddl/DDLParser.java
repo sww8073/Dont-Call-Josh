@@ -79,6 +79,9 @@ public class DDLParser implements IDDLParser {
             table = parseAttribute(attribute, table);
         }
 
+        if(catalog.tableExists(tableName))  {
+            throw new DDLParserException("Table already exists");
+        }
         catalog.addTable(table);
 
         // create table in storage manager
@@ -137,7 +140,9 @@ public class DDLParser implements IDDLParser {
                 break;
             case "primarykey":
                 for (int i = 1; i < elements.length; i++){
-                    if(!elements[i].equals("") && elements[i] != null){
+                    if(!elements[i].equals("") && elements[i] != null)  {
+                        if(!table.attributeExists(elements[i]))
+                            throw new DDLParserException("Cannot make a primary key on attribute that doesnt exist");
                         table.addPrimaryKey(elements[i]);
                     }
                 }
