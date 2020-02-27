@@ -104,8 +104,8 @@ public class Phase2Tester {
         database.executeNonQuery(createErrorFK3);
         database.executeNonQuery(createErrorU1);
 
-        //System.out.println("Shutting down the database...");
-        //database.terminateDatabase();
+        System.out.println("Shutting down the database...");
+        database.terminateDatabase();
 
         //System.out.println("Restarting just storage manager...");
         try {

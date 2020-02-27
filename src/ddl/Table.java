@@ -85,6 +85,11 @@ public class Table {
         }
     }
 
+    /**
+     * This function adds a unique attribute
+     * @param name the name of the new attribute
+     * @throws DDLParserException
+     */
     public void addUnqiueAttribute(String name) throws DDLParserException {
         if(!unique.contains(name)) {
             name = name.toLowerCase();

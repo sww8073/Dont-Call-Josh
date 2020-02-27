@@ -83,6 +83,8 @@ public class DDLParser implements IDDLParser {
         // create table in storage manager
         try {
             storageManager.addTable(table.getId(), table.getDataTypes(), table.getKeyIndices());
+            int i = 0;
+            i++;
         }
         catch (StorageManagerException e) {
             throw new DDLParserException(e.getMessage());
@@ -115,6 +117,13 @@ public class DDLParser implements IDDLParser {
         return table;
     }
 
+    /**
+     * This function takes an attribute in a non-query and parses it
+     * @param attribute un-parse non-query attribute
+     * @param table the table in which the information needs to be added
+     * @return the updated table
+     * @throws DDLParserException
+     */
     public Table prefixConstraint(String attribute, Table table) throws DDLParserException  {
         String[] elements = attribute.split("[\\(\\)\\,\\s]");
         String option = elements[0];
@@ -234,7 +243,11 @@ public class DDLParser implements IDDLParser {
         return table;
     }
 
-
+    /**
+     * this function drops an entire table
+     * @param statement un-parsed statement
+     * @throws DDLParserException
+     */
     public void dropTable(String statement) throws DDLParserException {
         String[] wordsInStatement = statement.split(" ");
         if(wordsInStatement.length != 3){
@@ -254,6 +267,11 @@ public class DDLParser implements IDDLParser {
         }
     }
 
+    /**
+     * This function parses alter table statements
+     * @param statement un-parsed statement
+     * @throws DDLParserException
+     */
     public void alterTable(String statement) throws DDLParserException{
         String[] wordsInStatement = statement.split(" ");
 
