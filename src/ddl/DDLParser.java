@@ -337,7 +337,7 @@ public class DDLParser implements IDDLParser {
     }
 
     /**
-     *  Drops a table from the database using the storage manager
+     * Drops a table from the database using the storage manager
      * @param table the table to drop
      * @throws DDLParserException the table does not exist
      */
