@@ -17,7 +17,7 @@ public class Phase2Tester {
     public static void main(String[] args) {
 
         // You may need to modify some values to test on your system
-        String dbLoc = "C:\\Users\\jtell\\Desktop\\RIT_SPRING_2020\\DBSI\\Database";
+        String dbLoc = "C:\\Users\\Matthew\\Desktop\\db";
         int pageBufferSize = 20;
         int pageSize = 4096;
         AStorageManager sm;
@@ -95,14 +95,14 @@ public class Phase2Tester {
         database.executeNonQuery(createTable1);
         database.executeNonQuery(createTable2);
 
-        System.out.println("\tThese table creates should report failure but not stop the database...");
-        database.executeNonQuery(createErrorExists);
-        database.executeNonQuery(createErrorType);
-        database.executeNonQuery(createErrorPK1);
-        database.executeNonQuery(createErrorFK1);
-        database.executeNonQuery(createErrorFK2);
-        database.executeNonQuery(createErrorFK3);
-        database.executeNonQuery(createErrorU1);
+//        System.out.println("\tThese table creates should report failure but not stop the database...");
+//        database.executeNonQuery(createErrorExists);
+//        database.executeNonQuery(createErrorType);
+//        database.executeNonQuery(createErrorPK1);
+//        database.executeNonQuery(createErrorFK1);
+//        database.executeNonQuery(createErrorFK2);
+//        database.executeNonQuery(createErrorFK3);
+//        database.executeNonQuery(createErrorU1);
 
         System.out.println("Shutting down the database...");
         database.terminateDatabase();

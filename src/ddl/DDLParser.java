@@ -16,7 +16,6 @@ public class DDLParser implements IDDLParser {
     public static int tableIdIncrement = 0; // this will be used to generate new table ids
     private static Catalog catalog;
     private static StorageManager storageManager;
-    private List<String> types = Arrays.asList("integer", "char", "varchar", "double");
 
     public DDLParser(){}
 

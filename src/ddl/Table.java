@@ -118,13 +118,6 @@ public class Table implements Serializable {
     }
 
     /**
-     * Gets the size of the table.
-     */
-    public int getSize() {
-        return size;
-    }
-
-    /**
      * Sets the size of the table.
      * @param size the size of the table.
      */

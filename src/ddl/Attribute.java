@@ -15,16 +15,20 @@ public class Attribute implements Serializable {
     public Attribute(String name, String type) throws DDLParserException {
         name = name.toLowerCase();
         type = type.toLowerCase();
-        type = type.replaceAll("[^a-zA-Z0-9]", ""); // remove special characters
-        type = type.replaceAll("\\d", ""); // remove digits
-        String[] typeArr = {"double", "integer", "char", "varchar", "boolean"};
-        List<String> typeList = Arrays.asList(typeArr);
 
-        if(typeList.contains(type)) { // checks for valid type
-            this.name = name;
+        this.name = name;
+        this.constraints = new ArrayList<>();
+
+        if(type.equals("integer"))
             this.type = type;
-            this.constraints = new ArrayList<>();
-        }
+        else if (type.equals("double"))
+            this.type = type;
+        else if (type.equals("boolean"))
+            this.type = type;
+        else if(type.startsWith("char"))
+            this.type = type;
+        else if(type.startsWith("varchar"))
+            this.type = type;
         else {
             throw new DDLParserException("Invalid type: " + type);
         }
