@@ -1,6 +1,8 @@
 package ddl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Table {
     private int id;
@@ -8,8 +10,13 @@ public class Table {
     private ArrayList<Attribute> attributes;
     private ArrayList<String> primaryKeys;
     private ArrayList<String> unique;
+
+    // foreign keys that this table uses to reference other tables
+    private Map<String, Table> foreignKeys; // key - table name, value - key indices
+
+    // foreign keys that other tables have that reference this table
+    private Map<String, Table> foreignKeysRefThisTable; // key - table name, value - key indices
     private int size;
-    // TODO foreign key tbd
 
     public Table(int id, String name) {
         this.id = id;
@@ -17,6 +24,8 @@ public class Table {
         this.attributes = new ArrayList<>();
         this.primaryKeys = new ArrayList<>();
         this.unique = new ArrayList<>();
+        this.foreignKeys = new HashMap<String, Table>();
+        this.foreignKeysRefThisTable = new HashMap<String, Table>();
         this.setSize(0);
     }
 

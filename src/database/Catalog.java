@@ -1,5 +1,6 @@
 package database;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,5 +52,17 @@ public class Catalog {
      */
     public void dropTable(String tableName) {
         tables.remove(tableName);
+    }
+
+    /**
+     * This function adds a foreign key
+     * @param table1Name the table containing the foreign key
+     * @param table1KeyAttr the key attributes, by name not index
+     * @param table2Name the table that the foreign key is referencing
+     * @param table2KeyAttr the key attributes, by name not index
+     */
+    public void addForeignKey(String table1Name, ArrayList[] table1KeyAttr, String table2Name,
+                              ArrayList[] table2KeyAttr) {
+
     }
 }

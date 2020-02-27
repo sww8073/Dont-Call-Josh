@@ -4,6 +4,7 @@ import database.Catalog;
 import storagemanager.StorageManager;
 import storagemanager.StorageManagerException;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -140,31 +141,41 @@ public class DDLParser implements IDDLParser {
         return table;
     }
 
+    /**
+     *
+     * @param attribute
+     * @param table
+     * @return
+     * @throws DDLParserException
+     */
     public Table addForeignKey(String attribute, Table table) throws DDLParserException  {
-        String[] elements = attribute.split("[\\s\\(\\s]+ | [\\s\\)\\s]+");
+        attribute = attribute.replaceAll("\\(", " ");
+        attribute = attribute.replaceAll("\\)", " ");
+        String[] elements = attribute.split("\\s+");
+
+        ArrayList<String> keyAttr = new ArrayList<>(); // key attributes for this table
+        ArrayList<String> foreignKeyAttr = new ArrayList<>(); // key attributes for the table being referenced
+
+        // skip first value and add attributes to list until references keyword found
+        // or index is smaller than the max array index
+        int i = 1;
+        while(!elements[i].toLowerCase().equals("references") && i < elements.length)   {
+            keyAttr.add(elements[i].toLowerCase());
+            i++;
+        }
+
+        i++; // skip "references"
+        String foreignTableName = elements[i]; // name of the table being referenced
+        i++; // skip table name
+        // adds the remaining attributes to the key indices of the other table
+        while(i < elements.length)   {
+            foreignKeyAttr.add(elements[i].toLowerCase());
+            i++;
+        }
+
 
         
-        if(catalog.tableExists(table.getName())){
-            if (elements[2].toLowerCase().equals("references")) {
-                if(catalog.tableExists(elements[3])){
-                    Table referenceTable = catalog.getTable(elements[3]);
-                    String referenceAttr = elements[4];
-                    if(referenceTable.attributeExists(referenceAttr)){
-                        //TODO add foreign key to table here
-                    }
-                    else{
-                        throw new DDLParserException("Reference attribute " + referenceAttr + " does not" +
-                                "exist in the table " + referenceTable.toString() + ".");
-                    }
-                }
-                else{
-                    throw new DDLParserException("Reference table " + elements[3] + " does not exist.");
-                }
-            }
-            else{
-                throw new DDLParserException("Syntax error for foreign key statement, missing reference.");
-            }
-        }
+
         return table;
     }
 
