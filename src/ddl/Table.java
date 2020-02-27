@@ -142,8 +142,12 @@ public class Table {
         return this.name;
     }
 
+    /**
+     * gives the keyIndices of the table
+     * @return
+     */
     public Integer[] getKeyIndices(){
-        int[] keyIndices = new int[primaryKeys.size()];
+        Integer[] keyIndices = new Integer[primaryKeys.size()];
         int index = 0;
         for (String keyName: primaryKeys) {
             for (Attribute attribute : attributes) {
@@ -153,6 +157,20 @@ public class Table {
                 }
             }
         }
-        return null;
+        return keyIndices;
+    }
+
+    /**
+     * gives the dataTypes of the table
+     * @return
+     */
+    public String[] getDataTypes(){
+        String[] dataTypes = new String[attributes.size()];
+        int index = 0;
+        for (Attribute attribute: attributes) {
+            dataTypes[index] = attribute.getType();
+            index++;
+        }
+        return dataTypes;
     }
 }
