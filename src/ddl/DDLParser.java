@@ -267,7 +267,7 @@ public class DDLParser implements IDDLParser {
                         }
                         oldTable.dropAttribute(attr);
                         Object[][] records = readTable(oldTable);
-                        // TODO delete table from storage manager
+                        dropTable(oldTable);
                         // TODO modify table
                         // TODO create new table
                         // TODO add modified records
