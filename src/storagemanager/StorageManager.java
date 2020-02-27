@@ -388,8 +388,7 @@ public class StorageManager extends AStorageManager {
     @Override
     public void terminateDatabase() throws StorageManagerException {
         try{
-
-            FileOutputStream out = new FileOutputStream(this.dbLoc + "\\database.txt");
+            FileOutputStream out = new FileOutputStream( dbLoc + "\\database.txt");
             ObjectOutputStream objectOut = new ObjectOutputStream(out);
             objectOut.writeObject(this.dataTypes);
             objectOut.writeObject(this.keyIndices);
@@ -404,7 +403,7 @@ public class StorageManager extends AStorageManager {
             objectOut.flush();
             objectOut.close();
         }catch(IOException e){
-            System.out.println("File not found");
+            System.out.println("File not found during terminate database.");
         }
     }
 
@@ -421,6 +420,7 @@ public class StorageManager extends AStorageManager {
         try{
             FileInputStream in = new FileInputStream(sizes);
             ObjectInputStream ois = new ObjectInputStream(in);
+            this.dbLoc = dbLoc;
             this.dataTypes = (HashMap<Integer, String[]>) ois.readObject();
             this.keyIndices = (HashMap<Integer, Integer[]>) ois.readObject();
             this.maxRecordsPerPage = (HashMap<Integer, Integer>) ois.readObject();
@@ -428,8 +428,8 @@ public class StorageManager extends AStorageManager {
             this.pageId = (Integer) ois.readObject();
             int pageSize = (int) ois.readObject();
             int pageBufferSize = (int) ois.readObject();
-            String dbloc = (String) ois.readObject();
-            this.bufferManager = new BufferManager(pageSize, pageBufferSize, dbloc);
+            String buffloc = (String) ois.readObject();
+            this.bufferManager = new BufferManager(pageSize, pageBufferSize, buffloc);
             ois.close();
         }catch(IOException e){
             System.out.println("File not found");
