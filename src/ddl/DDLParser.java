@@ -119,7 +119,6 @@ public class DDLParser implements IDDLParser {
 
         switch(option){
             case "unique":
-                System.out.println(option);
                 for (int i = 1; i < elements.length; i++){
                     if(!elements[i].equals(" ") && elements[i] != null){
                         table.addUnqiueAttribute(elements[i]);
