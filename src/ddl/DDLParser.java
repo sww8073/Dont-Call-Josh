@@ -142,7 +142,7 @@ public class DDLParser implements IDDLParser {
     }
 
     /**
-     *
+     * This function parses the foreign key statements and adds references to both tables
      * @param attribute
      * @param table
      * @return

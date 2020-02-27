@@ -47,6 +47,8 @@ public class Table {
         }
     }
 
+    //public void addForeignKey()
+
     /**
      * Adds a attribute to the attribute list. Order matters.
      * @param attribute Attribute Object
