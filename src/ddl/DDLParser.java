@@ -266,10 +266,8 @@ public class DDLParser implements IDDLParser {
                             throw new DDLParserException("Attribute " + attr + " is a primary key and cannot be dropped.");
                         }
                         oldTable.dropAttribute(attr);
-                        // TODO read in values
-                        
+                        Object[][] records = readTable(oldTable);
                         // TODO delete table from storage manager
-
                         // TODO modify table
                         // TODO create new table
                         // TODO add modified records
@@ -339,10 +337,23 @@ public class DDLParser implements IDDLParser {
     }
 
     /**
+     *  Drops a table from the database using the storage manager
+     * @param table the table to drop
+     * @throws DDLParserException the table does not exist
+     */
+    private void dropTable(Table table) throws DDLParserException {
+        try {
+            storageManager.dropTable(table.getId());
+        } catch (Exception e) {
+            throw new DDLParserException("Table does not exist");
+        }
+    }
+
+    /**
      * Gets all records from a table
      * @param table the table to get records from
      * @return the records
-     * @throws DDLParserException if the table does not exist
+     * @throws DDLParserException the table does not exist
      */
     private Object[][] readTable(Table table) throws DDLParserException {
         int tableID = table.getId();
