@@ -47,7 +47,16 @@ public class Table {
         }
     }
 
-    //public void addForeignKey()
+    /**
+     * this adds the foreign day for the foreign key, only this table will be impacted*****
+     * @param keyIndicies this tables key indices
+     * @param foreignTable the name of the foreign table
+     * @param foreignKeyIndicies the foreign tables indices
+     */
+    public void addForeignKey(ArrayList<String> keyIndicies, String foreignTable,
+                              ArrayList<String> foreignKeyIndicies) {
+
+    }
 
     /**
      * Adds a attribute to the attribute list. Order matters.
