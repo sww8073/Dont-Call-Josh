@@ -147,6 +147,20 @@ public class Table implements Serializable {
     }
 
     /**
+     * Returns the index of the attribute in the table
+     * @param attrName The attribute to find
+     * @return the indec of the attribute
+     */
+    public int indexOfAttribute(String attrName) {
+        for (Attribute attribute: attributes) {
+            if(attribute.getName().equals(attrName)){
+                return attributes.indexOf(attribute);
+            }
+        }
+        return -1;
+    }
+
+    /**
      * returns a true if the table has this attribute
      * @param attrName
      */
