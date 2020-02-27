@@ -173,6 +173,9 @@ public class DDLParser implements IDDLParser {
             foreignKeyAttr.add(elements[i].toLowerCase());
             i++;
         }
+
+        ForeignKey foreignKey = new ForeignKey(table.getName(), keyAttr, foreignTableName, foreignKeyAttr);
+        table.addForeignKey(foreignKey);
         return table;
     }
 
