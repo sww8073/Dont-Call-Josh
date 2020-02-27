@@ -48,11 +48,21 @@ public class Table {
     }
 
     /**
-     * This function adds a foreign key to this table. Updates the catalog, with the reference of the other foreign key
+     * This function adds a foreign key to this table.
      * @param foreignKey foreign key object
      */
     public void addForeignKey(ForeignKey foreignKey)    {
+        // adds foreign key to table that normally contains it
+        foreignKeys.put(foreignKey.getForeignTableName(), foreignKey);
+    }
 
+    /**
+     * This function adds a reference foreign key to this table.
+     * @param foreignKey foreign key object
+     */
+    public void addForeignKeyReference(ForeignKey foreignKey)    {
+        // tells the table that is being referenced that there is a foreign key associated with it
+        foreignKeysRefThisTable.put(foreignKey.getTableName(), foreignKey);
     }
 
     /**

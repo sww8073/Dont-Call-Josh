@@ -143,10 +143,10 @@ public class DDLParser implements IDDLParser {
     }
 
     /**
-     * This function parses the foreign key statements and adds references to both tables
-     * @param attribute
-     * @param table
-     * @return
+     * This function parses the foreign key statements and adds references to both tables.
+     * @param attribute foreign key string
+     * @param table the table the foreign key is being added to
+     * @return the updated table
      * @throws DDLParserException
      */
     public Table addForeignKey(String attribute, Table table) throws DDLParserException  {
@@ -175,7 +175,10 @@ public class DDLParser implements IDDLParser {
         }
 
         ForeignKey foreignKey = new ForeignKey(table.getName(), keyAttr, foreignTableName, foreignKeyAttr);
-        table.addForeignKey(foreignKey);
+        table.addForeignKey(foreignKey); // adds foreign key to table that normally contains it
+
+        // tells the table that is being referenced that there is a foreign key associated with it
+        catalog.addForeignKeyReference(foreignKey);
         return table;
     }
 

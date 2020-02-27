@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import ddl.DDLParserException;
+import ddl.ForeignKey;
 import ddl.Table;
+import javafx.scene.control.Tab;
 
 /**
  * Catalog class manages table data for the database
@@ -55,14 +58,17 @@ public class Catalog {
     }
 
     /**
-     * This function adds a foreign key
-     * @param table1Name the table containing the foreign key
-     * @param table1KeyAttr the key attributes, by name not index
-     * @param table2Name the table that the foreign key is referencing
-     * @param table2KeyAttr the key attributes, by name not index
+     * This functions adds a foreign key reference form another table
+     * @param foreignKey
      */
-    public void addForeignKey(String table1Name, ArrayList[] table1KeyAttr, String table2Name,
-                              ArrayList[] table2KeyAttr) {
-
+    public void addForeignKeyReference(ForeignKey foreignKey)  throws DDLParserException {
+        String foreignTableName = foreignKey.getForeignTableName();
+        if(tables.containsKey(foreignTableName))    {
+            Table foreignTable = tables.get(foreignTableName); // gets the foreign table
+            foreignTable.addForeignKeyReference(foreignKey); // adds the foreign kry reference
+            tables.replace(foreignTableName, foreignTable); // updates the table in the map
+        }
+        else
+            throw new DDLParserException(foreignTableName + " does not exist");
     }
 }

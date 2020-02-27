@@ -20,5 +20,11 @@ public class ForeignKey {
         this.foreignKeyIndices = foreignKeyIndices;
     }
 
+    public String getForeignTableName() {
+        return foreignTableName;
+    }
 
+    public String getTableName() {
+        return tableName;
+    }
 }
