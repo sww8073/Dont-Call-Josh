@@ -17,7 +17,7 @@ public class Phase2Tester {
     public static void main(String[] args) {
 
         // You may need to modify some values to test on your system
-        String dbLoc = "C:\\Users\\Matthew\\Desktop\\db";
+        String dbLoc = "C:\\Users\\slice\\Desktop\\db\\dba";
         int pageBufferSize = 20;
         int pageSize = 4096;
         AStorageManager sm;
@@ -217,24 +217,25 @@ public class Phase2Tester {
             e.printStackTrace();
             System.exit(1);
         }
-//
-//        System.out.println("Restarting the database...");
-//
-//        database = Database.getConnection(dbLoc, pageBufferSize, pageSize);
-//
-//        System.out.println("Altering table 1. this may take a moment...");
-//        System.out.println("Three failures should be reported.");
-//
-//
-//        String alterAddNull = "alter table foo add gar double;";//       String alterAddDefault = "alter table foo add another integer default 10;";
-//        String alterExists = "alter table foo add id double;";
-//        String alterDropAttr = "alter table baz drop department;";
-//        String alterNonexistentTable = "alter table bazzle drop attr;";
-//        String alterNonexistentAttr = "alter table baz drop foo;";
-//
-//        database.executeNonQuery(alterAddNull);
-//        database.executeNonQuery(alterAddDefault);
-//        database.executeNonQuery(alterDropAttr);
+
+        System.out.println("Restarting the database...");
+
+        database = Database.getConnection(dbLoc, pageBufferSize, pageSize);
+
+        System.out.println("Altering table 1. this may take a moment...");
+        System.out.println("Three failures should be reported.");
+
+
+        String alterAddNull = "alter table foo add gar double;";
+        String alterAddDefault = "alter table foo add another integer default 10;";
+        String alterExists = "alter table foo add id double;";
+        String alterDropAttr = "alter table baz drop department;";
+        String alterNonexistentTable = "alter table bazzle drop attr;";
+        String alterNonexistentAttr = "alter table baz drop foo;";
+
+        database.executeNonQuery(alterAddNull);
+        database.executeNonQuery(alterAddDefault);
+        database.executeNonQuery(alterDropAttr);
 //
 //        System.out.println("These alters should report failure...");
 //        database.executeNonQuery(alterExists);
