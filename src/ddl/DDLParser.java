@@ -172,10 +172,6 @@ public class DDLParser implements IDDLParser {
             foreignKeyAttr.add(elements[i].toLowerCase());
             i++;
         }
-
-
-        
-
         return table;
     }
 
