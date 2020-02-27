@@ -12,10 +12,10 @@ public class Table {
     private ArrayList<String> unique;
 
     // foreign keys that this table uses to reference other tables
-    private Map<String, Table> foreignKeys; // key - table name, value - key indices
+    private Map<String, ForeignKey> foreignKeys; // key - table name, value - ForeignKey Object
 
     // foreign keys that other tables have that reference this table
-    private Map<String, Table> foreignKeysRefThisTable; // key - table name, value - key indices
+    private Map<String, ForeignKey> foreignKeysRefThisTable; // key - table name, value - ForeignKey Object
     private int size;
 
     public Table(int id, String name) {
@@ -24,8 +24,8 @@ public class Table {
         this.attributes = new ArrayList<>();
         this.primaryKeys = new ArrayList<>();
         this.unique = new ArrayList<>();
-        this.foreignKeys = new HashMap<String, Table>();
-        this.foreignKeysRefThisTable = new HashMap<String, Table>();
+        this.foreignKeys = new HashMap<String, ForeignKey>();
+        this.foreignKeysRefThisTable = new HashMap<String, ForeignKey>();
         this.setSize(0);
     }
 
@@ -48,13 +48,10 @@ public class Table {
     }
 
     /**
-     * this adds the foreign day for the foreign key, only this table will be impacted*****
-     * @param keyIndicies this tables key indices
-     * @param foreignTable the name of the foreign table
-     * @param foreignKeyIndicies the foreign tables indices
+     * This function adds a foreign key to this table. Updates the catalog, with the reference of the other foreign key
+     * @param foreignKey foreign key object
      */
-    public void addForeignKey(ArrayList<String> keyIndicies, String foreignTable,
-                              ArrayList<String> foreignKeyIndicies) {
+    public void addForeignKey(ForeignKey foreignKey)    {
 
     }
 

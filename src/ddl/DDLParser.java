@@ -1,5 +1,4 @@
 package ddl;
-
 import database.Catalog;
 import storagemanager.StorageManager;
 import storagemanager.StorageManagerException;
@@ -9,9 +8,10 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * This a a parser for DDL statements
+ * Storage Manager: Phase 2
+ * Team: Don't Tell Josh
+ * Members: Matthew Clements, Josh Tellier, Stone Warren, Josh Schenk
  */
-
 public class DDLParser implements IDDLParser {
 
     public static int tableIdIncrement = 0; // this will be used to generate new table ids
@@ -172,6 +172,9 @@ public class DDLParser implements IDDLParser {
             foreignKeyAttr.add(elements[i].toLowerCase());
             i++;
         }
+
+        ForeignKey foreignKey = new ForeignKey(table.getName(), keyAttr, foreignTableName, foreignKeyAttr);
+        table.addForeignKey(foreignKey);
         return table;
     }
 
