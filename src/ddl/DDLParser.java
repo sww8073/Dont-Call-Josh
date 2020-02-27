@@ -312,13 +312,7 @@ public class DDLParser implements IDDLParser {
                         if (oldAttr.isPrimary()) {
                             throw new DDLParserException("Attribute " + attr + " is a primary key and cannot be dropped.");
                         }
-                        oldTable.dropAttribute(attr);
-                        Object[][] records = readTable(oldTable);
-                        dropTable(oldTable);
-                        // TODO modify table
-                        // TODO create new table
-                        // TODO add modified records
-                        catalog.dropTable(tableName);
+                        dropAttribute(oldTable, attr);
                         break;
 
                     default:
@@ -332,6 +326,47 @@ public class DDLParser implements IDDLParser {
         else{
             throw new DDLParserException("Incorrect syntax for alter statement.");
         }
+    }
+
+    /**
+     * Drops an attribute from a table
+     * @param table the table to modify
+     * @param attr the table to drop
+     * @throws DDLParserException The attribute is a key
+     */
+    private void dropAttribute(Table table, String attr) throws DDLParserException {
+        int attrLoc = table.indexOfAttribute(attr);
+        table.dropAttribute(attr);
+        Object[][] oldRecords = readTable(table);
+
+        String[] dataTypes = table.getDataTypes();
+        Integer[] keyIndices = table.getKeyIndices();
+        int tableID = table.getId();
+
+        dropTable(table);
+        int newAttrNum = oldRecords[0].length - 1;
+        int oldAttrNum  = oldRecords[0].length;
+        int relationNum = oldRecords.length;
+        // This is our new object array of records.
+        Object[][] newRecords = new Object[relationNum][newAttrNum];
+        for (int i = 0; i < relationNum; i++) {
+            int newJ = 0;
+            for (int j = 0; j < oldAttrNum; j++) {
+                if (j == attrLoc) {
+                    newJ--;
+                } else {
+                    newRecords[i][newJ] = oldRecords[i][j];
+                }
+                newJ++;
+            }
+        }
+        try {
+            storageManager.addTable(tableID, dataTypes, keyIndices);
+            for (Object[] record: newRecords) {
+                storageManager.insertRecord(tableID, record);
+            }
+        } catch (StorageManagerException e) {}
+        catalog.dropTable(table.getName());
     }
 
     private void makeNewTable(Table table, String value, String attrType){
