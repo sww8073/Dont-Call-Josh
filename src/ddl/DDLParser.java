@@ -219,11 +219,7 @@ public class DDLParser implements IDDLParser {
             // check for special constraint and add them to the table
             String elementStr = elements[i];
             elementStr = elementStr.toLowerCase();
-            if(elementStr.equals("foreignkey")) {
-                // table.addPrimaryKey(name);
-                // TODO add forignkey
-            }
-            else if(elementStr.equals("primarykey")) {
+            if(elementStr.equals("primarykey")) {
                 table.addPrimaryKey(name);
             }
             else if(elementStr.equals("unique"))    {
