@@ -279,39 +279,8 @@ public class DDLParser implements IDDLParser {
 
                         if(wordsInStatement.length > 5){
                             if(wordsInStatement[6].toLowerCase().equals("default")){
-
                                 String defaultValue = wordsInStatement[7].toLowerCase();// the default value
-
-                                try {
-                                    switch(attrType) {
-                                        case "double":
-                                            Double doubleValue = Double.parseDouble(defaultValue);
-                                            makeNewTable(table, doubleValue);
-                                            break;
-
-                                        case "integer":
-                                            Integer intValue = Integer.parseInt(defaultValue);
-                                            makeNewTable(table, intValue);
-                                            break;
-
-                                        case "char":
-                                            String charValue = defaultValue;
-                                            makeNewTable(table, charValue);
-                                            break;
-
-                                        case "varchar":
-                                            String varchar = defaultValue;
-                                            makeNewTable(table, varchar);
-                                            break;
-
-                                        default:
-                                            throw new DDLParserException(attrType + " is an invalid type");
-                                    }
-                                }
-                                catch (Exception e) {
-                                    throw new DDLParserException("unable to add attribute " + defaultValue);
-                                }
-
+                                makeNewTable(table, defaultValue, attrType);
                             }
                         }
                         break;
@@ -345,22 +314,100 @@ public class DDLParser implements IDDLParser {
         }
     }
 
-    private Object[][] makeNewTable(Table table, Object o){
+    private Object[][] makeNewTable(Table table, String value, String attrType){
         try{
+
             Object[][] oldtable = readTable(table);
+
+            String[] dataTypes = table.getDataTypes();
+            Integer[] keyIndices = table.getKeyIndices();
+            int tableID = table.getId();
+
             dropTable(table);
 
-            Integer[] keyIndices = table.getKeyIndices();
             int newAttrNum = oldtable[0].length + 1;
             int relationNum = oldtable.length;
-            Object [][] newTable = new Object[relationNum][newAttrNum];
+            Object[][] newTable = new Object[relationNum][newAttrNum];
 
-            for (int i = 0; i < relationNum; i++) {
-                for (int j = 0; j < newAttrNum-1; j++) {
-                    newTable[i][j] = oldtable[i][j];
+            if(value != null) {//has a default value
+                switch(attrType){
+                    case "double":
+                        Double doubleVal = null;
+                        for (int i = 0; i < relationNum; i++) {
+                            for (int j = 0; j < newAttrNum - 1; j++) {
+                                newTable[i][j] = oldtable[i][j];
+                            }
+                            newTable[i][newAttrNum] = doubleVal;
+                        }
+                        break;
+                    case "integer":
+                        Integer integerVal = null;
+                        for (int i = 0; i < relationNum; i++) {
+                            for (int j = 0; j < newAttrNum - 1; j++) {
+                                newTable[i][j] = oldtable[i][j];
+                            }
+                            newTable[i][newAttrNum] = integerVal;
+                        }
+                        break;
+                    case "char":
+                        String charVal = null;
+                        for (int i = 0; i < relationNum; i++) {
+                            for (int j = 0; j < newAttrNum - 1; j++) {
+                                newTable[i][j] = oldtable[i][j];
+                            }
+                            newTable[i][newAttrNum] = charVal;
+                        }
+                        break;
+                    case "varchar":
+                        String varcharVal = null;
+                        for (int i = 0; i < relationNum; i++) {
+                            for (int j = 0; j < newAttrNum - 1; j++) {
+                                newTable[i][j] = oldtable[i][j];
+                            }
+                            newTable[i][newAttrNum] = varcharVal;
+                        }
+                        break;
                 }
-                newTable[i][newAttrNum] = o;
             }
+            else{
+                switch(attrType){
+                    case "double":
+                        Double doubleVal = Double.parseDouble(value);
+                        for (int i = 0; i < relationNum; i++) {
+                            for (int j = 0; j < newAttrNum - 1; j++) {
+                                newTable[i][j] = oldtable[i][j];
+                            }
+                            newTable[i][newAttrNum] = doubleVal;
+                        }
+                        break;
+                    case "integer":
+                        Integer integerVal = Integer.parseInt(value);
+                        for (int i = 0; i < relationNum; i++) {
+                            for (int j = 0; j < newAttrNum - 1; j++) {
+                                newTable[i][j] = oldtable[i][j];
+                            }
+                            newTable[i][newAttrNum] = integerVal;
+                        }
+                        break;
+                    case "char":
+                        for (int i = 0; i < relationNum; i++) {
+                            for (int j = 0; j < newAttrNum - 1; j++) {
+                                newTable[i][j] = oldtable[i][j];
+                            }
+                            newTable[i][newAttrNum] = value;
+                        }
+                        break;
+                    case "varchar":
+                        for (int i = 0; i < relationNum; i++) {
+                            for (int j = 0; j < newAttrNum - 1; j++) {
+                                newTable[i][j] = oldtable[i][j];
+                            }
+                            newTable[i][newAttrNum] = value;
+                        }
+                        break;
+                }
+            }
+
         }
         catch (DDLParserException e){}
 
