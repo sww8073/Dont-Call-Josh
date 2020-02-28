@@ -64,7 +64,7 @@ public class Catalog implements Serializable {
         String foreignTableName = foreignKey.getForeignTableName();
         if(tables.containsKey(foreignTableName))    {
             Table foreignTable = tables.get(foreignTableName); // gets the foreign table
-            foreignTable.addForeignKeyReference(foreignKey); // adds the foreign kry reference
+            foreignTable.addForeignKeyReference(foreignKey); // adds the foreign key reference
             tables.replace(foreignTableName, foreignTable); // updates the table in the map
         }
         else

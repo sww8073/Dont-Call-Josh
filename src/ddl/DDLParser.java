@@ -188,6 +188,9 @@ public class DDLParser implements IDDLParser {
             i++;
         }
 
+        if(!catalog.tableExists(foreignTableName))
+            throw new DDLParserException("Cannot make a foreign key to a table that does not exist");
+
         ForeignKey foreignKey = new ForeignKey(table.getName(), keyAttr, foreignTableName, foreignKeyAttr);
         table.addForeignKey(foreignKey); // adds foreign key to table that normally contains it
 

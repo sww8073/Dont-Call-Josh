@@ -28,4 +28,12 @@ public class ForeignKey implements Serializable {
     public String getTableName() {
         return tableName;
     }
+
+    public ArrayList<String> getKeyIndices() {
+        return keyIndices;
+    }
+
+    public ArrayList<String> getForeignKeyIndices() {
+        return foreignKeyIndices;
+    }
 }
