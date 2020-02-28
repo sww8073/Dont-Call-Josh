@@ -17,7 +17,7 @@ public class Phase2Tester {
     public static void main(String[] args) {
 
         // You may need to modify some values to test on your system
-        String dbLoc = "C:\\Users\\slice\\Desktop\\db\\db2";
+        String dbLoc = "C:\\Users\\Matthew\\Desktop\\db\\dba";
         int pageBufferSize = 20;
         int pageSize = 4096;
         AStorageManager sm;

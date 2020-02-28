@@ -399,7 +399,6 @@ public class DDLParser implements IDDLParser {
                 storageManager.insertRecord(tableID, record);
             }
         } catch (StorageManagerException e) {}
-        catalog.dropTable(table.getName());
     }
 
     private void makeNewTable(Table table, String value, String attrType){
