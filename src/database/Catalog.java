@@ -35,7 +35,8 @@ public class Catalog implements Serializable {
      * @return whether the table exists
      */
     public boolean tableExists(String table) {
-        return tables.containsKey(table);
+        boolean answer = tables.containsKey(table);
+        return answer;
     }
 
     /**
