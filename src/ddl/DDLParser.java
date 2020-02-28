@@ -266,7 +266,9 @@ public class DDLParser implements IDDLParser {
             String table = wordsInStatement[2];
             String tableName = table.substring(0, table.length() - 1);
             Table table1 = catalog.getTable(tableName);
+            System.out.println(table1);
             int tableIndex = table1.getId();
+            System.out.println(tableIndex);
             try{
                 storageManager.dropTable(tableIndex);
             }catch(StorageManagerException e){
@@ -357,7 +359,7 @@ public class DDLParser implements IDDLParser {
         Integer[] keyIndices = table.getKeyIndices();
         int tableID = table.getId();
 
-        dropTable(table);
+        dropTable2(table);
         int newAttrNum = oldRecords[0].length - 1;
         int oldAttrNum  = oldRecords[0].length;
         int relationNum = oldRecords.length;
@@ -392,7 +394,7 @@ public class DDLParser implements IDDLParser {
             Integer[] keyIndices = table.getKeyIndices();
             int tableID = table.getId();
 
-            dropTable(table);
+            dropTable2(table);
 
             int newAttrNum = oldtable[0].length + 1;
             int relationNum = oldtable.length;
@@ -545,7 +547,7 @@ public class DDLParser implements IDDLParser {
      * @param table the table to drop
      * @throws DDLParserException the table does not exist
      */
-    private void dropTable(Table table) throws DDLParserException {
+    private void dropTable2(Table table) throws DDLParserException {
         try {
             storageManager.dropTable(table.getId());
         } catch (Exception e) {
