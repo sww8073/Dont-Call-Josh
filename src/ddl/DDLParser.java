@@ -301,6 +301,10 @@ public class DDLParser implements IDDLParser {
                     case "add":
 
                         String attrName = wordsInStatement[4].toLowerCase();
+                        Attribute a = table.getAttribute(attrName);
+                        if( a != null){
+                            throw new DDLParserException("Attribute already exists");
+                        }
                         String attrType = wordsInStatement[5].toLowerCase();
 
                         if(wordsInStatement.length > 6){
