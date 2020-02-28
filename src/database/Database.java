@@ -29,7 +29,7 @@ public class Database implements IDatabase {
         String temp = dbLoc + "database.txt";
         File restart = new File(temp);
         db = dbLoc;
-        String catalogLoc = dbLoc + "\\catalog.txt";
+        String catalogLoc = dbLoc + "catalog.txt";
         try{
             if(restart.exists()){
                 storageManager = new StorageManager(dbLoc, pageBufferSize, pageSize, true);
