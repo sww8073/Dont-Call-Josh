@@ -410,7 +410,7 @@ public class DDLParser implements IDDLParser {
                             for (int j = 0; j < newAttrNum - 1; j++) {
                                 newTable[i][j] = oldtable[i][j];
                             }
-                            newTable[i][newAttrNum] = doubleVal;
+                            newTable[i][newAttrNum-1] = doubleVal;
                         }
                         break;
                     case "integer":
@@ -419,7 +419,7 @@ public class DDLParser implements IDDLParser {
                             for (int j = 0; j < newAttrNum - 1; j++) {
                                 newTable[i][j] = oldtable[i][j];
                             }
-                            newTable[i][newAttrNum] = integerVal;
+                            newTable[i][newAttrNum-1] = integerVal;
                         }
                         break;
                     case "char":
@@ -428,7 +428,7 @@ public class DDLParser implements IDDLParser {
                             for (int j = 0; j < newAttrNum - 1; j++) {
                                 newTable[i][j] = oldtable[i][j];
                             }
-                            newTable[i][newAttrNum] = charVal;
+                            newTable[i][newAttrNum-1] = charVal;
                         }
                         break;
                     case "varchar":
@@ -437,7 +437,7 @@ public class DDLParser implements IDDLParser {
                             for (int j = 0; j < newAttrNum - 1; j++) {
                                 newTable[i][j] = oldtable[i][j];
                             }
-                            newTable[i][newAttrNum] = varcharVal;
+                            newTable[i][newAttrNum-1] = varcharVal;
                         }
                         break;
                 }
@@ -450,16 +450,17 @@ public class DDLParser implements IDDLParser {
                             for (int j = 0; j < newAttrNum - 1; j++) {
                                 newTable[i][j] = oldtable[i][j];
                             }
-                            newTable[i][newAttrNum] = doubleVal;
+                            newTable[i][newAttrNum-1] = doubleVal;
                         }
                         break;
                     case "integer":
+                        value = new String(value.substring(0,value.length()-1));
                         Integer integerVal = Integer.parseInt(value);
                         for (int i = 0; i < relationNum; i++) {
                             for (int j = 0; j < newAttrNum - 1; j++) {
                                 newTable[i][j] = oldtable[i][j];
                             }
-                            newTable[i][newAttrNum] = integerVal;
+                            newTable[i][newAttrNum-1] = integerVal;
                         }
                         break;
                     case "char":
@@ -467,7 +468,7 @@ public class DDLParser implements IDDLParser {
                             for (int j = 0; j < newAttrNum - 1; j++) {
                                 newTable[i][j] = oldtable[i][j];
                             }
-                            newTable[i][newAttrNum] = value;
+                            newTable[i][newAttrNum-1] = value;
                         }
                         break;
                     case "varchar":
@@ -475,7 +476,7 @@ public class DDLParser implements IDDLParser {
                             for (int j = 0; j < newAttrNum - 1; j++) {
                                 newTable[i][j] = oldtable[i][j];
                             }
-                            newTable[i][newAttrNum] = value;
+                            newTable[i][newAttrNum-1] = value;
                         }
                         break;
                 }
