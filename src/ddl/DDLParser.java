@@ -1,5 +1,4 @@
 package ddl;
-
 import database.Catalog;
 import storagemanager.StorageManager;
 import storagemanager.StorageManagerException;
@@ -8,7 +7,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * This a a parser for DDL statements
+ * Team: Don't Tell Josh
+ * Members: Matthew Clements, Josh Tellier, Stone Warren, Josh Schenk
  */
 
 public class DDLParser implements IDDLParser {

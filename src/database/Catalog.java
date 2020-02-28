@@ -1,12 +1,15 @@
 package database;
-
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-
 import ddl.DDLParserException;
 import ddl.ForeignKey;
 import ddl.Table;
+
+/**
+ * Team: Don't Tell Josh
+ * Members: Matthew Clements, Josh Tellier, Stone Warren, Josh Schenk
+ */
 
 /**
  * Catalog class manages table data for the database

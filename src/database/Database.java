@@ -1,14 +1,13 @@
 package database;
-
 import ddl.DDLParser;
 import ddl.DDLParserException;
 import storagemanager.StorageManager;
 import storagemanager.StorageManagerException;
-
 import java.io.*;
 
 /**
- * Class to create and access a database.
+ * Team: Don't Tell Josh
+ * Members: Matthew Clements, Josh Tellier, Stone Warren, Josh Schenk
  */
 
 public class Database implements IDatabase {

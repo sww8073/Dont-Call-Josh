@@ -1,9 +1,14 @@
 package ddl;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+/**
+ * Team: Don't Tell Josh
+ * Members: Matthew Clements, Josh Tellier, Stone Warren, Josh Schenk
+ */
+
 
 public class Table implements Serializable {
     private int id;
