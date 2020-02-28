@@ -326,7 +326,7 @@ public class DDLParser implements IDDLParser {
                     case "drop":
                         Table oldTable = catalog.getTable(tableName);
                         String attr = wordsInStatement[4];
-                        attr = new String(attr.substring(0,attr.length()-1));
+                        attr = attr.substring(0,attr.length()-1);
                         if (!oldTable.attributeExists(attr)) {
                             throw new DDLParserException("Attribute "+ attr + " does not exist.");
                         }
