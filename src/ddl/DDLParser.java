@@ -303,22 +303,22 @@ public class DDLParser implements IDDLParser {
                         String attrName = wordsInStatement[4].toLowerCase();
                         Attribute a = table.getAttribute(attrName);
                         if( a != null){
-                            throw new DDLParserException("Attribute already exists");
+                            throw new DDLParserException("Attribute " + attrName + " already exists");
                         }
                         String attrType = wordsInStatement[5].toLowerCase();
 
                         if(wordsInStatement.length > 6){
                             if(wordsInStatement[6].toLowerCase().equals("default")){
-                                //TODO add attribute to catalog
                                 String defaultValue = wordsInStatement[7].toLowerCase();// the default value
                                 Attribute attribute = new Attribute(attrName, attrType);
+                                table.addAttribute(attribute);
                                 makeNewTable(table, defaultValue, attrType);
                             }
                         }
                         else{
                             attrType = attrType.substring(0, attrType.length() - 1);
-                            //TODO add atribute to catalog
                             Attribute attribute = new Attribute(attrName, attrType);//new attr to add
+                            table.addAttribute(attribute);
                             makeNewTable(table,null,attrType);
                         }
                         break;
