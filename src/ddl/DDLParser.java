@@ -315,7 +315,7 @@ public class DDLParser implements IDDLParser {
                             attrType = attrType.substring(0, attrType.length() - 1);
                             //TODO add atribute to catalog
                             Attribute attribute = new Attribute(attrName, attrType);//new attr to add
-                            makeNewTable(table,null,null);
+                            makeNewTable(table,null,attrType);
                         }
                         break;
 
