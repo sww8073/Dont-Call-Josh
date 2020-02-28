@@ -398,7 +398,9 @@ public class DDLParser implements IDDLParser {
             for (Object[] record: newRecords) {
                 storageManager.insertRecord(tableID, record);
             }
-        } catch (StorageManagerException e) {}
+        } catch (StorageManagerException e) {
+            throw new DDLParserException(e.getMessage());
+        }
     }
 
     private void makeNewTable(Table table, String value, String attrType){
@@ -502,7 +504,9 @@ public class DDLParser implements IDDLParser {
                     storageManager.insertRecord(tableID, record);
                 }
             }
-            catch(StorageManagerException e){}
+            catch(StorageManagerException e){
+                throw new DDLParserException(e.getMessage());
+            }
 
         }
         catch (DDLParserException e){}
