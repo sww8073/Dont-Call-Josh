@@ -26,7 +26,7 @@ public class Database implements IDatabase {
      */
     @SuppressWarnings("unchecked")
     public static IDatabase getConnection(String dbLoc, int pageBufferSize, int pageSize ) {
-        String temp = dbLoc + "\\database.txt";
+        String temp = dbLoc + "database.txt";
         File restart = new File(temp);
         db = dbLoc;
         String catalogLoc = dbLoc + "catalog.txt";
@@ -96,7 +96,7 @@ public class Database implements IDatabase {
         try {
             storageManager.purgeBuffer();
             storageManager.terminateDatabase();
-            FileOutputStream out = new FileOutputStream(db + "\\catalog.txt");
+            FileOutputStream out = new FileOutputStream(db + "catalog.txt");
             ObjectOutputStream objectOut = new ObjectOutputStream(out);
             objectOut.writeObject(catalog);
             objectOut.flush();
