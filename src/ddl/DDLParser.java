@@ -278,7 +278,7 @@ public class DDLParser implements IDDLParser {
      */
     public void alterTable(String statement) throws DDLParserException{
         String[] wordsInStatement = statement.split(" ");
-
+        System.out.println(wordsInStatement);
         //if the word after alter is "table" continue, else throw an error
         if(wordsInStatement[1].toLowerCase().equals("table")) {
             String tableName = wordsInStatement[2];
@@ -313,7 +313,7 @@ public class DDLParser implements IDDLParser {
                         Table oldTable = catalog.getTable(tableName);
                         String attr = wordsInStatement[4];
                         if (!oldTable.attributeExists(attr)) {
-                            throw new DDLParserException("Attribute does not exist.");
+                            throw new DDLParserException("Attribute "+ attr + "does not exist.");
                         }
                         Attribute oldAttr = oldTable.getAttribute(attr);
                         if (oldAttr.isPrimary()) {
