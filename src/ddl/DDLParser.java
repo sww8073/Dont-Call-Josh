@@ -299,17 +299,19 @@ public class DDLParser implements IDDLParser {
 
                         String attrName = wordsInStatement[4].toLowerCase();
                         String attrType = wordsInStatement[5].toLowerCase();
-                        attrType = new String(attrType.substring(0,attrType.length()-1));
-
-                        Attribute attribute = new Attribute(attrName, attrType);//new attr to add
 
                         if(wordsInStatement.length > 6){
                             if(wordsInStatement[6].toLowerCase().equals("default")){
+                                //TODO add attribute to catalog
                                 String defaultValue = wordsInStatement[7].toLowerCase();// the default value
+                                Attribute attribute = new Attribute(attrName, attrType);
                                 makeNewTable(table, defaultValue, attrType);
                             }
                         }
                         else{
+                            attrType = attrType.substring(0, attrType.length() - 1);
+                            //TODO add atribute to catalog
+                            Attribute attribute = new Attribute(attrName, attrType);//new attr to add
                             makeNewTable(table,null,null);
                         }
                         break;
