@@ -29,7 +29,7 @@ public class Database implements IDatabase {
         String temp = dbLoc + "\\database.txt";
         File restart = new File(temp);
         db = dbLoc;
-        String catalogLoc = dbLoc + "catalog.txt";
+        String catalogLoc = dbLoc + "\\catalog.txt";
         try{
             if(restart.exists()){
                 storageManager = new StorageManager(dbLoc, pageBufferSize, pageSize, true);
@@ -43,7 +43,6 @@ public class Database implements IDatabase {
         File f = new File(catalogLoc);
         if( f.exists() && !f.isDirectory()){
             try{
-                System.out.println("here");
                 FileInputStream in = new FileInputStream(catalogLoc);
                 ObjectInputStream ois = new ObjectInputStream(in);
                 catalog = (Catalog) ois.readObject();
