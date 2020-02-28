@@ -266,9 +266,10 @@ public class DDLParser implements IDDLParser {
             String table = wordsInStatement[2];
             String tableName = table.substring(0, table.length() - 1);
             Table table1 = catalog.getTable(tableName);
-            System.out.println(table1);
+            if(table1 == null){
+                throw new DDLParserException("Table does not exist");
+            }
             int tableIndex = table1.getId();
-            System.out.println(tableIndex);
             try{
                 storageManager.dropTable(tableIndex);
             }catch(StorageManagerException e){

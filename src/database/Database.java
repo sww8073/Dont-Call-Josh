@@ -26,7 +26,7 @@ public class Database implements IDatabase {
      */
     @SuppressWarnings("unchecked")
     public static IDatabase getConnection(String dbLoc, int pageBufferSize, int pageSize ) {
-        String temp = dbLoc + "database.txt";
+        String temp = dbLoc + "sm.dat";
         File restart = new File(temp);
         db = dbLoc;
         String catalogLoc = dbLoc + "catalog.txt";
