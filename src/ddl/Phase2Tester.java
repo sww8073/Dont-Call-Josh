@@ -17,7 +17,7 @@ public class Phase2Tester {
     public static void main(String[] args) {
 
         // You may need to modify some values to test on your system
-        String dbLoc = "C:\\Users\\jtell\\Desktop\\Database\\Database2";
+        String dbLoc = "C:\\Users\\slice\\Desktop\\db\\db2";
         int pageBufferSize = 20;
         int pageSize = 4096;
         AStorageManager sm;
@@ -96,13 +96,13 @@ public class Phase2Tester {
         database.executeNonQuery(createTable2);
 
         System.out.println("\tThese table creates should report failure but not stop the database...");
-//        database.executeNonQuery(createErrorExists);
-//        database.executeNonQuery(createErrorType);
-//        database.executeNonQuery(createErrorPK1);
-//        database.executeNonQuery(createErrorFK1);
-//        database.executeNonQuery(createErrorFK2);
-//        database.executeNonQuery(createErrorFK3);
-//        database.executeNonQuery(createErrorU1);
+        database.executeNonQuery(createErrorExists);
+        database.executeNonQuery(createErrorType);
+        database.executeNonQuery(createErrorPK1);
+        database.executeNonQuery(createErrorFK1);
+        database.executeNonQuery(createErrorFK2);
+        database.executeNonQuery(createErrorFK3);
+        database.executeNonQuery(createErrorU1);
 
         System.out.println("Shutting down the database...");
         database.terminateDatabase();
@@ -236,95 +236,95 @@ public class Phase2Tester {
         database.executeNonQuery(alterAddNull);
         database.executeNonQuery(alterAddDefault);
         database.executeNonQuery(alterDropAttr);
-//
-//        System.out.println("These alters should report failure...");
-//        database.executeNonQuery(alterExists);
-//        database.executeNonQuery(alterNonexistentTable);
-//        database.executeNonQuery(alterNonexistentAttr);
-//
-//        System.out.println("Shutting down the database...");
-//        database.terminateDatabase();
-//
-//        System.out.println("Restarting just storage manager...");
-//        try {
-//            sm = new StorageManager(dbLoc, pageBufferSize, pageSize, true);
-//            System.out.println("Testing getRecords for all tables. Looking for alters...");
-//            // Getting all table entries
-//            // Table 1
-//            try {
-//                Object[][] table1Data = sm.getRecords(table1Id);
-//                Object[] row0 = table1Data[0];
-//                if(row0.length != 6 || !(row0[0]).equals(1) || !(row0[1]).equals("Morna Probbing")
-//                        || !(row0[2]).equals(36.76) || !(row0[3]).equals(false) ||
-//                        row0[4] != null || !row0[5].equals(10)){
-//                    for(Object o: row0)
-//                        System.out.print(o + ",");
-//                    System.out.println();
-//                    System.err.println("Invalid record at table 1 position 0. Alter add failed");
-//                }
-//                Object[] row299 = table1Data[299];
-//                if(row0.length != 6 || !(row299[0]).equals(300) || !(row299[1]).equals("Urbano Petrussi")
-//                        || !(row299[2]).equals(77.51) || !(row299[3]).equals(true) ||
-//                        row0[4] != null || !row0[5].equals(10)){
-//                    System.err.println("Invalid record at table 1 position 299. Alter add failed");
-//                }
-//            } catch (StorageManagerException e) {
-//                System.err.println("Error in get all table 1 records");
-//                e.printStackTrace();
-//                System.exit(1);
-//            }
-//
-//            // Table 2
-//            try {
-//                Object[][] table1Data = sm.getRecords(table2Id);
-//                Object[] row0 = table1Data[0];
-//                if(row0.length != 1 || !(row0[0]).equals(2)){
-//                    System.err.println(row0[0]);
-//                    System.err.println("Invalid record at table 2 position 0. Alter drop failed");
-//                }
-//                Object[] row299 = table1Data[299];
-//                if(row0.length != 1 || !(row299[0]).equals(301)){
-//                    System.err.println(row299[0]);
-//                    System.err.println("Invalid record at table 2 position 299. Alter drop failed");
-//                }
-//            } catch (StorageManagerException e) {
-//                System.err.println("Error in get all table 2 records");
-//                e.printStackTrace();
-//                System.exit(1);
-//            }
-//
-//            System.out.println("Shutting down the storage manager...");
-//            sm.terminateDatabase();
-//        } catch (StorageManagerException e) {
-//            e.printStackTrace();
-//        }
-//
-//        System.out.println("Restarting the database...");
-//        database = Database.getConnection(dbLoc, pageBufferSize, pageSize);
-//
-//        System.out.println("Dropping tables. One should report an error...");
-//
-//        String drop1 = "drop table foo;";
-//        String drop2 = "drop table baz;";
-//        String dropNonexistent = "drop table bazzle;";
-//
-//        database.executeNonQuery(drop1);
-//        database.executeNonQuery(drop2);
-//        database.executeNonQuery(dropNonexistent);
-//
-//        System.out.println("Shutting down the database...");
-//        database.terminateDatabase();
-//
-//        System.out.println("Restarting the storage manager...");
-//
-//        try {
-//            sm = new StorageManager(dbLoc, pageBufferSize, pageSize, true);
-//            sm.dropTable(table1Id); //this should fail...
-//            System.err.println("Drop failed...");
-//        } catch (StorageManagerException e) {
-//            System.out.println("dropped successfully");
-//        }
-//
-//        System.out.println("Testing complete....");
+
+        System.out.println("These alters should report failure...");
+        database.executeNonQuery(alterExists);
+        database.executeNonQuery(alterNonexistentTable);
+        database.executeNonQuery(alterNonexistentAttr);
+
+        System.out.println("Shutting down the database...");
+        database.terminateDatabase();
+
+        System.out.println("Restarting just storage manager...");
+        try {
+            sm = new StorageManager(dbLoc, pageBufferSize, pageSize, true);
+            System.out.println("Testing getRecords for all tables. Looking for alters...");
+            // Getting all table entries
+            // Table 1
+            try {
+                Object[][] table1Data = sm.getRecords(table1Id);
+                Object[] row0 = table1Data[0];
+                if(row0.length != 6 || !(row0[0]).equals(1) || !(row0[1]).equals("Morna Probbing")
+                        || !(row0[2]).equals(36.76) || !(row0[3]).equals(false) ||
+                        row0[4] != null || !row0[5].equals(10)){
+                    for(Object o: row0)
+                        System.out.print(o + ",");
+                    System.out.println();
+                    System.err.println("Invalid record at table 1 position 0. Alter add failed");
+                }
+                Object[] row299 = table1Data[299];
+                if(row0.length != 6 || !(row299[0]).equals(300) || !(row299[1]).equals("Urbano Petrussi")
+                        || !(row299[2]).equals(77.51) || !(row299[3]).equals(true) ||
+                        row0[4] != null || !row0[5].equals(10)){
+                    System.err.println("Invalid record at table 1 position 299. Alter add failed");
+                }
+            } catch (StorageManagerException e) {
+                System.err.println("Error in get all table 1 records");
+                e.printStackTrace();
+                System.exit(1);
+            }
+
+            // Table 2
+            try {
+                Object[][] table1Data = sm.getRecords(table2Id);
+                Object[] row0 = table1Data[0];
+                if(row0.length != 1 || !(row0[0]).equals(2)){
+                    System.err.println(row0[0]);
+                    System.err.println("Invalid record at table 2 position 0. Alter drop failed");
+                }
+                Object[] row299 = table1Data[299];
+                if(row0.length != 1 || !(row299[0]).equals(301)){
+                    System.err.println(row299[0]);
+                    System.err.println("Invalid record at table 2 position 299. Alter drop failed");
+                }
+            } catch (StorageManagerException e) {
+                System.err.println("Error in get all table 2 records");
+                e.printStackTrace();
+                System.exit(1);
+            }
+
+            System.out.println("Shutting down the storage manager...");
+            sm.terminateDatabase();
+        } catch (StorageManagerException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Restarting the database...");
+        database = Database.getConnection(dbLoc, pageBufferSize, pageSize);
+
+        System.out.println("Dropping tables. One should report an error...");
+
+        String drop1 = "drop table foo;";
+        String drop2 = "drop table baz;";
+        String dropNonexistent = "drop table bazzle;";
+
+        database.executeNonQuery(drop1);
+        database.executeNonQuery(drop2);
+        database.executeNonQuery(dropNonexistent);
+
+        System.out.println("Shutting down the database...");
+        database.terminateDatabase();
+
+        System.out.println("Restarting the storage manager...");
+
+        try {
+            sm = new StorageManager(dbLoc, pageBufferSize, pageSize, true);
+            sm.dropTable(table1Id); //this should fail...
+            System.err.println("Drop failed...");
+        } catch (StorageManagerException e) {
+            System.out.println("dropped successfully");
+        }
+
+        System.out.println("Testing complete....");
     }
 }

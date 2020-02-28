@@ -363,6 +363,17 @@ public class DDLParser implements IDDLParser {
 
         String[] dataTypes = table.getDataTypes();
         Integer[] keyIndices = table.getKeyIndices();
+        String[] newDataTypes = new String[dataTypes.length - 1];
+
+        int newIndex = 0;
+        for (int i = 0; i < dataTypes.length; i++) {
+            if (i == attrLoc) {
+                newIndex--;
+            } else {
+                newDataTypes[newIndex] = dataTypes[i];
+            }
+            newIndex++;
+        }
         int tableID = table.getId();
 
         dropTable2(table);
@@ -383,7 +394,7 @@ public class DDLParser implements IDDLParser {
             }
         }
         try {
-            storageManager.addTable(tableID, dataTypes, keyIndices);
+            storageManager.addTable(tableID, newDataTypes, keyIndices);
             for (Object[] record: newRecords) {
                 storageManager.insertRecord(tableID, record);
             }
