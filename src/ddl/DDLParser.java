@@ -315,6 +315,9 @@ public class DDLParser implements IDDLParser {
                     case "drop":
                         Table oldTable = catalog.getTable(tableName);
                         String attr = wordsInStatement[4];
+                        if (!oldTable.attributeExists(attr)) {
+                            throw new DDLParserException("Attribute does not exist.");
+                        }
                         Attribute oldAttr = oldTable.getAttribute(attr);
                         if (oldAttr.isPrimary()) {
                             throw new DDLParserException("Attribute " + attr + " is a primary key and cannot be dropped.");
