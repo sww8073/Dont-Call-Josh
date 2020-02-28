@@ -133,7 +133,9 @@ public class DDLParser implements IDDLParser {
         switch(option){
             case "unique":
                 for (int i = 1; i < elements.length; i++){
-                    if(!elements[i].equals(" ") && elements[i] != null){
+                    if(!elements[i].equals("") && elements[i] != null){
+                        if(!table.attributeExists(elements[i]))
+                            throw new DDLParserException("Cannot make an attribute unique that doesnt exist");
                         table.addUnqiueAttribute(elements[i]);
                     }
                 }
@@ -187,6 +189,9 @@ public class DDLParser implements IDDLParser {
             foreignKeyAttr.add(elements[i].toLowerCase());
             i++;
         }
+
+        if(!catalog.tableExists(foreignTableName))
+            throw new DDLParserException("Cannot make a foreign key to a table that does not exist");
 
         ForeignKey foreignKey = new ForeignKey(table.getName(), keyAttr, foreignTableName, foreignKeyAttr);
         table.addForeignKey(foreignKey); // adds foreign key to table that normally contains it

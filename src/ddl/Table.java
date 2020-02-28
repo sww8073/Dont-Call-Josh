@@ -52,7 +52,11 @@ public class Table implements Serializable {
      * This function adds a foreign key to this table.
      * @param foreignKey foreign key object
      */
-    public void addForeignKey(ForeignKey foreignKey)    {
+    public void addForeignKey(ForeignKey foreignKey) throws DDLParserException     {
+        if(!doesTableHaveAttr(foreignKey.getKeyIndices()))  {
+            throw new DDLParserException("foreign key indices do not exist");
+        }
+
         // adds foreign key to table that normally contains it
         foreignKeys.put(foreignKey.getForeignTableName(), foreignKey);
     }
@@ -61,7 +65,11 @@ public class Table implements Serializable {
      * This function adds a reference foreign key to this table.
      * @param foreignKey foreign key object
      */
-    public void addForeignKeyReference(ForeignKey foreignKey)    {
+    public void addForeignKeyReference(ForeignKey foreignKey) throws DDLParserException    {
+        if(!doesTableHaveAttr(foreignKey.getForeignKeyIndices()))  {
+            throw new DDLParserException("referenced foreign key indices do not exist");
+        }
+
         // tells the table that is being referenced that there is a foreign key associated with it
         foreignKeysRefThisTable.put(foreignKey.getTableName(), foreignKey);
     }
@@ -164,6 +172,20 @@ public class Table implements Serializable {
             }
         }
         return false;
+    }
+
+    /**
+     * This function checks see if the table has all the attributes
+     * @param indices
+     * @return
+     */
+    public boolean doesTableHaveAttr(ArrayList<String> indices)  {
+        for (String i : indices)   {
+            if(!attributeExists(i))  {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
