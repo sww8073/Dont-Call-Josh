@@ -133,7 +133,7 @@ public class DDLParser implements IDDLParser {
         switch(option){
             case "unique":
                 for (int i = 1; i < elements.length; i++){
-                    if(!elements[i].equals(" ") && elements[i] != null){
+                    if(!elements[i].equals("") && elements[i] != null){
                         if(!table.attributeExists(elements[i]))
                             throw new DDLParserException("Cannot make an attribute unique that doesnt exist");
                         table.addUnqiueAttribute(elements[i]);
