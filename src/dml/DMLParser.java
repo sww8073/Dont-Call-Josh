@@ -14,7 +14,7 @@ public class DMLParser implements IDMLParser {
     public void parseDMLStatement(String statement) throws DMLParserException {}
     
     @Override
-    Object[][] parseDMLQuery(String statement) throws DMLParserException{
+    public Object[][] parseDMLQuery(String statement) throws DMLParserException{
         return null;
     }
 
