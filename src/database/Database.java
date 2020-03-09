@@ -1,6 +1,8 @@
 package database;
 import ddl.DDLParser;
 import ddl.DDLParserException;
+import dml.DMLParser;
+import dml.DMLParserException;
 import storagemanager.StorageManager;
 import storagemanager.StorageManagerException;
 import java.io.*;
@@ -14,6 +16,7 @@ public class Database implements IDatabase {
 
     private static StorageManager storageManager;
     private static DDLParser iddlParser;
+    private static DMLParser idmlParser;
     private static Catalog catalog;
     private static String db;
     /**
@@ -57,6 +60,7 @@ public class Database implements IDatabase {
             catalog = new Catalog();
         }
         iddlParser = new DDLParser(catalog, storageManager);
+        idmlParser = new DMLParser(catalog, storageManager);
         return new Database();
     }
 
@@ -66,11 +70,18 @@ public class Database implements IDatabase {
      * @param statement the statement to execute
      */
     public void executeNonQuery(String statement) {
-        // TODO In later phases this needs to be updated to differentiate between ddl and dml
         try{
-            iddlParser.parseDDLstatement(statement);
-        }catch(DDLParserException e){
-            //TODO change this exception maybe?
+            String[] wordsInStatement = statement.split(" ");
+            String option = wordsInStatement[0].toLowerCase();
+
+            if( option.equals("create") || option.equals("drop") || option.equals("alter")){
+                iddlParser.parseDDLstatement(statement);
+            }
+            else if( option.equals("insert") || option.equals("delete") || option.equals("update")){
+                idmlParser.parseDMLStatement(statement);
+            }
+
+        }catch(DDLParserException | DMLParserException e){
             e.printStackTrace();
         }
     }
