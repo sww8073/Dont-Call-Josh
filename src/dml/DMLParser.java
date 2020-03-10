@@ -52,7 +52,14 @@ public class DMLParser implements IDMLParser {
         return null;
     }
 
-    public void insertTable(String statement) throws DMLParserException{}
+    /**
+     * This function parses insert DML Statements and adds a relation to a table.
+     * @param statement An insert statement as a string
+     * @throws DMLParserException
+     */
+    public void insertTable(String statement) throws DMLParserException {
+
+    }
 
     public void updateTable(String statement) throws DMLParserException{}
 
