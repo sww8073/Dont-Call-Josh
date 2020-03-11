@@ -24,6 +24,7 @@ public class DMLTester {
 
         try {
             dmlParser.parseDMLStatement(insert1);
+            dmlParser.parseDMLStatement(insert2);
         }
         catch (DMLParserException e)    {
             System.err.println(e.getMessage());

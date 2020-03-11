@@ -3,6 +3,8 @@ package dml;
 import database.Catalog;
 import storagemanager.StorageManager;
 
+import java.util.ArrayList;
+
 public class DMLParser implements IDMLParser {
 
     private static Catalog catalog;
@@ -58,7 +60,24 @@ public class DMLParser implements IDMLParser {
      * @throws DMLParserException
      */
     public void insertTable(String statement) throws DMLParserException {
+        String prefix = statement.substring(0, statement.indexOf("("));
+        String[] wordsInPrefix = prefix.split("\\s+");
 
+        if(wordsInPrefix.length != 4)
+            throw new DMLParserException("Illegal insert statement prefix");
+        else if(!wordsInPrefix[0].toLowerCase().equals("insert")
+                || !wordsInPrefix[1].toLowerCase().equals("into")
+                || !wordsInPrefix[3].toLowerCase().equals("values"))   {
+            throw new DMLParserException("Illegal insert statement prefix");
+        }
+
+        String tableName = wordsInPrefix[2].toLowerCase();
+        // TODO check if the table is in the DB
+
+        // get the suffix starting with the first "(" and ending with last ")" skipping the ";"
+        String suffix = statement.substring(statement.indexOf("(") - 1, statement.length() -1);
+
+        String[] relations = suffix.split(",");
     }
 
     public void updateTable(String statement) throws DMLParserException{}
