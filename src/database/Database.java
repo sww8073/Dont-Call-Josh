@@ -91,7 +91,6 @@ public class Database implements IDatabase {
      *
      * @param query the query to execute
      * @return the table of data returned. Size zero if empty
-     * THIS SHOULD NOT BE IMPLEMENTED IN PHASE2 KEEP THIS EMPTY
      */
     public Object[][] executeQuery(String query) {
         return new Object[0][];
