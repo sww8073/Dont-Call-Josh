@@ -72,12 +72,16 @@ public class DMLParser implements IDMLParser {
         }
 
         String tableName = wordsInPrefix[2].toLowerCase();
-        // TODO check if the table is in the DB
+        catalog.tableExists(tableName);
 
         // get the suffix starting with the first "(" and ending with last ")" skipping the ";"
         String suffix = statement.substring(statement.indexOf("(") - 1, statement.length() -1);
 
         String[] relations = suffix.split(",");
+    }
+
+    public void insertRelations()  throws DMLParserException {
+
     }
 
     public void updateTable(String statement) throws DMLParserException{}
