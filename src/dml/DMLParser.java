@@ -1,6 +1,8 @@
 package dml;
 
 import database.Catalog;
+import ddl.Attribute;
+import ddl.Table;
 import storagemanager.StorageManager;
 
 import java.util.ArrayList;
@@ -89,8 +91,30 @@ public class DMLParser implements IDMLParser {
     public void deleteTable(String statement) throws DMLParserException{
         String[] wordsInStatement = statement.split(" ");
         String table = wordsInStatement[2];
+        Table table1 = catalog.getTable(table);
+        if( table1 == null){
+            throw new DMLParserException("Table does not exist");
+        }
+
         if(wordsInStatement.length == 3){
             // Where cause is true, delete all tuples table
+        }
+        else if(wordsInStatement.length == 7){
+            // only one attribute to check
+            String attribute = wordsInStatement[4];
+            Attribute attribute1 = table1.getAttribute(attribute);
+            if( attribute1 == null){
+                throw new DMLParserException("Attribute does not exist");
+            }
+            String op = wordsInStatement[5];
+            String value = wordsInStatement[6];
+        }
+        else{
+            for( int i = 4; i < wordsInStatement.length; i++){
+                if( (i % 4) == 0){
+                    //Attribute name
+                }
+            }
         }
     }
 
