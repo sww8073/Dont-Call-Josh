@@ -86,7 +86,67 @@ public class DMLParser implements IDMLParser {
 
     }
 
-    public void updateTable(String statement) throws DMLParserException{}
+
+    /**
+     * update: All DML statements that start with this will be considered to be trying to update data in a table.
+     * <name>: is the name of the table to update in. All table names are unique.
+     * set<column1>=<value>, ...,<columnN>=<value> Sets the columns to the provided values.
+     * <value>: attribute name, constant value, or a mathematical operation.
+     * where<condition>: A condition where a tuple should updated. If this evaluates to true  the  tuple  is  updated;
+     * otherwise  it remains  the  same.  See  below  for  evaluating conditionals. If there is no where clause it is
+     * considered to be a where true and all tuples get updated.
+     * @param statement the update statement sent to the database
+     * @throws DMLParserException
+     */
+    public void updateTable(String statement) throws DMLParserException{
+        String[] wordsInStatment = statement.split(" ");
+        String tableName = wordsInStatment[1];
+        String setValue = wordsInStatment[3];
+        Table table;
+        try{
+            table = catalog.getTable(tableName);
+        }
+        catch(Exception e){
+            throw new DMLParserException("Table \"tableName\" does not exist");
+        }
+
+        //where clause
+        if(statement.contains("where")){
+            //where <value> = <value>
+            if(statement.contains("and") || statement.contains("or")){
+                handleCondtional(statement.substring(statement.indexOf("where")));
+            }
+            else{
+                String whereClause = statement.substring(statement.indexOf("where"));
+                String[] wordsInWhereClause = whereClause.split(" ");
+                String value = wordsInWhereClause[1];
+                String checkValue = wordsInStatment[3];
+                if(checkValue.contains(";")){
+                    checkValue = new String(checkValue.substring(0,checkValue.length()-1));
+                }
+
+                //check if attribute exists
+                Attribute attribute;
+
+                try{
+                    attribute = table.getAttribute(value);
+                }
+                catch (Exception e){
+                    throw new DMLParserException("Attribute \"value\" does not exist.");
+                }
+
+                //update attribute here
+            }
+        }
+        else{//all tuples considered to change
+
+        }
+
+    }
+
+    private void handleCondtional(String statement){
+
+    }
 
     public void deleteTable(String statement) throws DMLParserException{
         String[] wordsInStatement = statement.split(" ");
