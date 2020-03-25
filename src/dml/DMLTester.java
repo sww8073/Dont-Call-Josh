@@ -148,28 +148,28 @@ public class DMLTester {
 
         database.executeNonQuery(insert1);
         database.executeNonQuery(insert1Multiple);
-//
-//        database.executeNonQuery(insert2);
-//        database.executeNonQuery(insert2Multiple);
-//
-//        database.executeNonQuery(insert3);
-//        database.executeNonQuery(insert3Multiple);
-//
-//        database.executeNonQuery(insert4);
-//        database.executeNonQuery(insert4Multiple);
-//
-//        System.out.println("These inserts should report errors...");
-//
-//        database.executeNonQuery(insert1DupKey);
-//
-//        database.executeNonQuery(insert2DupKey);
-//        database.executeNonQuery(insert2DupUnique);
-//
-//        database.executeNonQuery(insert3DupKey);
-//        database.executeNonQuery(insert3Null);
-//
-//        database.executeNonQuery(insert4DupKey);
-//        database.executeNonQuery(insert4NonFK);
+
+        database.executeNonQuery(insert2);
+        database.executeNonQuery(insert2Multiple);
+
+        database.executeNonQuery(insert3);
+        database.executeNonQuery(insert3Multiple);
+
+        database.executeNonQuery(insert4);
+        database.executeNonQuery(insert4Multiple);
+
+        System.out.println("These inserts should report errors...");
+
+        database.executeNonQuery(insert1DupKey);
+
+        database.executeNonQuery(insert2DupKey);
+        database.executeNonQuery(insert2DupUnique);
+
+        database.executeNonQuery(insert3DupKey);
+        database.executeNonQuery(insert3Null);
+
+        database.executeNonQuery(insert4DupKey);
+        database.executeNonQuery(insert4NonFK);
 //
 //        database.terminateDatabase();
 //

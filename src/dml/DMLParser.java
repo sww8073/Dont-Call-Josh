@@ -151,7 +151,9 @@ public class DMLParser implements IDMLParser {
                 return Integer.parseInt(value);
             else if (type.equals("char"))
                 return value;
-            else if (type.equals("varchar"))
+            else if (type.startsWith("varchar"))
+                return value;
+            else if (type.equals("boolean"))
                 return value;
             else
                 throw new DMLParserException("Could not convert " + type + " to a " + type);
