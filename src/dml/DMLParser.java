@@ -4,6 +4,7 @@ import database.Catalog;
 import ddl.Attribute;
 import ddl.Table;
 import storagemanager.StorageManager;
+import storagemanager.StorageManagerException;
 
 import java.util.ArrayList;
 
@@ -92,11 +93,20 @@ public class DMLParser implements IDMLParser {
         relationString = relationString.replaceAll("[\\(\\)]", "");
         String[] relations = relationString.trim().split(",");
 
-        for (String relation: relations) {
-            String[] elements = relation.trim().split(" ");
-             int i = 0;
-             i++;
+        Table table = catalog.getTable(tableName);
+        if(table == null)   {
+            throw new DMLParserException("Table does not exist");
+        }
 
+        for (String relation: relations) {
+            try {
+                String[] elements = relation.trim().split(" ");
+                int tableNum = table.getId();
+                storageManager.insertRecord(tableNum, elements);
+            }
+            catch (StorageManagerException e)   {
+                throw new DMLParserException(e.getMessage());
+            }
         }
     }
 
