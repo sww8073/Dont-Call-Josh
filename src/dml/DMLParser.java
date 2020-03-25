@@ -79,13 +79,26 @@ public class DMLParser implements IDMLParser {
         // get the suffix starting with the first "(" and ending with last ")" skipping the ";"
         String suffix = statement.substring(statement.indexOf("(") - 1, statement.length() -1);
 
-        String[] relations = suffix.split(",");
+        insertRelations(tableName, suffix);
     }
 
-    public void insertRelations()  throws DMLParserException {
+    /**
+     * This function inserts the each tuple into its corresponding table
+     * @param tableName the name of the table being inserted into
+     * @param relationString the unparsed string containing 1 or more tuple
+     * @throws DMLParserException
+     */
+    public void insertRelations(String tableName, String relationString)  throws DMLParserException {
+        relationString = relationString.replaceAll("[\\(\\)]", "");
+        String[] relations = relationString.trim().split(",");
 
+        for (String relation: relations) {
+            String[] elements = relation.trim().split(" ");
+             int i = 0;
+             i++;
+
+        }
     }
-
 
     /**
      * update: All DML statements that start with this will be considered to be trying to update data in a table.
