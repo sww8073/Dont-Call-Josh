@@ -114,7 +114,7 @@ public class DMLParser implements IDMLParser {
         if(statement.contains("where")){
             //where <value> = <value>
             if(statement.contains("and") || statement.contains("or")){
-                handleCondtional(statement.substring(statement.indexOf("where")));
+                handleConditional(statement.substring(statement.indexOf("where")));
             }
             else{
                 String whereClause = statement.substring(statement.indexOf("where"));
@@ -144,7 +144,7 @@ public class DMLParser implements IDMLParser {
 
     }
 
-    private void handleCondtional(String statement){
+    private void handleConditional(String statement){
 
     }
 
