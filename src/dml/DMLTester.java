@@ -109,54 +109,54 @@ public class DMLTester {
         database.executeNonQuery(createTable4);
 
         //testing insert
-        System.out.println("Testing insert....");
-
-        Object[] expectedData1_0 = new Object[] {1, "baz", 5.8, false};
-        Object[] expectedData1_1 = new Object[] {2, "foo", 3.12, true};
-        Object[] expectedData1_2 = new Object[] {3, "bar", 35.8, false};
-
-        Object[] expectedData2_0 = new Object[] {1, "baz"};
-        Object[] expectedData2_1 = new Object[] {2, "foo"};
-        Object[] expectedData2_2 = new Object[] {3, "bar"};
-
-        Object[] expectedData3_0 = new Object[] {1, "baz", 24};
-        Object[] expectedData3_1 = new Object[] {2, "foo", null};
-        Object[] expectedData3_2 = new Object[] {3, "bar", 12};
-
-        Object[] expectedData4_0 = new Object[] {1, "baz"};
-        Object[] expectedData4_1 = new Object[] {2, "foo"};
-        Object[] expectedData4_2 = new Object[] {3, "bar"};
-
-        String insert1 = "insert into foo values (2 \"foo\" 3.12 true);";
-        String insert1Multiple = "insert into foo values (3 \"bar\" 35.8 false), (1 \"baz\" 5.8 false);";
-        String insert1DupKey = "insert into foo values (1 \"bazzle\" 4.12 true);";
-
-        String insert2 = "insert into baz values (2 \"foo\");";
-        String insert2Multiple = "insert into baz values (3 \"bar\"), (1 \"baz\");";
-        String insert2DupKey = "insert into baz values (1 \"bazzle\");";
-        String insert2DupUnique = "insert into baz values (4 \"baz\");";
-
-        String insert3 = "insert into bar values (2 \"foo\" null);";
-        String insert3Multiple = "insert into bar values (3 \"bar\" 12), (1 \"baz\" 24);";
-        String insert3DupKey = "insert into bar values (1 \"bazzle\" 15);";
-        String insert3Null = "insert into bar values (4 null 45);";
-
-        String insert4 = "insert into bazzle values (2 \"foo\");";
-        String insert4Multiple = "insert into bazzle values (3 \"bar\"), (1 \"baz\");";
-        String insert4DupKey = "insert into bazzle values (1 \"bazzle\");";
-        String insert4NonFK = "insert into bazzle values (4 \"baz\");";
-
-        database.executeNonQuery(insert1);
-        database.executeNonQuery(insert1Multiple);
-
-        database.executeNonQuery(insert2);
-        database.executeNonQuery(insert2Multiple);
-
-        database.executeNonQuery(insert3);
-        database.executeNonQuery(insert3Multiple);
-
-        database.executeNonQuery(insert4);
-        database.executeNonQuery(insert4Multiple);
+//        System.out.println("Testing insert....");
+//
+//        Object[] expectedData1_0 = new Object[] {1, "baz", 5.8, false};
+//        Object[] expectedData1_1 = new Object[] {2, "foo", 3.12, true};
+//        Object[] expectedData1_2 = new Object[] {3, "bar", 35.8, false};
+//
+//        Object[] expectedData2_0 = new Object[] {1, "baz"};
+//        Object[] expectedData2_1 = new Object[] {2, "foo"};
+//        Object[] expectedData2_2 = new Object[] {3, "bar"};
+//
+//        Object[] expectedData3_0 = new Object[] {1, "baz", 24};
+//        Object[] expectedData3_1 = new Object[] {2, "foo", null};
+//        Object[] expectedData3_2 = new Object[] {3, "bar", 12};
+//
+//        Object[] expectedData4_0 = new Object[] {1, "baz"};
+//        Object[] expectedData4_1 = new Object[] {2, "foo"};
+//        Object[] expectedData4_2 = new Object[] {3, "bar"};
+//
+//        String insert1 = "insert into foo values (2 \"foo\" 3.12 true);";
+//        String insert1Multiple = "insert into foo values (3 \"bar\" 35.8 false), (1 \"baz\" 5.8 false);";
+//        String insert1DupKey = "insert into foo values (1 \"bazzle\" 4.12 true);";
+//
+//        String insert2 = "insert into baz values (2 \"foo\");";
+//        String insert2Multiple = "insert into baz values (3 \"bar\"), (1 \"baz\");";
+//        String insert2DupKey = "insert into baz values (1 \"bazzle\");";
+//        String insert2DupUnique = "insert into baz values (4 \"baz\");";
+//
+//        String insert3 = "insert into bar values (2 \"foo\" null);";
+//        String insert3Multiple = "insert into bar values (3 \"bar\" 12), (1 \"baz\" 24);";
+//        String insert3DupKey = "insert into bar values (1 \"bazzle\" 15);";
+//        String insert3Null = "insert into bar values (4 null 45);";
+//
+//        String insert4 = "insert into bazzle values (2 \"foo\");";
+//        String insert4Multiple = "insert into bazzle values (3 \"bar\"), (1 \"baz\");";
+//        String insert4DupKey = "insert into bazzle values (1 \"bazzle\");";
+//        String insert4NonFK = "insert into bazzle values (4 \"baz\");";
+//
+//        database.executeNonQuery(insert1);
+//        database.executeNonQuery(insert1Multiple);
+//
+//        database.executeNonQuery(insert2);
+//        database.executeNonQuery(insert2Multiple);
+//
+//        database.executeNonQuery(insert3);
+//        database.executeNonQuery(insert3Multiple);
+//
+//        database.executeNonQuery(insert4);
+//        database.executeNonQuery(insert4Multiple);
 
 //        System.out.println("These inserts should report errors...");
 //

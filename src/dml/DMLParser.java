@@ -83,7 +83,7 @@ public class DMLParser implements IDMLParser {
     }
 
     public void insertRelations()  throws DMLParserException {
-
+        
     }
 
 
@@ -171,8 +171,8 @@ public class DMLParser implements IDMLParser {
         }
         else{
             for( int i = 4; i < wordsInStatement.length; i++){
-                if( (i % 4) == 0){
-                    //Attribute name
+                if( (i % 4) == 0) {
+                    // Attribute name
                 }
             }
         }

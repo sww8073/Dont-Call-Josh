@@ -177,7 +177,9 @@ public class DDLParser implements IDDLParser {
         // or index is smaller than the max array index
         int i = 1;
         while(!elements[i].toLowerCase().equals("references") && i < elements.length)   {
-            keyAttr.add(elements[i].toLowerCase());
+            if (!elements[i].toLowerCase().equals("foreignkey")) {
+                keyAttr.add(elements[i].toLowerCase());
+            }
             i++;
         }
 
