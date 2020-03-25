@@ -2,6 +2,7 @@ package dml;
 
 import database.Catalog;
 import ddl.Attribute;
+import ddl.DDLParserException;
 import ddl.Table;
 import storagemanager.StorageManager;
 import storagemanager.StorageManagerException;
@@ -97,16 +98,66 @@ public class DMLParser implements IDMLParser {
         if(table == null)   {
             throw new DMLParserException("Table does not exist");
         }
+        String types[] = table.getDataTypes();
 
         for (String relation: relations) {
             try {
-                String[] elements = relation.trim().split(" ");
-                int tableNum = table.getId();
-                storageManager.insertRecord(tableNum, elements);
+                int tableNum = table.getId(); // get table id
+
+                String[] attrs = relation.trim().split(" ");
+                Object[] convertedAttrs = convertTupleType(types, attrs); // converts attrs to correct Object types
+                storageManager.insertRecord(tableNum, convertedAttrs);
             }
             catch (StorageManagerException e)   {
                 throw new DMLParserException(e.getMessage());
             }
+        }
+    }
+
+    /**
+     * This function converts a array of attributes to their corresponding types
+     * @param types array list of lowercase strings representing Object types
+     * @param attrs array of attributes to be converted
+     * @return converted array of objects
+     * @throws DMLParserException
+     */
+    private Object[] convertTupleType(String[] types, String[] attrs)  throws DMLParserException {
+        int typesLength = types.length;
+        int attrLength = attrs.length;
+
+        if(typesLength != attrLength)
+            throw new DMLParserException("Incorrect amount of attributes");
+
+        Object convertedAttrs[] = new Object[typesLength];
+        for(int i = 0;i < typesLength;i++)  {
+            convertedAttrs[i] = convertAttrType(types[i], attrs[i]);
+        }
+        return convertedAttrs;
+    }
+
+    /**
+     * This function converts a single string that represents an attribute to its corresponding
+     * object type
+     * @param type lowercase string representing an object type
+     * @param value the type needing to be converted
+     * @return converted Object
+     * @throws DMLParserException
+     */
+    private Object convertAttrType(String type, String value)  throws DMLParserException {
+        try {
+            if (type.equals("double"))
+                return Double.parseDouble(value);
+            else if (type.equals("integer"))
+                return Integer.parseInt(value);
+            else if (type.equals("char"))
+                return value;
+            else if (type.equals("varchar"))
+                return value;
+            else
+                throw new DMLParserException("Could not convert " + type + " to a " + type);
+        }
+        catch (Exception e) {
+            throw new DMLParserException("Could not convert " + type + " to a " + type);
         }
     }
 

@@ -1,153 +1,153 @@
-package dml;
-
-import database.Catalog;
-import database.Database;
-import database.IDatabase;
-import storagemanager.AStorageManager;
-import storagemanager.StorageManager;
-
-public class DMLTester {
-    public static void main(String[] args) {
-        String dbLoc = "C:\\Users\\Matthew\\Desktop\\db\\dba";
-        int pageBufferSize = 20;
-        int pageSize = 4096;
-        AStorageManager sm;
-
-        IDatabase database = Database.getConnection(dbLoc, pageBufferSize, pageSize);
-
-        DMLParser dmlParser = new DMLParser();
-
-        String insert1 = "insert into foo values (1 \"foo\" true 2.1);";
-        String insert2 = "insert into foo values (1 \"foo\" true 2.1)," +
-                "(2 \"baz\" true 4.14)," +
-                "(3 \"bar\" true 5.2);";
-
-        try {
-            dmlParser.parseDMLStatement(insert1);
-            dmlParser.parseDMLStatement(insert2);
-        }
-        catch (DMLParserException e)    {
-            System.err.println(e.getMessage());
-        }
-
-    }
-}
-
 //package dml;
 //
+//import database.Catalog;
 //import database.Database;
 //import database.IDatabase;
-//import dml.DMLParserException;
 //import storagemanager.AStorageManager;
 //import storagemanager.StorageManager;
-//import storagemanager.StorageManagerException;
-//
-//import java.io.File;
-//import java.util.Arrays;
 //
 //public class DMLTester {
-//
-//    private static void deleteFolder(File folder) {
-//        File[] files = folder.listFiles();
-//        if(files!=null) { //some JVMs return null for empty dirs
-//            for(File f: files) {
-//                if(f.isDirectory()) {
-//                    deleteFolder(f);
-//                } else {
-//                    f.delete();
-//                }
-//            }
-//        }
-//    }
-//
 //    public static void main(String[] args) {
-//
-//
-//        // You may need to modify some values to test on your system
-//        String dbLoc = "db/";
+//        String dbLoc = "C:\\Users\\Matthew\\Desktop\\db\\dba";
 //        int pageBufferSize = 20;
 //        int pageSize = 4096;
 //        AStorageManager sm;
 //
 //        IDatabase database = Database.getConnection(dbLoc, pageBufferSize, pageSize);
 //
-//        System.out.println("Adding tables to database...");
+//        DMLParser dmlParser = new DMLParser();
 //
-//        // make a few tables
-//        // assumes table 1 in storage manager... change if needed
-//        int table1Id = 1;
-//        String createTable1 = "create table foo( " +
-//                "id integer primarykey, " +
-//                "name varchar(40), " +
-//                "amount double, " +
-//                "married boolean );";
+//        String insert1 = "insert into foo values (1 \"foo\" true 2.1);";
+//        String insert2 = "insert into foo values (1 \"foo\" true 2.1)," +
+//                "(2 \"baz\" true 4.14)," +
+//                "(3 \"bar\" true 5.2);";
 //
-//        // assumes table 2 in storage manager
-//        int table2Id = 2;
-//        String createTable2 = "CREATE TABLE baz( " +
-//                "id INTEGER PRIMARYKEY, " +
-//                "department varchar(60), " +
-//                "unique( department ) );";
+//        try {
+//            dmlParser.parseDMLStatement(insert1);
+//            dmlParser.parseDMLStatement(insert2);
+//        }
+//        catch (DMLParserException e)    {
+//            System.err.println(e.getMessage());
+//        }
 //
-//        // assumes table 3 in storage manager
-//        int table3Id = 3;
-//        String createTable3 = "CREATE TABLE bar( " +
-//                "id integer primarykey, " +
-//                "department varchar(60) notnull, " +
-//                "age integer);";
-//
-//        // assumes table 3 in storage manager
-//        int table4Id = 4;
-//        String createTable4 = "CREATE TABLE bazzle( " +
-//                "id integer primarykey, " +
-//                "department varchar(60), " +
-//                "foreignkey( id ) references foo( id ) );";
-//
-//        database.executeNonQuery(createTable1);
-//        database.executeNonQuery(createTable2);
-//        database.executeNonQuery(createTable3);
-//        database.executeNonQuery(createTable4);
-//
-//        //testing insert
-//        System.out.println("Testing insert....");
-//
-//        Object[] expectedData1_0 = new Object[] {1, "baz", 5.8, false};
-//        Object[] expectedData1_1 = new Object[] {2, "foo", 3.12, true};
-//        Object[] expectedData1_2 = new Object[] {3, "bar", 35.8, false};
-//
-//        Object[] expectedData2_0 = new Object[] {1, "baz"};
-//        Object[] expectedData2_1 = new Object[] {2, "foo"};
-//        Object[] expectedData2_2 = new Object[] {3, "bar"};
-//
-//        Object[] expectedData3_0 = new Object[] {1, "baz", 24};
-//        Object[] expectedData3_1 = new Object[] {2, "foo", null};
-//        Object[] expectedData3_2 = new Object[] {3, "bar", 12};
-//
-//        Object[] expectedData4_0 = new Object[] {1, "baz"};
-//        Object[] expectedData4_1 = new Object[] {2, "foo"};
-//        Object[] expectedData4_2 = new Object[] {3, "bar"};
-//
-//        String insert1 = "insert into foo values (2 \"foo\" 3.12 true);";
-//        String insert1Multiple = "insert into foo values (3 \"bar\" 35.8 false), (1 \"baz\" 5.8 false);";
-//        String insert1DupKey = "insert into foo values (1 \"bazzle\" 4.12 true);";
-//
-//        String insert2 = "insert into baz values (2 \"foo\");";
-//        String insert2Multiple = "insert into baz values (3 \"bar\"), (1 \"baz\");";
-//        String insert2DupKey = "insert into baz values (1 \"bazzle\");";
-//        String insert2DupUnique = "insert into baz values (4 \"baz\");";
-//
-//        String insert3 = "insert into bar values (2 \"foo\" null);";
-//        String insert3Multiple = "insert into bar values (3 \"bar\" 12), (1 \"baz\" 24);";
-//        String insert3DupKey = "insert into bar values (1 \"bazzle\" 15);";
-//        String insert3Null = "insert into bar values (4 null 45);";
-//
-//        String insert4 = "insert into bazzle values (2 \"foo\");";
-//        String insert4Multiple = "insert into bazzle values (3 \"bar\"), (1 \"baz\");";
-//        String insert4DupKey = "insert into bazzle values (1 \"bazzle\");";
-//        String insert4NonFK = "insert into bazzle values (4 \"baz\");";
-//
-//        database.executeNonQuery(insert1);
-//        database.executeNonQuery(insert1Multiple);
+//    }
+//}
+
+package dml;
+
+import database.Database;
+import database.IDatabase;
+import dml.DMLParserException;
+import storagemanager.AStorageManager;
+import storagemanager.StorageManager;
+import storagemanager.StorageManagerException;
+
+import java.io.File;
+import java.util.Arrays;
+
+public class DMLTester {
+
+    private static void deleteFolder(File folder) {
+        File[] files = folder.listFiles();
+        if(files!=null) { //some JVMs return null for empty dirs
+            for(File f: files) {
+                if(f.isDirectory()) {
+                    deleteFolder(f);
+                } else {
+                    f.delete();
+                }
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+
+
+        // You may need to modify some values to test on your system
+        String dbLoc = "C:\\Users\\Matthew\\Desktop\\DB";
+        int pageBufferSize = 20;
+        int pageSize = 4096;
+        AStorageManager sm;
+
+        IDatabase database = Database.getConnection(dbLoc, pageBufferSize, pageSize);
+
+        System.out.println("Adding tables to database...");
+
+        // make a few tables
+        // assumes table 1 in storage manager... change if needed
+        int table1Id = 1;
+        String createTable1 = "create table foo( " +
+                "id integer primarykey, " +
+                "name varchar(40), " +
+                "amount double, " +
+                "married boolean );";
+
+        // assumes table 2 in storage manager
+        int table2Id = 2;
+        String createTable2 = "CREATE TABLE baz( " +
+                "id INTEGER PRIMARYKEY, " +
+                "department varchar(60), " +
+                "unique( department ) );";
+
+        // assumes table 3 in storage manager
+        int table3Id = 3;
+        String createTable3 = "CREATE TABLE bar( " +
+                "id integer primarykey, " +
+                "department varchar(60) notnull, " +
+                "age integer);";
+
+        // assumes table 3 in storage manager
+        int table4Id = 4;
+        String createTable4 = "CREATE TABLE bazzle( " +
+                "id integer primarykey, " +
+                "department varchar(60), " +
+                "foreignkey( id ) references foo( id ) );";
+
+        database.executeNonQuery(createTable1);
+        database.executeNonQuery(createTable2);
+        database.executeNonQuery(createTable3);
+        database.executeNonQuery(createTable4);
+
+        //testing insert
+        System.out.println("Testing insert....");
+
+        Object[] expectedData1_0 = new Object[] {1, "baz", 5.8, false};
+        Object[] expectedData1_1 = new Object[] {2, "foo", 3.12, true};
+        Object[] expectedData1_2 = new Object[] {3, "bar", 35.8, false};
+
+        Object[] expectedData2_0 = new Object[] {1, "baz"};
+        Object[] expectedData2_1 = new Object[] {2, "foo"};
+        Object[] expectedData2_2 = new Object[] {3, "bar"};
+
+        Object[] expectedData3_0 = new Object[] {1, "baz", 24};
+        Object[] expectedData3_1 = new Object[] {2, "foo", null};
+        Object[] expectedData3_2 = new Object[] {3, "bar", 12};
+
+        Object[] expectedData4_0 = new Object[] {1, "baz"};
+        Object[] expectedData4_1 = new Object[] {2, "foo"};
+        Object[] expectedData4_2 = new Object[] {3, "bar"};
+
+        String insert1 = "insert into foo values (2 \"foo\" 3.12 true);";
+        String insert1Multiple = "insert into foo values (3 \"bar\" 35.8 false), (1 \"baz\" 5.8 false);";
+        String insert1DupKey = "insert into foo values (1 \"bazzle\" 4.12 true);";
+
+        String insert2 = "insert into baz values (2 \"foo\");";
+        String insert2Multiple = "insert into baz values (3 \"bar\"), (1 \"baz\");";
+        String insert2DupKey = "insert into baz values (1 \"bazzle\");";
+        String insert2DupUnique = "insert into baz values (4 \"baz\");";
+
+        String insert3 = "insert into bar values (2 \"foo\" null);";
+        String insert3Multiple = "insert into bar values (3 \"bar\" 12), (1 \"baz\" 24);";
+        String insert3DupKey = "insert into bar values (1 \"bazzle\" 15);";
+        String insert3Null = "insert into bar values (4 null 45);";
+
+        String insert4 = "insert into bazzle values (2 \"foo\");";
+        String insert4Multiple = "insert into bazzle values (3 \"bar\"), (1 \"baz\");";
+        String insert4DupKey = "insert into bazzle values (1 \"bazzle\");";
+        String insert4NonFK = "insert into bazzle values (4 \"baz\");";
+
+        database.executeNonQuery(insert1);
+        database.executeNonQuery(insert1Multiple);
 //
 //        database.executeNonQuery(insert2);
 //        database.executeNonQuery(insert2Multiple);
@@ -157,7 +157,7 @@ public class DMLTester {
 //
 //        database.executeNonQuery(insert4);
 //        database.executeNonQuery(insert4Multiple);
-
+//
 //        System.out.println("These inserts should report errors...");
 //
 //        database.executeNonQuery(insert1DupKey);
@@ -335,5 +335,5 @@ public class DMLTester {
 //        }
 //
 //        System.out.println("Testing complete...");
-//    }
-//}
+    }
+}
