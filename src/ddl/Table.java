@@ -153,6 +153,17 @@ public class Table implements Serializable {
         return null;
     }
 
+    public int getIndex(String attrName){
+        int count = 0;
+        for (Attribute attribute: attributes) {
+            if(attribute.getName().equals(attrName)){
+                return count;
+            }
+            count++;
+        }
+        return count;
+    }
+
     /**
      * This function returns an array list of all the attributes ina table
      * @return ArrayList of attributes
@@ -255,4 +266,5 @@ public class Table implements Serializable {
         }
         return dataTypes;
     }
+
 }
