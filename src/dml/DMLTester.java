@@ -210,12 +210,12 @@ public class DMLTester {
             System.out.println("Getting table 4 data...");
             Object[][] data4 = sm.getRecords(table4Id);
 
-//            if(data4.length != 3 || !Arrays.equals(data4[0], expectedData4_0) ||
-//                    !Arrays.equals(data4[1], expectedData4_1) ||
-//                    !Arrays.equals(data4[2], expectedData4_2)){
-//                System.err.println("Inserting into Table 4 failed...");
-//                System.exit(1);
-//            }
+            if(data4.length != 3 || !Arrays.equals(data4[0], expectedData4_0) ||
+                    !Arrays.equals(data4[1], expectedData4_1) ||
+                    !Arrays.equals(data4[2], expectedData4_2)){
+                System.err.println("Inserting into Table 4 failed...");
+                System.exit(1);
+            }
             sm.terminateDatabase();
         } catch (StorageManagerException e){
             e.printStackTrace();

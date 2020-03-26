@@ -5,9 +5,11 @@ import ddl.Attribute;
 import ddl.DDLParserException;
 import ddl.ForeignKey;
 import ddl.Table;
+import javafx.scene.control.Tab;
 import storagemanager.StorageManager;
 import storagemanager.StorageManagerException;
 
+import javax.naming.PartialResultException;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -122,8 +124,6 @@ public class DMLParser implements IDMLParser {
         int tableId = table.getId();
         ArrayList<Attribute> attributes = table.getAttrs();
         ArrayList<String> uniqueAttrNames = table.getUniqueAttrs();
-        ArrayList<ForeignKey> foreignKeys = new ArrayList<>(table.getForeignKeys().values());
-
 
         for(int i = 0;i < attributes.size();i++)    {
             Attribute currentAttr = attributes.get(i);
@@ -135,7 +135,7 @@ public class DMLParser implements IDMLParser {
                     Object[][] records = storageManager.getRecords(tableId);
                     for(int j = 0;j < records.length;j++)   {
                         if(records[j][i].equals(relation[i]))
-                            throw new DMLParserException( relation[i] + "is not unique");
+                            throw new DMLParserException( relation[i] + " is not unique");
                     }
                 }
                 catch (StorageManagerException e)   { throw new DMLParserException(e.getMessage()); }
@@ -148,18 +148,87 @@ public class DMLParser implements IDMLParser {
                 // attr has not null constraint and the attribute is null
                 throw new DMLParserException(currentAttr.getName() + " cannot be null");
             }
-
-            //check validity of foreign keys
-            for(int j = 0;j < foreignKeys.size();j++)   {
-                ArrayList<String> keyIndices = foreignKeys.get(j).getKeyIndices();
-                ArrayList<String> foreignKeyIndices = foreignKeys.get(j).getForeignKeyIndices();
-
-                ArrayList<Integer> keyIndexes = new ArrayList<>();
-                //for(int k = 0;k < )
-            }
         }
 
+        if(!doesForeignAttrExist(relation, table))  {
+            throw new DMLParserException("Cannot insert foreign key that does not exits");
+        }
         return true;
+    }
+
+    private boolean doesForeignAttrExist(Object[] relation, Table table) throws DMLParserException   {
+        ArrayList<ForeignKey> fkList = new ArrayList<>(table.getForeignKeys().values());
+
+        if(fkList.size() == 0) // there are no foreign keys to check
+            return true;
+
+        for(int i = 0;i < fkList.size();i++)  { // loop through all foreign keys
+            ForeignKey fk = fkList.get(i);
+            ArrayList<String> kIndicesNames =  fk.getKeyIndices();
+            ArrayList<String> fkIndicesNames = fk.getForeignKeyIndices();
+
+            ArrayList<Integer> kIndexes = getNameIndexes(table, kIndicesNames);
+
+            String foreignTableName = fk.getForeignTableName();
+            Table foreignTable = catalog.getTable(foreignTableName);
+            ArrayList<Integer> fkIndexes = getNameIndexes(foreignTable, fkIndicesNames);
+
+            try {
+                // get all the record in the foreign table, loop through all of them and check to see if the referenced
+                //  relation exists
+                Object records[][] = storageManager.getRecords(foreignTable.getId());
+                for(int j = 0;j < records.length;j++)   {
+                    if(compareTupleIndexes(relation, kIndexes, records[j], fkIndexes))
+                        return true;
+                }
+                return false; // no matching relation was found
+            }
+            catch (StorageManagerException e)   { throw new DMLParserException(e.getMessage()); }
+        }
+        return true;
+    }
+
+    /**
+     * This function compares the index of two different tuples
+     * @param tuple1 tuple being compared
+     * @param tuple1Indexes indexes being compared
+     * @param tuple2 tuple being compared
+     * @param tuple2Indexes indexes being compares
+     * @return true if tuple indexes match
+     */
+    private boolean compareTupleIndexes(Object[] tuple1, ArrayList<Integer> tuple1Indexes,
+                                        Object[] tuple2, ArrayList<Integer> tuple2Indexes)   {
+        if(tuple1Indexes.size() != tuple2Indexes.size())
+            return false;
+        for(int i = 0;i < tuple1Indexes.size();i++) {
+            Object tuple1Attr = tuple1[tuple1Indexes.get(i)];
+            Object tuple2Attr = tuple2[tuple2Indexes.get(i)];
+            if(!tuple1Attr.equals(tuple2Attr))
+                return false;
+        }
+        return true;
+    }
+
+    /**
+     * This function takes foreign key attribute names and gets the corresponding indexes in a
+     * given table
+     * @param table the table in which you need the indexes of the names
+     * @param names the names that you want the indexes of
+     * @return ArrayList of indexes corresponding to the names
+     */
+    private ArrayList<Integer> getNameIndexes(Table table, ArrayList<String> names) {
+        ArrayList<Integer> attrNameIndexes = new ArrayList<>();
+        ArrayList<Attribute> attrNameList = table.getAttrs();
+
+        for(int i = 0;i < attrNameList.size();i++)  {
+            String currentAttrName = attrNameList.get(i).getName();
+            for(int j = 0;j < names.size();j++) {
+                if(names.get(j).equals(currentAttrName))    {
+                    attrNameIndexes.add(i);
+                }
+            }
+        }
+        return attrNameIndexes;
     }
 
     /**
