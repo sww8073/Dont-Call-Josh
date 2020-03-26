@@ -100,7 +100,7 @@ public class DMLParser implements IDMLParser {
         }
         String types[] = table.getDataTypes();
 
-        for (String relation: relations) {
+        for(String relation: relations) {
             try {
                 int tableNum = table.getId(); // get table id
 
@@ -145,16 +145,19 @@ public class DMLParser implements IDMLParser {
      */
     private Object convertAttrType(String type, String value)  throws DMLParserException {
         try {
-            if (type.equals("double"))
+            if(value.equals("null"))    {
+                return null;
+            }
+            else if (type.equals("double"))
                 return Double.parseDouble(value);
             else if (type.equals("integer"))
                 return Integer.parseInt(value);
             else if (type.equals("char"))
                 return value;
             else if (type.startsWith("varchar"))
-                return value;
+                return value.replaceAll("\"","");
             else if (type.equals("boolean"))
-                return value;
+                return Boolean.parseBoolean(value);
             else
                 throw new DMLParserException("Could not convert " + type + " to a " + type);
         }
