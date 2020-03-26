@@ -328,26 +328,27 @@ public class DMLParser implements IDMLParser {
             if(statement.contains("and") || statement.contains("or")){
                 handleCondtional(statement.substring(statement.indexOf("where")));
             }
-            else{
+            //no "and" or "or"
+            else {
+
                 String whereClause = statement.substring(statement.indexOf("where"));
-                String[] wordsInWhereClause = whereClause.split(" ");
-                String value = wordsInWhereClause[1];
-                String checkValue = wordsInStatment[3];
-                if(checkValue.contains(";")){
-                    checkValue = new String(checkValue.substring(0,checkValue.length()-1));
+                String[] whereClauseWords = whereClause.split(" ");
+
+                String attr = whereClauseWords[1];
+                String value = whereClauseWords[3];
+                value = new String(value.substring(0,value.length()-1));
+
+                System.out.println(value);
+                if(table.attributeExists(attr)){//ex: table has "id"
+                    String[] dataTypes = table.getDataTypes();
+                    String attrType = dataTypes[table.getAttrs().indexOf(attr)];
+
+                    Object attrObject = convertAttrType(attrType.toLowerCase(),value);
+
+
                 }
 
-                //check if attribute exists
-                Attribute attribute;
 
-                try{
-                    attribute = table.getAttribute(value);
-                }
-                catch (Exception e){
-                    throw new DMLParserException("Attribute \"value\" does not exist.");
-                }
-
-                //update attribute here
             }
         }
         else{//all tuples considered to change
