@@ -351,10 +351,29 @@ public class DMLParser implements IDMLParser {
 
             }
         }
-        else{//all tuples considered to change
+        else { // there is no where clause
+            try {
+                int tableId = table.getId();
+                Object[][] relations = storageManager.getRecords(tableId);
+
+            }
+            catch (StorageManagerException e) { throw new DMLParserException(e.getMessage()); }
+        }
+
+    }
+
+    private int getIndexFromTable(String tableName, String attrName) throws DMLParserException   {
+        Table table = catalog.getTable(tableName);
+
+        if(table == null)
+            throw new DMLParserException("Table does not exist");
+
+        ArrayList<Attribute> attrs = table.getAttrs();
+        for(int i = 0;i < attrs.size();i++) {
 
         }
 
+        return -1;
     }
 
     private void handleCondtional(String statement){
