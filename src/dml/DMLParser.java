@@ -362,6 +362,13 @@ public class DMLParser implements IDMLParser {
 
     }
 
+    /**
+     * This function gets the index of an attribute name from a table
+     * @param tableName String table name
+     * @param attrName the name of the attribute being looked for
+     * @return the index of that attribute
+     * @throws DMLParserException
+     */
     private int getIndexFromTable(String tableName, String attrName) throws DMLParserException   {
         Table table = catalog.getTable(tableName);
 
@@ -370,9 +377,11 @@ public class DMLParser implements IDMLParser {
 
         ArrayList<Attribute> attrs = table.getAttrs();
         for(int i = 0;i < attrs.size();i++) {
-
+            String attrIndexName = attrs.get(i).getName();
+            if(attrName.equals(attrIndexName))  {
+                return i;
+            }
         }
-
         return -1;
     }
 
