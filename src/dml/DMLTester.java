@@ -136,7 +136,7 @@ public class DMLTester {
         String insert2DupKey = "insert into baz values (1 \"bazzle\");";
         String insert2DupUnique = "insert into baz values (4 \"baz\");";
 
-        // String insert3 = "insert into bar values (2 \"foo\" null);";
+        String insert3 = "insert into bar values (2 \"foo\" null);";
         String insert3Multiple = "insert into bar values (3 \"bar\" 12), (1 \"baz\" 24);";
         String insert3DupKey = "insert into bar values (1 \"bazzle\" 15);";
         String insert3Null = "insert into bar values (4 null 45);";
@@ -152,7 +152,7 @@ public class DMLTester {
         database.executeNonQuery(insert2);
         database.executeNonQuery(insert2Multiple);
 
-        // database.executeNonQuery(insert3);
+        database.executeNonQuery(insert3);
         database.executeNonQuery(insert3Multiple);
 
         database.executeNonQuery(insert4);
@@ -170,57 +170,57 @@ public class DMLTester {
 
         database.executeNonQuery(insert4DupKey);
         database.executeNonQuery(insert4NonFK);
-//
-//        database.terminateDatabase();
-//
-//        System.out.println("Restarting just storage manager...");
-//        try {
-//            sm = new StorageManager(dbLoc, pageBufferSize, pageSize, true);
-//
-//            System.out.println("Getting table 1 data...");
-//            Object[][] data1 = sm.getRecords(table1Id);
-//
-//            if(data1.length != 3 || !Arrays.equals(data1[0], expectedData1_0) ||
-//                    !Arrays.equals(data1[1], expectedData1_1) ||
-//                    !Arrays.equals(data1[2], expectedData1_2)){
-//                System.err.println("Inserting into Table 1 failed...");
-//                System.exit(1);
-//            }
-//
-//            System.out.println("Getting table 2 data...");
-//            Object[][] data2 = sm.getRecords(table2Id);
-//
-//            if(data2.length != 3 || !Arrays.equals(data2[0], expectedData2_0) ||
-//                    !Arrays.equals(data2[1], expectedData2_1) ||
-//                    !Arrays.equals(data2[2], expectedData2_2)){
-//                System.err.println("Inserting into Table 2 failed...");
-//                System.exit(1);
-//            }
-//
-//            System.out.println("Getting table 3 data...");
-//            Object[][] data3 = sm.getRecords(table3Id);
-//
-//            if(data3.length != 3 || !Arrays.equals(data3[0], expectedData3_0) ||
-//                    !Arrays.equals(data3[1], expectedData3_1) ||
-//                    !Arrays.equals(data3[2], expectedData3_2)){
-//                System.err.println("Inserting into Table 3 failed...");
-//                System.exit(1);
-//            }
-//
-//            System.out.println("Getting table 4 data...");
-//            Object[][] data4 = sm.getRecords(table4Id);
-//
-//            if(data4.length != 3 || !Arrays.equals(data4[0], expectedData4_0) ||
-//                    !Arrays.equals(data4[1], expectedData4_1) ||
-//                    !Arrays.equals(data4[2], expectedData4_2)){
-//                System.err.println("Inserting into Table 4 failed...");
-//                System.exit(1);
-//            }
-//            sm.terminateDatabase();
-//        } catch (StorageManagerException e){
-//            e.printStackTrace();
-//            System.exit(1);
-//        }
+
+        database.terminateDatabase();
+
+        System.out.println("Restarting just storage manager...");
+        try {
+            sm = new StorageManager(dbLoc, pageBufferSize, pageSize, true);
+
+            System.out.println("Getting table 1 data...");
+            Object[][] data1 = sm.getRecords(table1Id);
+
+            if(data1.length != 3 || !Arrays.equals(data1[0], expectedData1_0) ||
+                    !Arrays.equals(data1[1], expectedData1_1) ||
+                    !Arrays.equals(data1[2], expectedData1_2)){
+                System.err.println("Inserting into Table 1 failed...");
+                System.exit(1);
+            }
+
+            System.out.println("Getting table 2 data...");
+            Object[][] data2 = sm.getRecords(table2Id);
+
+            if(data2.length != 3 || !Arrays.equals(data2[0], expectedData2_0) ||
+                    !Arrays.equals(data2[1], expectedData2_1) ||
+                    !Arrays.equals(data2[2], expectedData2_2)){
+                System.err.println("Inserting into Table 2 failed...");
+                System.exit(1);
+            }
+
+            System.out.println("Getting table 3 data...");
+            Object[][] data3 = sm.getRecords(table3Id);
+
+            if(data3.length != 3 || !Arrays.equals(data3[0], expectedData3_0) ||
+                    !Arrays.equals(data3[1], expectedData3_1) ||
+                    !Arrays.equals(data3[2], expectedData3_2)){
+                System.err.println("Inserting into Table 3 failed...");
+                System.exit(1);
+            }
+
+            System.out.println("Getting table 4 data...");
+            Object[][] data4 = sm.getRecords(table4Id);
+
+            if(data4.length != 3 || !Arrays.equals(data4[0], expectedData4_0) ||
+                    !Arrays.equals(data4[1], expectedData4_1) ||
+                    !Arrays.equals(data4[2], expectedData4_2)){
+                System.err.println("Inserting into Table 4 failed...");
+                System.exit(1);
+            }
+            sm.terminateDatabase();
+        } catch (StorageManagerException e){
+            e.printStackTrace();
+            System.exit(1);
+        }
 //
 //        System.out.println("Restarting the database...");
 //

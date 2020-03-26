@@ -3,11 +3,13 @@ package dml;
 import database.Catalog;
 import ddl.Attribute;
 import ddl.DDLParserException;
+import ddl.ForeignKey;
 import ddl.Table;
 import storagemanager.StorageManager;
 import storagemanager.StorageManagerException;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class DMLParser implements IDMLParser {
 
@@ -120,19 +122,35 @@ public class DMLParser implements IDMLParser {
         int tableId = table.getId();
         ArrayList<Attribute> attributes = table.getAttrs();
         ArrayList<String> uniqueAttrNames = table.getUniqueAttrs();
+        Map<String, ForeignKey> foreignKeys = table.getForeignKeys();
+
 
         for(int i = 0;i < attributes.size();i++)    {
             Attribute currentAttr = attributes.get(i);
-            ArrayList<String> constraints = currentAttr.getConstraints(); // list aon constraint strings
 
-            if(uniqueAttrNames.contains(currentAttr.getName())) { // check if attribute is unique
-                // todo check to  make sure this attribute is unique
+            // check if attribute is unique
+            if(uniqueAttrNames.contains(currentAttr.getName())) {
+                try {
+                    // loop through all record and check for a duplicate
+                    Object[][] records = storageManager.getRecords(tableId);
+                    for(int j = 0;j < records.length;j++)   {
+                        if(records[j][i].equals(relation[i]))
+                            throw new DMLParserException( relation[i] + "is not unique");
+                    }
+                }
+                catch (StorageManagerException e)   { throw new DMLParserException(e.getMessage()); }
             }
+
+            // check not null constraint
+            ArrayList<String> constraints = currentAttr.getConstraints(); // list aon constraint strings
             if((constraints.contains("notnull") || constraints.contains("not null"))
-                    && relation[i] == null)    { // check not null constraint
+                    && relation[i] == null)    {
                 // attr has not null constraint and the attribute is null
                 throw new DMLParserException(currentAttr.getName() + " cannot be null");
             }
+
+            //check validity of foreign keys
+            // todo check this
         }
 
         return true;

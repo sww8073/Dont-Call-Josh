@@ -170,6 +170,15 @@ public class Table implements Serializable {
     }
 
     /**
+     * This function returns all the foreign keys the table has
+     * @return
+     */
+    public Map<String, ForeignKey> getForeignKeys() {
+        return foreignKeys;
+    }
+
+
+    /**
      * Returns the index of the attribute in the table
      * @param attrName The attribute to find
      * @return the indec of the attribute
