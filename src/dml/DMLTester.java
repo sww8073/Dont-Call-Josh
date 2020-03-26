@@ -64,7 +64,7 @@ public class DMLTester {
 
 
         // You may need to modify some values to test on your system
-        String dbLoc = "C:\\Users\\Matthew\\Desktop\\DB";
+        String dbLoc = "C:\\Users\\Matthew\\Desktop\\DB\\data";
         int pageBufferSize = 20;
         int pageSize = 4096;
         AStorageManager sm;
@@ -136,7 +136,7 @@ public class DMLTester {
         String insert2DupKey = "insert into baz values (1 \"bazzle\");";
         String insert2DupUnique = "insert into baz values (4 \"baz\");";
 
-        String insert3 = "insert into bar values (2 \"foo\" null);";
+        // String insert3 = "insert into bar values (2 \"foo\" null);";
         String insert3Multiple = "insert into bar values (3 \"bar\" 12), (1 \"baz\" 24);";
         String insert3DupKey = "insert into bar values (1 \"bazzle\" 15);";
         String insert3Null = "insert into bar values (4 null 45);";
@@ -152,7 +152,7 @@ public class DMLTester {
         database.executeNonQuery(insert2);
         database.executeNonQuery(insert2Multiple);
 
-        database.executeNonQuery(insert3);
+        // database.executeNonQuery(insert3);
         database.executeNonQuery(insert3Multiple);
 
         database.executeNonQuery(insert4);
