@@ -106,12 +106,36 @@ public class DMLParser implements IDMLParser {
 
                 String[] attrs = relation.trim().split(" ");
                 Object[] convertedAttrs = convertTupleType(types, attrs); // converts attrs to correct Object types
-                storageManager.insertRecord(tableNum, convertedAttrs);
+                if(checkConstraints(table, convertedAttrs)) {
+                    storageManager.insertRecord(tableNum, convertedAttrs);
+                }
             }
             catch (StorageManagerException e)   {
                 throw new DMLParserException(e.getMessage());
             }
         }
+    }
+
+    private boolean checkConstraints(Table table, Object[] relation) throws DMLParserException   {
+        int tableId = table.getId();
+        ArrayList<Attribute> attributes = table.getAttrs();
+        ArrayList<String> uniqueAttrNames = table.getUniqueAttrs();
+
+        for(int i = 0;i < attributes.size();i++)    {
+            Attribute currentAttr = attributes.get(i);
+            ArrayList<String> constraints = currentAttr.getConstraints(); // list aon constraint strings
+
+            if(uniqueAttrNames.contains(currentAttr.getName())) { // check if attribute is unique
+                // todo check to  make sure this attribute is unique
+            }
+            if((constraints.contains("notnull") || constraints.contains("not null"))
+                    && relation[i] == null)    { // check not null constraint
+                // attr has not null constraint and the attribute is null
+                throw new DMLParserException(currentAttr.getName() + " cannot be null");
+            }
+        }
+
+        return true;
     }
 
     /**

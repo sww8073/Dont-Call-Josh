@@ -1,6 +1,7 @@
 package ddl;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -150,6 +151,22 @@ public class Table implements Serializable {
             }
         }
         return null;
+    }
+
+    /**
+     * This function returns an array list of all the attributes ina table
+     * @return ArrayList of attributes
+     */
+    public ArrayList<Attribute> getAttrs() {
+        return attributes;
+    }
+
+    /**
+     * This function returns the names of all unique attributes
+     * @return
+     */
+    public ArrayList<String> getUniqueAttrs()   {
+        return unique;
     }
 
     /**
