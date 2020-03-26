@@ -326,21 +326,41 @@ public class DMLParser implements IDMLParser {
             //no "and" or "or"
             else {
 
+                String attrToChange = wordsInStatment[3];
+                String newValue = wordsInStatment[5];
+                if(newValue.contains("\"")) {
+                    newValue = newValue.substring(1, newValue.length() - 1);
+                }
+
                 String whereClause = statement.substring(statement.indexOf("where"));
                 String[] whereClauseWords = whereClause.split(" ");
 
                 String attr = whereClauseWords[1];
                 String value = whereClauseWords[3];
-                value = new String(value.substring(0,value.length()-1));
+                value = value.substring(0,value.length()-1);
 
                 System.out.println(value);
                 if(table.attributeExists(attr)){//ex: table has "id"
                     String[] dataTypes = table.getDataTypes();
-                    String attrType = dataTypes[table.getAttrs().indexOf(attr)];
+                    Attribute attribute = table.getAttribute(attr);
+                    Attribute attributeToChange = table.getAttribute(attrToChange);
+                    int indexOfAttr = table.getAttrs().indexOf(attribute);
+                    int indexOfAttrToChange = table.getAttrs().indexOf(attributeToChange);
+                    String attrType = dataTypes[indexOfAttr];
 
                     Object attrObject = convertAttrType(attrType.toLowerCase(),value);
 
-
+                    try {
+                        for (Object[] record : storageManager.getRecords(table.getId())) {
+                            if(record[indexOfAttr].equals(attrObject)){
+                                //update record
+                                record[indexOfAttrToChange] = newValue;
+                                storageManager.updateRecord(table.getId(),record);
+                            }
+                        }
+                    }catch(StorageManagerException e){
+                        throw new DMLParserException("Table " + table.getName() + " does not exist.");
+                    }
                 }
 
 
