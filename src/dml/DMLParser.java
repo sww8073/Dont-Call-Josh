@@ -122,7 +122,7 @@ public class DMLParser implements IDMLParser {
         int tableId = table.getId();
         ArrayList<Attribute> attributes = table.getAttrs();
         ArrayList<String> uniqueAttrNames = table.getUniqueAttrs();
-        Map<String, ForeignKey> foreignKeys = table.getForeignKeys();
+        ArrayList<ForeignKey> foreignKeys = new ArrayList<>(table.getForeignKeys().values());
 
 
         for(int i = 0;i < attributes.size();i++)    {
@@ -150,7 +150,13 @@ public class DMLParser implements IDMLParser {
             }
 
             //check validity of foreign keys
-            // todo check this
+            for(int j = 0;j < foreignKeys.size();j++)   {
+                ArrayList<String> keyIndices = foreignKeys.get(j).getKeyIndices();
+                ArrayList<String> foreignKeyIndices = foreignKeys.get(j).getForeignKeyIndices();
+
+                ArrayList<Integer> keyIndexes = new ArrayList<>();
+                //for(int k = 0;k < )
+            }
         }
 
         return true;
