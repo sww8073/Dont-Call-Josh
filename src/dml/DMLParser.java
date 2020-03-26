@@ -110,7 +110,7 @@ public class DMLParser implements IDMLParser {
 
                 String[] attrs = relation.trim().split(" ");
                 Object[] convertedAttrs = convertTupleType(types, attrs); // converts attrs to correct Object types
-                if(checkConstraints(table, convertedAttrs)) {
+                if(checkConstraints(table, convertedAttrs)) { // check to make sure all constraints are followed
                     storageManager.insertRecord(tableNum, convertedAttrs);
                 }
             }
@@ -120,6 +120,14 @@ public class DMLParser implements IDMLParser {
         }
     }
 
+    /**
+     * This function checks all the constraints associated with the tuple. If any constraints are violated
+     * then an exception will be thrown
+     * @param table the table the relation is being added to
+     * @param relation Object array representing the relation
+     * @return true if all the constraint rules are followed
+     * @throws DMLParserException
+     */
     private boolean checkConstraints(Table table, Object[] relation) throws DMLParserException   {
         int tableId = table.getId();
         ArrayList<Attribute> attributes = table.getAttrs();
@@ -156,10 +164,18 @@ public class DMLParser implements IDMLParser {
         return true;
     }
 
+    /**
+     * This function checks if the table has any foreign keys. If it does it it check to make sure the value being
+     * references exists within the foreign table.
+     * @param relation Relation being inserted
+     * @param table The table with possible foreign key
+     * @return true if all foreign keys are valid
+     * @throws DMLParserException
+     */
     private boolean doesForeignAttrExist(Object[] relation, Table table) throws DMLParserException   {
         ArrayList<ForeignKey> fkList = new ArrayList<>(table.getForeignKeys().values());
 
-        if(fkList.size() == 0) // there are no foreign keys to check
+        if(fkList.size() == 0) // there are no foreign keys to check, everything is good
             return true;
 
         for(int i = 0;i < fkList.size();i++)  { // loop through all foreign keys
