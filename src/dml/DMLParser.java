@@ -1,17 +1,12 @@
 package dml;
-
 import database.Catalog;
 import ddl.Attribute;
-import ddl.DDLParserException;
 import ddl.ForeignKey;
 import ddl.Table;
-import javafx.scene.control.Tab;
 import storagemanager.StorageManager;
 import storagemanager.StorageManagerException;
-
-import javax.naming.PartialResultException;
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.Arrays;
 
 public class DMLParser implements IDMLParser {
 
@@ -365,30 +360,332 @@ public class DMLParser implements IDMLParser {
         String[] wordsInStatement = statement.split(" ");
         String table = wordsInStatement[2];
         Table table1 = catalog.getTable(table);
+        int tableid = table1.getId();
         if( table1 == null){
             throw new DMLParserException("Table does not exist");
         }
 
         if(wordsInStatement.length == 3){
-            // Where cause is true, delete all tuples table
-        }
-        else if(wordsInStatement.length == 7){
-            // only one attribute to check
-            String attribute = wordsInStatement[4];
-            Attribute attribute1 = table1.getAttribute(attribute);
-            if( attribute1 == null){
-                throw new DMLParserException("Attribute does not exist");
+            try {
+                Object[][] records = storageManager.getRecords(tableid);
+                for(int j = 0; j<records.length; j++){
+                    Object rec[] = records[j];
+                    storageManager.removeRecord(tableid,rec);
+                }
+            }catch (StorageManagerException e) {
+                throw new DMLParserException("Could not retrieve records");
             }
-            String op = wordsInStatement[5];
-            String value = wordsInStatement[6];
         }
         else{
-            for( int i = 4; i < wordsInStatement.length; i++){
-                if( (i % 4) == 0){
-                    //Attribute name
+            int count = 0;
+            String attribute = "";
+            String conditional = "";
+            String value = "";
+            String valueType = "";
+            int index = 0;
+            Attribute attribute1;
+
+            boolean and = false;
+            boolean or = false;
+            boolean loop = false;
+
+            try {
+                Object[][] records = storageManager.getRecords(tableid);
+                Object[][] newRecords = records;
+                Object[][] orArray;
+                for(int i = 4; i < wordsInStatement.length; i++){
+                    if (count == 0) {
+                        attribute = wordsInStatement[i];
+                        attribute1 = table1.getAttribute(attribute);
+                        if (attribute1 == null) {
+                            throw new DMLParserException("Attribute does not exist");
+                        }
+                        index = table1.getIndex(attribute);
+                        count++;
+                        continue;
+                    }
+                    else if (count == 1){
+                        conditional = wordsInStatement[i];
+                        count++;
+                        continue;
+                    }
+                    else if (count == 2){
+                        if( i == wordsInStatement.length - 1){
+                            value = wordsInStatement[i].substring(0, wordsInStatement[i].length() - 1);
+                        }
+                        else{
+                            value = wordsInStatement[i];
+                        }
+                        valueType = checkType(value);
+                        attribute1 = table1.getAttribute(attribute);
+                        String type = attribute1.getType();
+                        if (!valueType.equals(type)){
+                            throw new DMLParserException("Type does not match");
+                        }
+                    }
+                    if(and){
+                        and = false;
+                        newRecords = acquireRecords(newRecords, attribute, index, conditional, value, valueType, table1);
+                        loop = true;
+                        if( i == wordsInStatement.length - 1){
+                            break;
+                        }
+                    }
+                    else if(or){
+                        or = false;
+                        orArray = acquireRecords(records, attribute, index, conditional, value, valueType, table1);
+                        newRecords = mergeArray(newRecords,orArray);
+                        loop = true;
+                        if( i == wordsInStatement.length - 1){
+                            break;
+                        }
+                    }
+                    if( i == wordsInStatement.length - 1){
+                        newRecords = acquireRecords(records, attribute, index, conditional, value, valueType, table1);
+                    }
+                    else{
+                        i++;
+                        count = 0;
+                        if(!loop){
+                            newRecords = acquireRecords(records, attribute, index, conditional, value, valueType, table1);
+                        }
+                        if (wordsInStatement[i].equals("and")){
+                            and = true;
+                        }
+                        else{
+                            or = true;
+                        }
+                    }
+                    loop = false;
+
+                }
+                records = newRecords;
+                for (Object[] rec : records) {
+                    storageManager.removeRecord(tableid, rec);
+                }
+            } catch (StorageManagerException e) {
+                throw new DMLParserException("Could not retrieve records");
+            }
+
+        }
+    }
+
+    private Object[][] mergeArray(Object[][] a, Object[][] b){
+        Object[][] result = new Object[a.length + b.length][];
+        System.arraycopy(a, 0, result, 0, a.length);
+        System.arraycopy(b, 0, result, a.length, b.length);
+        return result;
+    }
+
+    /**
+     * Helper function to determine type of value for delete
+     * @param value String value
+     * @return String type
+     */
+    private String checkType(String value){
+        String blank;
+        try{
+            Integer.parseInt(value);
+            blank = "integer";
+            return blank;
+        }catch (Exception e){}
+        if( value.equals("true") || value.equals("false")){
+            blank = "boolean";
+            return blank;
+        }
+        try{
+            double d = Double.parseDouble(value);
+            blank = "double";
+            return blank;
+        }catch (NumberFormatException e){}
+
+        return "char";
+    }
+
+    /**
+     * acquireRecords filters out records in the 2d array that corresponds to the where clause given
+     * @param records
+     * @param attribute
+     * @param index
+     * @param conditional
+     * @param value
+     * @param type
+     * @return
+     */
+    private Object[][] acquireRecords(Object[][] records, String attribute, int index, String conditional, String value, String type, Table table1){
+        Object[][] newRecords = new Object[1][]; // This is wrong, needs to be size of filtered array
+        int count = 0;
+        int size = 1;
+        boolean num = false, doub = false, bool = false, charac = false;
+        switch(type){
+            case "integer":
+                num = true;
+                break;
+            case "double":
+                doub = true;
+                break;
+            case "char":
+                charac = true;
+                break;
+            case "boolean":
+                bool = true;
+                break;
+        }
+        if(num){
+            int val = Integer.parseInt(value);
+            for(int i=0; i<records.length; i++) {
+                boolean add = false;
+                Object[] record = records[i];
+                int rec = (Integer) record[index];
+                switch(conditional){
+                    case "=":
+                        if(rec == val){
+                            add = true;
+                        }
+                        break;
+                    case ">":
+                        if(rec > val){
+                            add = true;
+                        }
+                        break;
+                    case "<":
+                        if(rec < val){
+                            add = true;
+                        }
+                        break;
+                    case ">=":
+                        if(rec >= val){
+                            add = true;
+                        }
+                        break;
+                    case "<=":
+                        if(rec <= val){
+                            add = true;
+                        }
+                        break;
+                }
+                if(add){
+                    newRecords[count] = record;
+                    size++;
+                    newRecords = Arrays.copyOf(newRecords, size);
                 }
             }
         }
+        else if(doub){
+            double val = Double.parseDouble(value);
+            for(int i=0; i<records.length; i++) {
+                boolean add = false;
+                Object[] record = records[i];
+                double rec = (Double) record[index];
+                switch(conditional){
+                    case "=":
+                        if(rec == val){
+                            add = true;
+                        }
+                        break;
+                    case ">":
+                        if(rec > val){
+                            add = true;
+                        }
+                        break;
+                    case "<":
+                        if(rec < val){
+                            add = true;
+                        }
+                        break;
+                    case ">=":
+                        if(rec >= val){
+                            add = true;
+                        }
+                        break;
+                    case "<=":
+                        if(rec <= val){
+                            add = true;
+                        }
+                        break;
+                }
+                if(add){
+                    newRecords[count] = record;
+                    size++;
+                    newRecords = Arrays.copyOf(newRecords, size);
+                }
+            }
+        }
+        else if(bool){
+            //TODO Check how true/false is being stored as
+            if(value.equals("true")){
+                bool = true;
+            }
+            else{
+                bool = false;
+            }
+            for(int i=0; i<records.length; i++) {
+                boolean add = false;
+                Object[] record = records[i];
+                boolean rec = (Boolean) record[index];
+                if(rec == bool){
+                    add = true;
+                }
+                if(add){
+                    newRecords[count] = record;
+                    size++;
+                    newRecords = Arrays.copyOf(newRecords, size);
+                }
+            }
+        }
+        else if(charac){
+            if(value.contains("\"")){
+                //Compare String values
+                String val = value.replace("\"", "");
+                for(int i=0; i<records.length; i++) {
+                    boolean add = false;
+                    Object[] record = records[i];
+                    String rec = (String) record[index];
+                    int compare = val.compareTo(rec);
+                    switch(conditional){
+                        case "=":
+                            if(compare == 0){
+                                add = true;
+                            }
+                            break;
+                        case ">":
+                            if(compare > 0){
+                                add = true;
+                            }
+                            break;
+                        case "<":
+                            if(compare < 0){
+                                add = true;
+                            }
+                            break;
+                    }
+                    if(add){
+                        newRecords[count] = record;
+                        size++;
+                        newRecords = Arrays.copyOf(newRecords, size);
+                    }
+                }
+            }
+            else{
+                //Compare two columns
+                int index2 = table1.getIndex(value);
+                for(int i=0; i<records.length; i++) {
+                    boolean add = false;
+                    Object[] record = records[i];
+                    Object o1 = record[index];
+                    Object o2 = record[index2];
+                    if( o1 == o2){
+                        add = true;
+                    }
+                    if(add){
+                        newRecords[count] = record;
+                        size++;
+                        newRecords = Arrays.copyOf(newRecords, size);
+                    }
+                }
+            }
+        }
+        return newRecords;
     }
 
 }
