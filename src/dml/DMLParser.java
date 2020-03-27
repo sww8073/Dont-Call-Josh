@@ -400,6 +400,58 @@ public class DMLParser implements IDMLParser {
         return -1;
     }
 
+    private void handleConditional(String statement, Attribute attribute, int id) throws StorageManagerException {
+        Object[][] records = storageManager.getRecords(id);
+        // This can probably be more efficient
+        for (Object[] record : records) {
+            boolean conditionalValue = true;
+            // check if the statement has ors
+            if (statement.contains("or")) {
+                String[] orStatements = statement.split("or");
+                for (String conditional : orStatements) {
+                    // parse and statements
+                    if (conditional.contains("and")) {
+                        String[] andStatements = conditional.split("and");
+                        // if any of the end statements is false, then the entire sub section is false
+                        for (String condition : andStatements) {
+                            if ( false) { // TODO check condition
+                                conditionalValue = false;
+                            }
+                        }
+                    } else {
+                        // its a singular statement
+                        if (false) { // TODO check condition
+                            conditionalValue = false;
+                        }
+                    }
+                    // if it is still true for any of the ors, the entire statement is true and we can update the record
+                    if (conditionalValue == true) {
+                        // update record
+                        // TODO
+                    }
+                }
+            }
+            // Now we can check for ands
+            else if (statement.contains("and")) {
+                String[] andStatements = statement.split("and");
+                // if any of the end statements is false, then the entire sub section is false
+                for (String condition : andStatements) {
+                    if ( false) { // TODO check condition
+                        conditionalValue = false;
+                    }
+                }
+                // if its still true, then we can update
+                // TODO
+            } else {
+                // its a singular statement
+                if (false) { // TODO check condition
+                    conditionalValue = false;
+                }
+                // if its true, we can update
+                // TODO
+            }
+        }
+
     /**
      * This function computes a where clause. Consider where foo >= 1000; The following variables would be...
      * @param attrName "foo"
