@@ -400,6 +400,73 @@ public class DMLParser implements IDMLParser {
         return -1;
     }
 
+    /**
+     * This function computes a where clause. Consider where foo >= 1000; The following variables would be...
+     * @param attrName "foo"
+     * @param equivalency ">="
+     * @param var "1000"
+     * @return ArrayList that follows condition in where
+     */
+    private ArrayList<Object[]> computeWhere(String attrName, String equivalency, String var, String tableName)
+            throws DMLParserException   {
+        Table table = catalog.getTable(tableName);
+        int indexOfAttr = getIndexFromTable(tableName, attrName);
+        Object relations[][];
+        try {
+            relations = storageManager.getRecords(table.getId());
+        }
+        catch (StorageManagerException e) { throw new DMLParserException(e.getLocalizedMessage()); }
+
+        ArrayList<Object[]> result = new ArrayList<>(0);
+
+        equivalency = equivalency.trim();
+        switch (equivalency)    {
+            case "=":
+                for(int i = 0;i < relations.length;i++) {
+                    //if(relations[i][indexOfAttr]. )
+                }
+                break;
+            case ">":
+                break;
+            case "<":
+                break;
+            case ">=":
+                break;
+            case "<=":
+                break;
+            default:
+                throw new DMLParserException("cannot compare by " + equivalency);
+
+        }
+        return null;
+    }
+
+    /**
+     * This function compares two objects by trying to parse them to the same type
+     * @param o1
+     * @param o2
+     * @return negative num if o1 < o2, 0 if o1 == o2, and positive num if o1 > o2.
+     * @throws DMLParserException
+     */
+    private int compare(Object o1, Object o2) throws DMLParserException   {
+        if(o1 instanceof String && o2 instanceof String)    {
+            return ((String) o1).compareTo((String)o2);
+        }
+        else if(o1 instanceof Double && o2 instanceof Double)    {
+            return ((Double) o1).compareTo((Double)o2);
+        }
+        else if(o1 instanceof Integer && o2 instanceof Integer)    {
+            return ((Integer) o1).compareTo((Integer)o2);
+        }
+        else if(o1 instanceof Boolean && o2 instanceof Boolean)    {
+            return ((Boolean) o1).compareTo((Boolean)o2);
+        }
+        else if(o1 == null && o2 == null)
+            return 0;
+        else
+            throw new DMLParserException("Cannot compare invalid types.");
+    }
+
     private void handleCondtional(String statement){
 
     }
