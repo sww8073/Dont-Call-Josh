@@ -622,10 +622,6 @@ public class DMLParser implements IDMLParser {
             throw new DMLParserException("Cannot compare invalid types.");
     }
 
-    private void handleCondtional(String statement){
-
-    }
-
     public void deleteTable(String statement) throws DMLParserException{
         String[] wordsInStatement = statement.split("\\s+");
         String table = wordsInStatement[2].replace(";","");
