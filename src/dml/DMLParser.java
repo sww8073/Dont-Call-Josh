@@ -3,12 +3,10 @@ import database.Catalog;
 import ddl.Attribute;
 import ddl.ForeignKey;
 import ddl.Table;
-import javafx.beans.binding.ObjectExpression;
 import storagemanager.StorageManager;
 import storagemanager.StorageManagerException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 
 public class DMLParser implements IDMLParser {
 
@@ -323,7 +321,7 @@ public class DMLParser implements IDMLParser {
         if(statement.contains("where")){
             //where <value> = <value>
             if(statement.contains("and") || statement.contains("or")){
-                // handleConditional(statement.substring(statement.indexOf("where")));
+                handleCondtional(statement.substring(statement.indexOf("where")));
             }
             //no "and" or "or"
             else {
@@ -402,68 +400,102 @@ public class DMLParser implements IDMLParser {
         return -1;
     }
 
-    private void handleConditional(String statement, Attribute attribute, int id) throws StorageManagerException {
-        Object[][] records = storageManager.getRecords(id);
-        // This can probably be more efficient
-        for (Object[] record : records) {
-            boolean conditionalValue = true;
-            // check if the statement has ors
-            if (statement.contains("or")) {
-                String[] orStatements = statement.split("or");
-                for (String conditional : orStatements) {
-                    // parse and statements
-                    if (conditional.contains("and")) {
-                        String[] andStatements = conditional.split("and");
-                        // if any of the end statements is false, then the entire sub section is false
-                        for (String condition : andStatements) {
-                            if ( false) { // TODO check condition
-                                conditionalValue = false;
-                            }
-                        }
-                    } else {
-                        // its a singular statement
-                        if (false) { // TODO check condition
-                            conditionalValue = false;
-                        }
-                    }
-                    // if it is still true for any of the ors, the entire statement is true and we can update the record
-                    if (conditionalValue == true) {
-                        // update record
-                        // TODO
-                    }
-                }
-            }
-            // Now we can check for ands
-            else if (statement.contains("and")) {
-                String[] andStatements = statement.split("and");
-                // if any of the end statements is false, then the entire sub section is false
-                for (String condition : andStatements) {
-                    if ( false) { // TODO check condition
-                        conditionalValue = false;
-                    }
-                }
-                // if its still true, then we can update
-                // TODO
-            } else {
-                // its a singular statement
-                if (false) { // TODO check condition
-                    conditionalValue = false;
-                }
-                // if its true, we can update
-                // TODO
-            }
+    /**
+     * This function computes a where clause. Consider where foo >= 1000; The following variables would be...
+     * @param attrName "foo"
+     * @param equivalency ">="
+     * @param var parsed object representing 1000
+     * @return ArrayList that follows condition in where
+     */
+    private ArrayList<Object[]> computeWhere(String attrName, String equivalency, Object var, String tableName)
+            throws DMLParserException   {
+        Table table = catalog.getTable(tableName);
+        int indexOfAttr = getIndexFromTable(tableName, attrName);
+        Object relations[][];
+        try {
+            relations = storageManager.getRecords(table.getId());
         }
+        catch (StorageManagerException e) { throw new DMLParserException(e.getLocalizedMessage()); }
+
+        ArrayList<Object[]> result = new ArrayList<>(0);
+
+        equivalency = equivalency.trim();
+        switch (equivalency)    {
+            case "=":
+                for(int i = 0;i < relations.length;i++) {
+                    if(compare(relations[i][indexOfAttr], var) == 0)
+                        result.add(relations[i]);
+                }
+                break;
+            case ">":
+                for(int i = 0;i < relations.length;i++) {
+                    if(compare(relations[i][indexOfAttr], var) > 0)
+                        result.add(relations[i]);
+                }
+                break;
+            case "<":
+                for(int i = 0;i < relations.length;i++) {
+                    if(compare(relations[i][indexOfAttr], var) < 0)
+                        result.add(relations[i]);
+                }
+                break;
+            case ">=":
+                for(int i = 0;i < relations.length;i++) {
+                    if(compare(relations[i][indexOfAttr], var) >= 0)
+                        result.add(relations[i]);
+                }
+                break;
+            case "<=":
+                for(int i = 0;i < relations.length;i++) {
+                    if(compare(relations[i][indexOfAttr], var) <= 0)
+                        result.add(relations[i]);
+                }
+                break;
+            default:
+                throw new DMLParserException("cannot compare by " + equivalency);
+
+        }
+        return null;
+    }
+
+    /**
+     * This function compares two objects by trying to parse them to the same type
+     * @param o1
+     * @param o2
+     * @return negative num if o1 < o2, 0 if o1 == o2, and positive num if o1 > o2.
+     * @throws DMLParserException
+     */
+    private int compare(Object o1, Object o2) throws DMLParserException   {
+        if(o1 instanceof String && o2 instanceof String)    {
+            return ((String) o1).compareTo((String)o2);
+        }
+        else if(o1 instanceof Double && o2 instanceof Double)    {
+            return ((Double) o1).compareTo((Double)o2);
+        }
+        else if(o1 instanceof Integer && o2 instanceof Integer)    {
+            return ((Integer) o1).compareTo((Integer)o2);
+        }
+        else if(o1 instanceof Boolean && o2 instanceof Boolean)    {
+            return ((Boolean) o1).compareTo((Boolean)o2);
+        }
+        else if(o1 == null && o2 == null)
+            return 0;
+        else
+            throw new DMLParserException("Cannot compare invalid types.");
+    }
+
+    private void handleCondtional(String statement){
+
     }
 
     public void deleteTable(String statement) throws DMLParserException{
-        String[] wordsInStatement = statement.split(" ");
-        String table = wordsInStatement[2];
+        String[] wordsInStatement = statement.split("\\s+");
+        String table = wordsInStatement[2].replace(";","");
         Table table1 = catalog.getTable(table);
         int tableid = table1.getId();
         if( table1 == null){
             throw new DMLParserException("Table does not exist");
         }
-
         if(wordsInStatement.length == 3){
             try {
                 Object[][] records = storageManager.getRecords(tableid);
@@ -510,7 +542,7 @@ public class DMLParser implements IDMLParser {
                     }
                     else if (count == 2){
                         if( i == wordsInStatement.length - 1){
-                            value = wordsInStatement[i].substring(0, wordsInStatement[i].length() - 1);
+                            value = wordsInStatement[i].replace(";","");
                         }
                         else{
                             value = wordsInStatement[i];
@@ -518,13 +550,16 @@ public class DMLParser implements IDMLParser {
                         valueType = checkType(value);
                         attribute1 = table1.getAttribute(attribute);
                         String type = attribute1.getType();
+                        if(type.contains("varchar")){
+                            type = "char";
+                        }
                         if (!valueType.equals(type)){
                             throw new DMLParserException("Type does not match");
                         }
                     }
                     if(and){
                         and = false;
-                        newRecords = acquireRecords(newRecords, attribute, index, conditional, value, valueType, table1);
+                        newRecords = acquireRecords(newRecords, index, conditional, value, valueType, table1);
                         loop = true;
                         if( i == wordsInStatement.length - 1){
                             break;
@@ -532,7 +567,7 @@ public class DMLParser implements IDMLParser {
                     }
                     else if(or){
                         or = false;
-                        orArray = acquireRecords(records, attribute, index, conditional, value, valueType, table1);
+                        orArray = acquireRecords(records, index, conditional, value, valueType, table1); // or does not make it past this point
                         newRecords = mergeArray(newRecords,orArray);
                         loop = true;
                         if( i == wordsInStatement.length - 1){
@@ -540,18 +575,18 @@ public class DMLParser implements IDMLParser {
                         }
                     }
                     if( i == wordsInStatement.length - 1){
-                        newRecords = acquireRecords(records, attribute, index, conditional, value, valueType, table1);
+                        newRecords = acquireRecords(records, index, conditional, value, valueType, table1);
                     }
                     else{
                         i++;
                         count = 0;
                         if(!loop){
-                            newRecords = acquireRecords(records, attribute, index, conditional, value, valueType, table1);
+                            newRecords = acquireRecords(records, index, conditional, value, valueType, table1);
                         }
                         if (wordsInStatement[i].equals("and")){
                             and = true;
                         }
-                        else{
+                        else if (wordsInStatement[i].equals("or")){
                             or = true;
                         }
                     }
@@ -604,15 +639,14 @@ public class DMLParser implements IDMLParser {
     /**
      * acquireRecords filters out records in the 2d array that corresponds to the where clause given
      * @param records
-     * @param attribute
      * @param index
      * @param conditional
      * @param value
      * @param type
      * @return
      */
-    private Object[][] acquireRecords(Object[][] records, String attribute, int index, String conditional, String value, String type, Table table1){
-        Object[][] newRecords = new Object[1][]; // This is wrong, needs to be size of filtered array
+    private Object[][] acquireRecords(Object[][] records, int index, String conditional, String value, String type, Table table1){
+        Object[][] newRecords = new Object[0][];
         int count = 0;
         int size = 1;
         boolean num = false, doub = false, bool = false, charac = false;
@@ -635,39 +669,42 @@ public class DMLParser implements IDMLParser {
             for(int i=0; i<records.length; i++) {
                 boolean add = false;
                 Object[] record = records[i];
-                int rec = (Integer) record[index];
-                switch(conditional){
-                    case "=":
-                        if(rec == val){
-                            add = true;
-                        }
-                        break;
-                    case ">":
-                        if(rec > val){
-                            add = true;
-                        }
-                        break;
-                    case "<":
-                        if(rec < val){
-                            add = true;
-                        }
-                        break;
-                    case ">=":
-                        if(rec >= val){
-                            add = true;
-                        }
-                        break;
-                    case "<=":
-                        if(rec <= val){
-                            add = true;
-                        }
-                        break;
-                }
-                if(add){
-                    newRecords[count] = record;
-                    size++;
-                    newRecords = Arrays.copyOf(newRecords, size);
-                }
+                try{
+                    int rec = (Integer) record[index];
+                    switch(conditional){
+                        case "=":
+                            if(rec == val){
+                                add = true;
+                            }
+                            break;
+                        case ">":
+                            if(rec > val){
+                                add = true;
+                            }
+                            break;
+                        case "<":
+                            if(rec < val){
+                                add = true;
+                            }
+                            break;
+                        case ">=":
+                            if(rec >= val){
+                                add = true;
+                            }
+                            break;
+                        case "<=":
+                            if(rec <= val){
+                                add = true;
+                            }
+                            break;
+                    }
+                    if(add){
+                        newRecords = Arrays.copyOf(newRecords, size);
+                        newRecords[count] = record;
+                        size++;
+                        count++;
+                    }
+                }catch( NullPointerException e){}
             }
         }
         else if(doub){
@@ -675,43 +712,45 @@ public class DMLParser implements IDMLParser {
             for(int i=0; i<records.length; i++) {
                 boolean add = false;
                 Object[] record = records[i];
-                double rec = (Double) record[index];
-                switch(conditional){
-                    case "=":
-                        if(rec == val){
-                            add = true;
-                        }
-                        break;
-                    case ">":
-                        if(rec > val){
-                            add = true;
-                        }
-                        break;
-                    case "<":
-                        if(rec < val){
-                            add = true;
-                        }
-                        break;
-                    case ">=":
-                        if(rec >= val){
-                            add = true;
-                        }
-                        break;
-                    case "<=":
-                        if(rec <= val){
-                            add = true;
-                        }
-                        break;
-                }
-                if(add){
-                    newRecords[count] = record;
-                    size++;
-                    newRecords = Arrays.copyOf(newRecords, size);
-                }
+                try{
+                    double rec = (Double) record[index];
+                    switch(conditional){
+                        case "=":
+                            if(rec == val){
+                                add = true;
+                            }
+                            break;
+                        case ">":
+                            if(rec > val){
+                                add = true;
+                            }
+                            break;
+                        case "<":
+                            if(rec < val){
+                                add = true;
+                            }
+                            break;
+                        case ">=":
+                            if(rec >= val){
+                                add = true;
+                            }
+                            break;
+                        case "<=":
+                            if(rec <= val){
+                                add = true;
+                            }
+                            break;
+                    }
+                    if(add){
+                        newRecords = Arrays.copyOf(newRecords, size);
+                        newRecords[count] = record;
+                        size++;
+                        count++;
+                    }
+                }catch( NullPointerException e){}
             }
         }
         else if(bool){
-            //TODO Check how true/false is being stored as
             if(value.equals("true")){
                 bool = true;
             }
@@ -721,15 +760,18 @@ public class DMLParser implements IDMLParser {
             for(int i=0; i<records.length; i++) {
                 boolean add = false;
                 Object[] record = records[i];
-                boolean rec = (Boolean) record[index];
-                if(rec == bool){
-                    add = true;
-                }
-                if(add){
-                    newRecords[count] = record;
-                    size++;
-                    newRecords = Arrays.copyOf(newRecords, size);
-                }
+                try{
+                    boolean rec = (Boolean) record[index];
+                    if(rec == bool){
+                        add = true;
+                    }
+                    if(add){
+                        newRecords = Arrays.copyOf(newRecords, size);
+                        newRecords[count] = record;
+                        size++;
+                        count++;
+                    }
+                }catch( NullPointerException e){}
             }
         }
         else if(charac){
@@ -739,30 +781,33 @@ public class DMLParser implements IDMLParser {
                 for(int i=0; i<records.length; i++) {
                     boolean add = false;
                     Object[] record = records[i];
-                    String rec = (String) record[index];
-                    int compare = val.compareTo(rec);
-                    switch(conditional){
-                        case "=":
-                            if(compare == 0){
-                                add = true;
-                            }
-                            break;
-                        case ">":
-                            if(compare > 0){
-                                add = true;
-                            }
-                            break;
-                        case "<":
-                            if(compare < 0){
-                                add = true;
-                            }
-                            break;
-                    }
-                    if(add){
-                        newRecords[count] = record;
-                        size++;
-                        newRecords = Arrays.copyOf(newRecords, size);
-                    }
+                    try{
+                        String rec = (String) record[index];
+                        int compare = val.compareTo(rec);
+                        switch(conditional){
+                            case "=":
+                                if(compare == 0){
+                                    add = true;
+                                }
+                                break;
+                            case ">":
+                                if(compare > 0){
+                                    add = true;
+                                }
+                                break;
+                            case "<":
+                                if(compare < 0){
+                                    add = true;
+                                }
+                                break;
+                        }
+                        if(add){
+                            newRecords = Arrays.copyOf(newRecords, size);
+                            newRecords[count] = record;
+                            size++;
+                            count++;
+                        }
+                    }catch( NullPointerException e){}
                 }
             }
             else{
@@ -777,9 +822,10 @@ public class DMLParser implements IDMLParser {
                         add = true;
                     }
                     if(add){
+                        newRecords = Arrays.copyOf(newRecords, size);
                         newRecords[count] = record;
                         size++;
-                        newRecords = Arrays.copyOf(newRecords, size);
+                        count++;
                     }
                 }
             }
