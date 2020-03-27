@@ -3,10 +3,12 @@ import database.Catalog;
 import ddl.Attribute;
 import ddl.ForeignKey;
 import ddl.Table;
+import javafx.beans.binding.ObjectExpression;
 import storagemanager.StorageManager;
 import storagemanager.StorageManagerException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 public class DMLParser implements IDMLParser {
 
@@ -321,7 +323,7 @@ public class DMLParser implements IDMLParser {
         if(statement.contains("where")){
             //where <value> = <value>
             if(statement.contains("and") || statement.contains("or")){
-                handleCondtional(statement.substring(statement.indexOf("where")));
+                // handleConditional(statement.substring(statement.indexOf("where")));
             }
             //no "and" or "or"
             else {
@@ -400,8 +402,57 @@ public class DMLParser implements IDMLParser {
         return -1;
     }
 
-    private void handleCondtional(String statement){
-
+    private void handleConditional(String statement, Attribute attribute, int id) throws StorageManagerException {
+        Object[][] records = storageManager.getRecords(id);
+        // This can probably be more efficient
+        for (Object[] record : records) {
+            boolean conditionalValue = true;
+            // check if the statement has ors
+            if (statement.contains("or")) {
+                String[] orStatements = statement.split("or");
+                for (String conditional : orStatements) {
+                    // parse and statements
+                    if (conditional.contains("and")) {
+                        String[] andStatements = conditional.split("and");
+                        // if any of the end statements is false, then the entire sub section is false
+                        for (String condition : andStatements) {
+                            if ( false) { // TODO check condition
+                                conditionalValue = false;
+                            }
+                        }
+                    } else {
+                        // its a singular statement
+                        if (false) { // TODO check condition
+                            conditionalValue = false;
+                        }
+                    }
+                    // if it is still true for any of the ors, the entire statement is true and we can update the record
+                    if (conditionalValue == true) {
+                        // update record
+                        // TODO
+                    }
+                }
+            }
+            // Now we can check for ands
+            else if (statement.contains("and")) {
+                String[] andStatements = statement.split("and");
+                // if any of the end statements is false, then the entire sub section is false
+                for (String condition : andStatements) {
+                    if ( false) { // TODO check condition
+                        conditionalValue = false;
+                    }
+                }
+                // if its still true, then we can update
+                // TODO
+            } else {
+                // its a singular statement
+                if (false) { // TODO check condition
+                    conditionalValue = false;
+                }
+                // if its true, we can update
+                // TODO
+            }
+        }
     }
 
     public void deleteTable(String statement) throws DMLParserException{
