@@ -404,10 +404,10 @@ public class DMLParser implements IDMLParser {
      * This function computes a where clause. Consider where foo >= 1000; The following variables would be...
      * @param attrName "foo"
      * @param equivalency ">="
-     * @param var "1000"
+     * @param var parsed object representing 1000
      * @return ArrayList that follows condition in where
      */
-    private ArrayList<Object[]> computeWhere(String attrName, String equivalency, String var, String tableName)
+    private ArrayList<Object[]> computeWhere(String attrName, String equivalency, Object var, String tableName)
             throws DMLParserException   {
         Table table = catalog.getTable(tableName);
         int indexOfAttr = getIndexFromTable(tableName, attrName);
@@ -423,16 +423,33 @@ public class DMLParser implements IDMLParser {
         switch (equivalency)    {
             case "=":
                 for(int i = 0;i < relations.length;i++) {
-                    //if(relations[i][indexOfAttr]. )
+                    if(compare(relations[i][indexOfAttr], var) == 0)
+                        result.add(relations[i]);
                 }
                 break;
             case ">":
+                for(int i = 0;i < relations.length;i++) {
+                    if(compare(relations[i][indexOfAttr], var) > 0)
+                        result.add(relations[i]);
+                }
                 break;
             case "<":
+                for(int i = 0;i < relations.length;i++) {
+                    if(compare(relations[i][indexOfAttr], var) < 0)
+                        result.add(relations[i]);
+                }
                 break;
             case ">=":
+                for(int i = 0;i < relations.length;i++) {
+                    if(compare(relations[i][indexOfAttr], var) >= 0)
+                        result.add(relations[i]);
+                }
                 break;
             case "<=":
+                for(int i = 0;i < relations.length;i++) {
+                    if(compare(relations[i][indexOfAttr], var) <= 0)
+                        result.add(relations[i]);
+                }
                 break;
             default:
                 throw new DMLParserException("cannot compare by " + equivalency);
