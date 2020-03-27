@@ -417,9 +417,6 @@ public class DMLParser implements IDMLParser {
                 throw new DMLParserException("Could not retrieve records");
             }
         }
-//        for(int k = 0; k<relations.length; k++){
-//            System.out.println(Arrays.toString(relations[k]));
-//        }
         try {
             String attr = "";
             String math = "";
@@ -1032,5 +1029,4 @@ public class DMLParser implements IDMLParser {
         }
         return newRecords;
     }
-
 }
