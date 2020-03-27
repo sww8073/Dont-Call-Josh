@@ -472,7 +472,7 @@ public class DMLParser implements IDMLParser {
                 for(int i=0; i<records.length; i++) {
                     Object[] record = records[i];
                     try{
-                        record[index] = o; // Potential error checking here (Conversion from obj to attr
+                        record[index] = o;
                         storageManager.updateRecord(tableid, record);
                     }catch( StorageManagerException e){
                         try {
