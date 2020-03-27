@@ -64,7 +64,7 @@ public class DMLTester {
 
 
         // You may need to modify some values to test on your system
-        String dbLoc = "C:\\Users\\jtell\\Desktop\\Database\\Database2";
+        String dbLoc = "C:\\Users\\Matthew\\Desktop\\DB\\data";
         int pageBufferSize = 20;
         int pageSize = 4096;
         AStorageManager sm;
@@ -298,43 +298,43 @@ public class DMLTester {
         //testing delete
         System.out.println("Testing update.... none should fail...");
 
-//        String update1 = "update foo set name = \"hello\" where id = 1;";
-//        String update2 = "update foo set amount = amount + 1.0 where id >= 2 and amount < 30.0;";
-//        String update3 = "update foo set name = \"hi\", amount = 4.0 where amount = 4.12 or id = 3;";
-//
-//        database.executeNonQuery(update1);
-//        database.executeNonQuery(update2);
-//        database.executeNonQuery(update3);
-//
-//        database.terminateDatabase();
-//
-//        System.out.println("Restarting just storage manager...");
-//        try {
-//            sm = new StorageManager(dbLoc, pageBufferSize, pageSize, true);
-//
-//            System.out.println("Getting table 1 data...");
-//            Object[][] data1 = sm.getRecords(table1Id);
-//
-//            expectedData1_0[1] = "hello";
-//            expectedData1_1[2] = 4.0;
-//            expectedData1_1[1] = "hi";
-//            expectedData1_2[1] = "hi";
-//            expectedData1_2[2] = 4.0;
-//
-//
-//            if(data1.length != 3 || !Arrays.equals(data1[0], expectedData1_0) ||
-//                    !Arrays.equals(data1[1], expectedData1_1) ||
-//                    !Arrays.equals(data1[2], expectedData1_2)){
-//                System.err.println("Updating Table 1 failed...");
-//                System.exit(1);
-//            }
-//
-//            sm.terminateDatabase();
-//        } catch (StorageManagerException e){
-//            e.printStackTrace();
-//            System.exit(1);
-//        }
-//
-//        System.out.println("Testing complete...");
+        String update1 = "update foo set name = \"hello\" where id = 1;";
+        String update2 = "update foo set amount = amount + 1.0 where id >= 2 and amount < 30.0;";
+        String update3 = "update foo set name = \"hi\", amount = 4.0 where amount = 4.12 or id = 3;";
+
+        database.executeNonQuery(update1);
+        database.executeNonQuery(update2);
+        database.executeNonQuery(update3);
+
+        database.terminateDatabase();
+
+        System.out.println("Restarting just storage manager...");
+        try {
+            sm = new StorageManager(dbLoc, pageBufferSize, pageSize, true);
+
+            System.out.println("Getting table 1 data...");
+            Object[][] data1 = sm.getRecords(table1Id);
+
+            expectedData1_0[1] = "hello";
+            expectedData1_1[2] = 4.0;
+            expectedData1_1[1] = "hi";
+            expectedData1_2[1] = "hi";
+            expectedData1_2[2] = 4.0;
+
+
+            if(data1.length != 3 || !Arrays.equals(data1[0], expectedData1_0) ||
+                    !Arrays.equals(data1[1], expectedData1_1) ||
+                    !Arrays.equals(data1[2], expectedData1_2)){
+                System.err.println("Updating Table 1 failed...");
+                System.exit(1);
+            }
+
+            sm.terminateDatabase();
+        } catch (StorageManagerException e){
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        System.out.println("Testing complete...");
     }
 }
