@@ -315,49 +315,150 @@ public class DMLParser implements IDMLParser {
         catch(Exception e){
             throw new DMLParserException("Table \"tableName\" does not exist");
         }
-        if(!(statement.contains("where"))){
-            //Eval everything
+        int tableId = table.getId();
+        Object[][] relations = new Object[0][];
+        try {
+            relations = storageManager.getRecords(tableId);
+        } catch (StorageManagerException e) {
+            e.printStackTrace();
+        }
+        if(statement.contains("where")){
+            int indexWhere = Arrays.asList(wordsInStatement).indexOf("where");
+            indexWhere++;
+            int tableid = table.getId();
             try {
-                String attr = "";
-                String math = "";
-                String value = "";
-                int index = 0;
                 int count = 0;
-                int tableId = table.getId();
-                Object[][] relations = storageManager.getRecords(tableId);
-                for(int i = 3; i < wordsInStatement.length; i++){
-                    if(count == 0){
-                        attr = wordsInStatement[i];
-                        Attribute attribute = table.getAttribute(attr);
-                        if(attribute == null){
-                            throw new DMLParserException("Attribute \"attr\" does not exist");
+                String attribute = "";
+                String conditional = "";
+                String value = "";
+                String valueType = "";
+                int index = 0;
+                Attribute attribute1;
+
+                boolean and = false;
+                boolean or = false;
+                boolean loop = false;
+
+                Object[][] records = storageManager.getRecords(tableid);
+                Object[][] newRecords = records;
+                Object[][] orArray;
+                for(int i = indexWhere; i < wordsInStatement.length; i++){
+                    if (count == 0) {
+                        attribute = wordsInStatement[i];
+                        attribute1 = table.getAttribute(attribute);
+                        if (attribute1 == null) {
+                            throw new DMLParserException("Attribute does not exist");
                         }
-                        index = table.getIndex(attr);
+                        index = table.getIndex(attribute);
                         count++;
                         continue;
                     }
-                    else if(count == 1){
+                    else if (count == 1){
+                        conditional = wordsInStatement[i];
                         count++;
                         continue;
                     }
-                    else if(count == 2){
-                        if(attr.equals(wordsInStatement[i])){
-                            i++;
-                            math = wordsInStatement[i];
-                            i++;
-                        }
-                        if(i == wordsInStatement.length - 1){
+                    else if (count == 2){
+                        if( i == wordsInStatement.length - 1){
                             value = wordsInStatement[i].replace(";","");
                         }
                         else{
-                            value = wordsInStatement[i].replace(",","");
+                            value = wordsInStatement[i];
                         }
-                        updateRecordsWhereAll(relations, math, value, index, tableId);
-                        count = 0;
+                        valueType = checkType(value);
+                        attribute1 = table.getAttribute(attribute);
+                        String type = attribute1.getType();
+                        if(type.contains("varchar")){
+                            type = "char";
+                        }
+                        if (!valueType.equals(type)){
+                            throw new DMLParserException("Type does not match");
+                        }
                     }
+                    if(and){
+                        and = false;
+                        newRecords = acquireRecords(newRecords, index, conditional, value, valueType, table);
+                        loop = true;
+                        if( i == wordsInStatement.length - 1){
+                            break;
+                        }
+                    }
+                    else if(or){
+                        or = false;
+                        orArray = acquireRecords(records, index, conditional, value, valueType, table); // or does not make it past this point
+                        newRecords = mergeArray(newRecords,orArray);
+                        loop = true;
+                        if( i == wordsInStatement.length - 1){
+                            break;
+                        }
+                    }
+                    if( i == wordsInStatement.length - 1){
+                        newRecords = acquireRecords(records, index, conditional, value, valueType, table);
+                    }
+                    else{
+                        i++;
+                        count = 0;
+                        if(!loop){
+                            newRecords = acquireRecords(records, index, conditional, value, valueType, table);
+                        }
+                        if (wordsInStatement[i].equals("and")){
+                            and = true;
+                        }
+                        else if (wordsInStatement[i].equals("or")){
+                            or = true;
+                        }
+                    }
+                    loop = false;
+
+                }
+                relations = newRecords;
+
+            } catch (StorageManagerException e) {
+                throw new DMLParserException("Could not retrieve records");
+            }
+        }
+//        for(int k = 0; k<relations.length; k++){
+//            System.out.println(Arrays.toString(relations[k]));
+//        }
+        try {
+            String attr = "";
+            String math = "";
+            String value = "";
+            int index = 0;
+            int count = 0;
+            for (int i = 3; i < wordsInStatement.length; i++) {
+                if(wordsInStatement[i].equals("where")){
+                    break;
+                }
+                if (count == 0) {
+                    attr = wordsInStatement[i];
+                    Attribute attribute = table.getAttribute(attr);
+                    if (attribute == null) {
+                        throw new DMLParserException("Attribute \"attr\" does not exist");
+                    }
+                    index = table.getIndex(attr);
+                    count++;
+                    continue;
+                } else if (count == 1) {
+                    count++;
+                    continue;
+                } else if (count == 2) {
+                    if (attr.equals(wordsInStatement[i])) {
+                        i++;
+                        math = wordsInStatement[i];
+                        i++;
+                    }
+                    if (i == wordsInStatement.length - 1) {
+                        value = wordsInStatement[i].replace(";", "");
+                    } else {
+                        value = wordsInStatement[i].replace(",", "");
+                    }
+                    updateRecordsWhereAll(relations, math, value, index, tableId);
+                    count = 0;
                 }
             }
-            catch (StorageManagerException e) { throw new DMLParserException(e.getMessage()); }
+        } catch (Exception e) {
+            throw new DMLParserException(e.getMessage());
         }
     }
 
@@ -387,7 +488,7 @@ public class DMLParser implements IDMLParser {
                 inte = true;
                 val1 = Integer.parseInt(value);
             }
-            else if(type.equals("boolean")){
+            else if(type.equals("double")){
                 doub = true;
                 val2 = Double.parseDouble(value);
             }
@@ -457,7 +558,6 @@ public class DMLParser implements IDMLParser {
             }
 
         }
-
     }
 
     /**
