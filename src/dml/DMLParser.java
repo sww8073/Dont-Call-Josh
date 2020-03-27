@@ -462,6 +462,14 @@ public class DMLParser implements IDMLParser {
         }
     }
 
+    /**
+     * Helper function that updates all records given update function
+     * @param records
+     * @param math
+     * @param value
+     * @param index
+     * @param tableid
+     */
     private void updateRecordsWhereAll(Object[][] records, String math, String value, int index, int tableid){
         value = value.replace("\"", "");
         if(math.equals("")){
