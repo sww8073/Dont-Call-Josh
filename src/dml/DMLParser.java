@@ -306,9 +306,8 @@ public class DMLParser implements IDMLParser {
      * @throws DMLParserException
      */
     public void updateTable(String statement) throws DMLParserException{
-        String[] wordsInStatment = statement.split(" ");
-        String tableName = wordsInStatment[1];
-        String setValue = wordsInStatment[3];
+        String[] wordsInStatement = statement.split(" ");
+        String tableName = wordsInStatement[1];
         Table table;
         try{
             table = catalog.getTable(tableName);
@@ -316,63 +315,147 @@ public class DMLParser implements IDMLParser {
         catch(Exception e){
             throw new DMLParserException("Table \"tableName\" does not exist");
         }
-
-        //where clause
-        if(statement.contains("where")){
-            //where <value> = <value>
-            if(statement.contains("and") || statement.contains("or")){
-                handleCondtional(statement.substring(statement.indexOf("where")));
-            }
-            //no "and" or "or"
-            else {
-
-                String attrToChange = wordsInStatment[3];
-                String newValue = wordsInStatment[5];
-                if(newValue.contains("\"")) {
-                    newValue = newValue.substring(1, newValue.length() - 1);
-                }
-
-                String whereClause = statement.substring(statement.indexOf("where"));
-                String[] whereClauseWords = whereClause.split(" ");
-
-                String attr = whereClauseWords[1];
-                String value = whereClauseWords[3];
-                value = value.substring(0,value.length()-1);
-
-                System.out.println(value);
-                if(table.attributeExists(attr)){//ex: table has "id"
-                    String[] dataTypes = table.getDataTypes();
-                    Attribute attribute = table.getAttribute(attr);
-                    Attribute attributeToChange = table.getAttribute(attrToChange);
-                    int indexOfAttr = table.getAttrs().indexOf(attribute);
-                    int indexOfAttrToChange = table.getAttrs().indexOf(attributeToChange);
-                    String attrType = dataTypes[indexOfAttr];
-
-                    Object attrObject = convertAttrType(attrType.toLowerCase(),value);
-
-                    try {
-                        for (Object[] record : storageManager.getRecords(table.getId())) {
-                            if(record[indexOfAttr].equals(attrObject)){
-                                //update record
-                                record[indexOfAttrToChange] = newValue;
-                                storageManager.updateRecord(table.getId(),record);
-                            }
-                        }
-                    }catch(StorageManagerException e){
-                        throw new DMLParserException("Table " + table.getName() + " does not exist.");
-                    }
-                }
-
-
-            }
-        }
-        else { // there is no where clause
+        if(!(statement.contains("where"))){
+            //Eval everything
             try {
+                String attr = "";
+                String math = "";
+                String value = "";
+                int index = 0;
+                int count = 0;
                 int tableId = table.getId();
                 Object[][] relations = storageManager.getRecords(tableId);
-
+                for(int i = 3; i < wordsInStatement.length; i++){
+                    if(count == 0){
+                        attr = wordsInStatement[i];
+                        Attribute attribute = table.getAttribute(attr);
+                        if(attribute == null){
+                            throw new DMLParserException("Attribute \"attr\" does not exist");
+                        }
+                        index = table.getIndex(attr);
+                        count++;
+                        continue;
+                    }
+                    else if(count == 1){
+                        count++;
+                        continue;
+                    }
+                    else if(count == 2){
+                        if(attr.equals(wordsInStatement[i])){
+                            i++;
+                            math = wordsInStatement[i];
+                            i++;
+                        }
+                        if(i == wordsInStatement.length - 1){
+                            value = wordsInStatement[i].replace(";","");
+                        }
+                        else{
+                            value = wordsInStatement[i].replace(",","");
+                        }
+                        updateRecordsWhereAll(relations, math, value, index, tableId);
+                        count = 0;
+                    }
+                }
             }
             catch (StorageManagerException e) { throw new DMLParserException(e.getMessage()); }
+        }
+    }
+
+    private void updateRecordsWhereAll(Object[][] records, String math, String value, int index, int tableid){
+        if(math.equals("")){
+            //no math, set all records = value
+            for(int i=0; i<records.length; i++) {
+                Object[] record = records[i];
+                try{
+                    record[index] = value; // Potential error checking here (Conversion from obj to attr
+                    storageManager.updateRecord(tableid, record);
+                }catch( StorageManagerException e){
+                    try {
+                        throw new DMLParserException("Update record could not be processed");
+                    } catch (DMLParserException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        }
+        else{
+            String type = checkType(value);
+            int val1 = 0;
+            double val2 = 0;
+            boolean inte = false, doub = false;
+            if (type.equals("integer")){
+                inte = true;
+                val1 = Integer.parseInt(value);
+            }
+            else if(type.equals("boolean")){
+                doub = true;
+                val2 = Double.parseDouble(value);
+            }
+            else{
+                try {
+                    throw new DMLParserException("Value given is not integer or boolean");
+                } catch (DMLParserException e) {
+                    e.printStackTrace();
+                }
+            }
+            //Mathematics for int/double
+            if(inte){
+                for(int i=0; i<records.length; i++) {
+                    Object[] record = records[i];
+                    try{
+                        switch(math){
+                            case "+":
+                                record[index] = (Integer) record[index] + val1;
+                                break;
+                            case "-":
+                                record[index] = (Integer) record[index] - val1;
+                                break;
+                            case "*":
+                                record[index] = (Integer) record[index] * val1;
+                                break;
+                            case "/":
+                                record[index] = (Integer) record[index] / val1;
+                                break;
+                        }
+                        storageManager.updateRecord(tableid, record);
+                    }catch( StorageManagerException e){
+                        try {
+                            throw new DMLParserException("Update record could not be processed");
+                        } catch (DMLParserException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+            }
+            else if(doub){
+                for(int i=0; i<records.length; i++) {
+                    Object[] record = records[i];
+                    try{
+                        switch(math){
+                            case "+":
+                                record[index] = (Double) record[index] + val2;
+                                break;
+                            case "-":
+                                record[index] = (Double) record[index] - val2;
+                                break;
+                            case "*":
+                                record[index] = (Double) record[index] * val2;
+                                break;
+                            case "/":
+                                record[index] = (Double) record[index] / val2;
+                                break;
+                        }
+                        storageManager.updateRecord(tableid, record);
+                    }catch( StorageManagerException e){
+                        try {
+                            throw new DMLParserException("Update record could not be processed");
+                        } catch (DMLParserException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+            }
+
         }
 
     }
@@ -400,58 +483,6 @@ public class DMLParser implements IDMLParser {
         return -1;
     }
 
-    private void handleConditional(String statement, Attribute attribute, int id) throws StorageManagerException {
-        Object[][] records = storageManager.getRecords(id);
-        // This can probably be more efficient
-        for (Object[] record : records) {
-            boolean conditionalValue = true;
-            // check if the statement has ors
-            if (statement.contains("or")) {
-                String[] orStatements = statement.split("or");
-                for (String conditional : orStatements) {
-                    // parse and statements
-                    if (conditional.contains("and")) {
-                        String[] andStatements = conditional.split("and");
-                        // if any of the end statements is false, then the entire sub section is false
-                        for (String condition : andStatements) {
-                            if (false) { // TODO check condition
-                                conditionalValue = false;
-                            }
-                        }
-                    } else {
-                        // its a singular statement
-                        if (false) { // TODO check condition
-                            conditionalValue = false;
-                        }
-                    }
-                    // if it is still true for any of the ors, the entire statement is true and we can update the record
-                    if (conditionalValue == true) {
-                        // update record
-                        // TODO
-                    }
-                }
-            }
-            // Now we can check for ands
-            else if (statement.contains("and")) {
-                String[] andStatements = statement.split("and");
-                // if any of the end statements is false, then the entire sub section is false
-                for (String condition : andStatements) {
-                    if (false) { // TODO check condition
-                        conditionalValue = false;
-                    }
-                }
-                // if its still true, then we can update
-                // TODO
-            } else {
-                // its a singular statement
-                if (false) { // TODO check condition
-                    conditionalValue = false;
-                }
-                // if its true, we can update
-                // TODO
-            }
-        }
-    }
 
     /**
      * This function computes a where clause. Consider where foo >= 1000; The following variables would be...
