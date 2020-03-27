@@ -414,7 +414,7 @@ public class DMLParser implements IDMLParser {
                         String[] andStatements = conditional.split("and");
                         // if any of the end statements is false, then the entire sub section is false
                         for (String condition : andStatements) {
-                            if ( false) { // TODO check condition
+                            if (false) { // TODO check condition
                                 conditionalValue = false;
                             }
                         }
@@ -436,7 +436,7 @@ public class DMLParser implements IDMLParser {
                 String[] andStatements = statement.split("and");
                 // if any of the end statements is false, then the entire sub section is false
                 for (String condition : andStatements) {
-                    if ( false) { // TODO check condition
+                    if (false) { // TODO check condition
                         conditionalValue = false;
                     }
                 }
@@ -451,6 +451,7 @@ public class DMLParser implements IDMLParser {
                 // TODO
             }
         }
+    }
 
     /**
      * This function computes a where clause. Consider where foo >= 1000; The following variables would be...
