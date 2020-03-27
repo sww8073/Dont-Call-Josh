@@ -299,8 +299,7 @@ public class DMLTester {
         System.out.println("Testing update.... none should fail...");
 
         String update1 = "update foo set name = \"hello\" where id = 1;";
-        // String update2 = "update foo set amount = amount + 1.0 where id >= 2 and amount < 30.0;";
-        String update2 = "update foo set amount = amount + 1.0 where id >= 2 and amount < 30.0 or id >= 3 or val = 14 and q = 5;";
+        String update2 = "update foo set amount = amount + 1.0 where id >= 2 and amount < 30.0;";
         String update3 = "update foo set name = \"hi\", amount = 4.0 where amount = 4.12 or id = 3;";
 
         database.executeNonQuery(update1);
