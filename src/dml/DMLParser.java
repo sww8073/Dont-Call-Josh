@@ -466,19 +466,26 @@ public class DMLParser implements IDMLParser {
         value = value.replace("\"", "");
         if(math.equals("")){
             //no math, set all records = value
-            for(int i=0; i<records.length; i++) {
-                Object[] record = records[i];
-                try{
-                    record[index] = value; // Potential error checking here (Conversion from obj to attr
-                    storageManager.updateRecord(tableid, record);
-                }catch( StorageManagerException e){
-                    try {
-                        throw new DMLParserException("Update record could not be processed");
-                    } catch (DMLParserException ex) {
-                        ex.printStackTrace();
+            String valueType = checkType(value);
+            try {
+                Object o = convertAttrType(valueType, value);
+                for(int i=0; i<records.length; i++) {
+                    Object[] record = records[i];
+                    try{
+                        record[index] = o; // Potential error checking here (Conversion from obj to attr
+                        storageManager.updateRecord(tableid, record);
+                    }catch( StorageManagerException e){
+                        try {
+                            throw new DMLParserException("Update record could not be processed");
+                        } catch (DMLParserException ex) {
+                            ex.printStackTrace();
+                        }
                     }
                 }
+            } catch (DMLParserException e) {
+                e.printStackTrace();
             }
+
         }
         else{
             String type = checkType(value);
