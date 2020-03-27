@@ -303,39 +303,39 @@ public class DMLTester {
         String update2 = "update foo set amount = amount + 1.0 where id >= 2 and amount < 30.0 or id >= 3 or val = 14 and q = 5;";
         String update3 = "update foo set name = \"hi\", amount = 4.0 where amount = 4.12 or id = 3;";
 
-//        database.executeNonQuery(update1);
+        database.executeNonQuery(update1);
         database.executeNonQuery(update2);
-//        database.executeNonQuery(update3);
-//
-//        database.terminateDatabase();
-//
-//        System.out.println("Restarting just storage manager...");
-//        try {
-//            sm = new StorageManager(dbLoc, pageBufferSize, pageSize, true);
-//
-//            System.out.println("Getting table 1 data...");
-//            Object[][] data1 = sm.getRecords(table1Id);
-//
-//            expectedData1_0[1] = "hello";
-//            expectedData1_1[2] = 4.0;
-//            expectedData1_1[1] = "hi";
-//            expectedData1_2[1] = "hi";
-//            expectedData1_2[2] = 4.0;
-//
-//
-//            if(data1.length != 3 || !Arrays.equals(data1[0], expectedData1_0) ||
-//                    !Arrays.equals(data1[1], expectedData1_1) ||
-//                    !Arrays.equals(data1[2], expectedData1_2)){
-//                System.err.println("Updating Table 1 failed...");
-//                System.exit(1);
-//            }
-//
-//            sm.terminateDatabase();
-//        } catch (StorageManagerException e){
-//            e.printStackTrace();
-//            System.exit(1);
-//        }
-//
-//        System.out.println("Testing complete...");
+        database.executeNonQuery(update3);
+
+        database.terminateDatabase();
+
+        System.out.println("Restarting just storage manager...");
+        try {
+            sm = new StorageManager(dbLoc, pageBufferSize, pageSize, true);
+
+            System.out.println("Getting table 1 data...");
+            Object[][] data1 = sm.getRecords(table1Id);
+
+            expectedData1_0[1] = "hello";
+            expectedData1_1[2] = 4.0;
+            expectedData1_1[1] = "hi";
+            expectedData1_2[1] = "hi";
+            expectedData1_2[2] = 4.0;
+
+
+            if(data1.length != 3 || !Arrays.equals(data1[0], expectedData1_0) ||
+                    !Arrays.equals(data1[1], expectedData1_1) ||
+                    !Arrays.equals(data1[2], expectedData1_2)){
+                System.err.println("Updating Table 1 failed...");
+                System.exit(1);
+            }
+
+            sm.terminateDatabase();
+        } catch (StorageManagerException e){
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        System.out.println("Testing complete...");
     }
 }
