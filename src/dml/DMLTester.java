@@ -221,90 +221,30 @@ public class DMLTester {
             e.printStackTrace();
             System.exit(1);
         }
-//
-//        System.out.println("Restarting the database...");
-//
-//        database = Database.getConnection(dbLoc, pageBufferSize, pageSize);
-//
-//        //testing delete
-//        System.out.println("Testing delete.... none should fail...");
-//
-//        String deleteByPK = "delete from baz where id = 2";
-//        String deleteByPKNonExist = "delete from baz where id = 12";
-//
-//        String deleteRange = "delete from bazzle where id < 5;";
-//
-//        String deleteTwoCondsAnd = "delete from bar where id = 1 and age = 24";
-//        String deleteTwoCondsOr = "delete from bar where id = 2 or age = 12";
-//
-//        String deleteMixed = "delete from baz where id = 1 and department = \"baz\" or id  = 3;";
-//
-//        database.executeNonQuery(deleteByPK);
-//        database.executeNonQuery(deleteByPKNonExist);
-//        database.executeNonQuery(deleteRange);
-//        database.executeNonQuery(deleteTwoCondsAnd);
-//        database.executeNonQuery(deleteTwoCondsOr);
-//        database.executeNonQuery(deleteMixed);
-//
-//        database.terminateDatabase();
-//
-//        System.out.println("Restarting just storage manager...");
-//        try {
-//            sm = new StorageManager(dbLoc, pageBufferSize, pageSize, true);
-//
-//            System.out.println("Getting table 1 data...");
-//            Object[][] data1 = sm.getRecords(table1Id);
-//
-//            if(data1.length != 3 || !Arrays.equals(data1[0], expectedData1_0) ||
-//                    !Arrays.equals(data1[1], expectedData1_1) ||
-//                    !Arrays.equals(data1[2], expectedData1_2)){
-//                System.err.println("Deleting from Table 1 failed...");
-//                System.exit(1);
-//            }
-//
-//            System.out.println("Getting table 2 data...");
-//            Object[][] data2 = sm.getRecords(table2Id);
-//
-//            if(data2.length != 0 ){
-//                System.err.println("Deleting Table 2 failed...");
-//                System.exit(1);
-//            }
-//
-//            System.out.println("Getting table 3 data...");
-//            Object[][] data3 = sm.getRecords(table3Id);
-//
-//            if(data3.length != 0){
-//                System.err.println("Deleting from Table 3 failed...");
-//                System.exit(1);
-//            }
-//
-//            System.out.println("Getting table 4 data...");
-//            Object[][] data4 = sm.getRecords(table4Id);
-//
-//            if(data4.length != 0){
-//                System.err.println("Deleting Table 4 failed...");
-//                System.exit(1);
-//            }
-//            sm.terminateDatabase();
-//        } catch (StorageManagerException e){
-//            e.printStackTrace();
-//            System.exit(1);
-//        }
-//
-//        System.out.println("Restarting the database...");
-//
-//        database = Database.getConnection(dbLoc, pageBufferSize, pageSize);
-//
-//        //testing delete
-//        System.out.println("Testing update.... none should fail...");
-//
-        String update1 = "update foo set name = \"hello\" where id = 1;";
-        String update2 = "update foo set amount = amount + 1.0 where id >= 2 and amount < 30.0;";
-        String update3 = "update foo set name = \"hi\", amount = 4.0 where amount = 4.12 or id = 3;";
 
-        database.executeNonQuery(update1);
-        database.executeNonQuery(update2);
-        database.executeNonQuery(update3);
+        System.out.println("Restarting the database...");
+
+        database = Database.getConnection(dbLoc, pageBufferSize, pageSize);
+
+        //testing delete
+        System.out.println("Testing delete.... none should fail...");
+
+        String deleteByPK = "delete from baz where id = 2";
+        String deleteByPKNonExist = "delete from baz where id = 12";
+
+        String deleteRange = "delete from bazzle where id < 5;";
+
+        String deleteTwoCondsAnd = "delete from bar where id = 1 and age = 24";
+        String deleteTwoCondsOr = "delete from bar where id = 2 or age = 12";
+
+        String deleteMixed = "delete from baz where id = 1 and department = \"baz\" or id  = 3;";
+
+        database.executeNonQuery(deleteByPK);
+        database.executeNonQuery(deleteByPKNonExist);
+        database.executeNonQuery(deleteRange);
+        database.executeNonQuery(deleteTwoCondsAnd);
+        database.executeNonQuery(deleteTwoCondsOr);
+        database.executeNonQuery(deleteMixed);
 
         database.terminateDatabase();
 
@@ -315,26 +255,86 @@ public class DMLTester {
             System.out.println("Getting table 1 data...");
             Object[][] data1 = sm.getRecords(table1Id);
 
-            expectedData1_0[1] = "hello";
-            expectedData1_1[2] = 4.0;
-            expectedData1_1[1] = "hi";
-            expectedData1_2[1] = "hi";
-            expectedData1_2[2] = 4.0;
-
-
             if(data1.length != 3 || !Arrays.equals(data1[0], expectedData1_0) ||
                     !Arrays.equals(data1[1], expectedData1_1) ||
                     !Arrays.equals(data1[2], expectedData1_2)){
-                System.err.println("Updating Table 1 failed...");
+                System.err.println("Deleting from Table 1 failed...");
                 System.exit(1);
             }
 
+            System.out.println("Getting table 2 data...");
+            Object[][] data2 = sm.getRecords(table2Id);
+
+            if(data2.length != 0 ){
+                System.err.println("Deleting Table 2 failed...");
+                System.exit(1);
+            }
+
+            System.out.println("Getting table 3 data...");
+            Object[][] data3 = sm.getRecords(table3Id);
+
+            if(data3.length != 0){
+                System.err.println("Deleting from Table 3 failed...");
+                System.exit(1);
+            }
+
+            System.out.println("Getting table 4 data...");
+            Object[][] data4 = sm.getRecords(table4Id);
+
+            if(data4.length != 0){
+                System.err.println("Deleting Table 4 failed...");
+                System.exit(1);
+            }
             sm.terminateDatabase();
         } catch (StorageManagerException e){
             e.printStackTrace();
             System.exit(1);
         }
 
-        System.out.println("Testing complete...");
+        System.out.println("Restarting the database...");
+
+        database = Database.getConnection(dbLoc, pageBufferSize, pageSize);
+
+        //testing delete
+        System.out.println("Testing update.... none should fail...");
+
+//        String update1 = "update foo set name = \"hello\" where id = 1;";
+//        String update2 = "update foo set amount = amount + 1.0 where id >= 2 and amount < 30.0;";
+//        String update3 = "update foo set name = \"hi\", amount = 4.0 where amount = 4.12 or id = 3;";
+//
+//        database.executeNonQuery(update1);
+//        database.executeNonQuery(update2);
+//        database.executeNonQuery(update3);
+//
+//        database.terminateDatabase();
+//
+//        System.out.println("Restarting just storage manager...");
+//        try {
+//            sm = new StorageManager(dbLoc, pageBufferSize, pageSize, true);
+//
+//            System.out.println("Getting table 1 data...");
+//            Object[][] data1 = sm.getRecords(table1Id);
+//
+//            expectedData1_0[1] = "hello";
+//            expectedData1_1[2] = 4.0;
+//            expectedData1_1[1] = "hi";
+//            expectedData1_2[1] = "hi";
+//            expectedData1_2[2] = 4.0;
+//
+//
+//            if(data1.length != 3 || !Arrays.equals(data1[0], expectedData1_0) ||
+//                    !Arrays.equals(data1[1], expectedData1_1) ||
+//                    !Arrays.equals(data1[2], expectedData1_2)){
+//                System.err.println("Updating Table 1 failed...");
+//                System.exit(1);
+//            }
+//
+//            sm.terminateDatabase();
+//        } catch (StorageManagerException e){
+//            e.printStackTrace();
+//            System.exit(1);
+//        }
+//
+//        System.out.println("Testing complete...");
     }
 }
