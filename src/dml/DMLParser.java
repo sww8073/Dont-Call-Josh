@@ -463,6 +463,7 @@ public class DMLParser implements IDMLParser {
     }
 
     private void updateRecordsWhereAll(Object[][] records, String math, String value, int index, int tableid){
+        value = value.replace("\"", "");
         if(math.equals("")){
             //no math, set all records = value
             for(int i=0; i<records.length; i++) {
