@@ -59,7 +59,7 @@ public class DDLParser implements IDDLParser {
      */
     public void createTable(String statement) throws DDLParserException {
         String prefix = statement.substring(0, statement.indexOf("("));
-        String[] wordsInPrefix = prefix.split("\\s+");
+        String[] wordsInPrefix = prefix.trim().split("\\s+");
 
         // check for incorrect create table statement
         if (wordsInPrefix.length != 3)
@@ -101,7 +101,7 @@ public class DDLParser implements IDDLParser {
      * @throws DDLParserException
      */
     private Table parseAttribute(String attribute, Table table) throws DDLParserException  {
-        String[] elements = attribute.split("[\\(\\)\\s+]");
+        String[] elements = attribute.trim().split("[\\(\\)\\s+]");
         switch (elements[0].toLowerCase()) {
             case "unique":
                 table = prefixConstraint(attribute, table);
@@ -127,7 +127,7 @@ public class DDLParser implements IDDLParser {
      * @throws DDLParserException
      */
     public Table prefixConstraint(String attribute, Table table) throws DDLParserException  {
-        String[] elements = attribute.split("[\\(\\)\\,\\s]");
+        String[] elements = attribute.trim().split("[\\(\\)\\,\\s]");
         String option = elements[0];
 
         switch(option){
@@ -177,7 +177,9 @@ public class DDLParser implements IDDLParser {
         // or index is smaller than the max array index
         int i = 1;
         while(!elements[i].toLowerCase().equals("references") && i < elements.length)   {
-            keyAttr.add(elements[i].toLowerCase());
+            if (!elements[i].toLowerCase().equals("foreignkey")) {
+                keyAttr.add(elements[i].toLowerCase());
+            }
             i++;
         }
 
@@ -209,7 +211,7 @@ public class DDLParser implements IDDLParser {
      * @throws DDLParserException
      */
     public Table postfixConstraint(String attributeStr, Table table) throws DDLParserException   {
-        String[] elements = attributeStr.split("[\\s+]");
+        String[] elements = attributeStr.trim().split("[\\s+]");
 
         if(elements.length < 2)     {
             throw new DDLParserException("Not enough attribute elements");

@@ -1,6 +1,7 @@
 package ddl;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -152,6 +153,42 @@ public class Table implements Serializable {
         return null;
     }
 
+    public int getIndex(String attrName){
+        int count = 0;
+        for (Attribute attribute: attributes) {
+            if(attribute.getName().equals(attrName)){
+                return count;
+            }
+            count++;
+        }
+        return count;
+    }
+
+    /**
+     * This function returns an array list of all the attributes ina table
+     * @return ArrayList of attributes
+     */
+    public ArrayList<Attribute> getAttrs() {
+        return attributes;
+    }
+
+    /**
+     * This function returns the names of all unique attributes
+     * @return
+     */
+    public ArrayList<String> getUniqueAttrs()   {
+        return unique;
+    }
+
+    /**
+     * This function returns all the foreign keys the table has
+     * @return
+     */
+    public Map<String, ForeignKey> getForeignKeys() {
+        return foreignKeys;
+    }
+
+
     /**
      * Returns the index of the attribute in the table
      * @param attrName The attribute to find
@@ -229,4 +266,5 @@ public class Table implements Serializable {
         }
         return dataTypes;
     }
+
 }

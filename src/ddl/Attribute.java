@@ -99,4 +99,6 @@ public class Attribute implements Serializable {
         return type;
     }
 
+    public ArrayList<String> getConstraints() { return constraints; }
+
 }
