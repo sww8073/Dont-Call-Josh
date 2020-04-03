@@ -25,6 +25,7 @@ public class DMLParser implements IDMLParser {
      * @return an instance of a IDMLParser
      */
     public static IDMLParser createParser(){
+        // TODO do this in phase 4 ... no clue what to do for this
         return new DMLParser();
     }
 
@@ -53,7 +54,13 @@ public class DMLParser implements IDMLParser {
     
     @Override
     public Object[][] parseDMLQuery(String statement) throws DMLParserException{
-        //TODO THIS WILL BE IMPLEMENTED IN A LATER PHASE (Prob phase 4)
+        statement = statement.toLowerCase();
+        if(!statement.contains("select") || !statement.contains("from"))
+            throw new DMLParserException("Query must contain select and from");
+
+        // grabs attributes form statement
+        String attribute = statement.substring(statement.indexOf("select") + 6, statement.indexOf("from")).trim();
+
         return null;
     }
 

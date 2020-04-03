@@ -82,17 +82,23 @@ public class Database implements IDatabase {
             }
 
         }catch(DDLParserException | DMLParserException e){
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         }
     }
 
     /**
      * This method will be used when executing database queries that return tables of data.
-     *
      * @param query the query to execute
      * @return the table of data returned. Size zero if empty
      */
     public Object[][] executeQuery(String query) {
+        try {
+            idmlParser.parseDMLQuery(query);
+        }
+        catch (DMLParserException e)    {
+            System.err.println(e.getMessage());
+        }
+
         return new Object[0][];
     }
 
