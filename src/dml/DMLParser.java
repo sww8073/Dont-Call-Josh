@@ -5,8 +5,8 @@ import ddl.ForeignKey;
 import ddl.Table;
 import storagemanager.StorageManager;
 import storagemanager.StorageManagerException;
-import java.util.ArrayList;
-import java.util.Arrays;
+
+import java.util.*;
 
 public class DMLParser implements IDMLParser {
 
@@ -82,8 +82,58 @@ public class DMLParser implements IDMLParser {
             fromSubString = statement.substring(beginOfFrom, beginOfOrderBy).trim();
             orderBySubString = statement.substring(beginOfOrderBy).trim();
         }
-        
+
+        parseSelectAndFrom(selectSubString, fromSubString);
         return null;
+    }
+
+    /**
+     * This function parses the "select" and "from" part pf the query.
+     * @param selectString "select attribute1, attribute2"
+     * @param fromString "from table1, table2"
+     * @return HashMap key table - table name, value - ArrayList of attributes
+     * @throws DMLParserException
+     */
+    private HashMap parseSelectAndFrom(String selectString, String fromString) throws DMLParserException  {
+        HashMap<String, ArrayList<String>> tables = new HashMap<>(); // key - tableName, value - ArrayList of attributes
+
+        fromString = fromString.replace("from", "").trim(); // remove "from"
+        String tableNames[] = fromString.split(",");
+
+        selectString = selectString.replace("select", "").trim(); // remove "select"
+        String attrNames[] = selectString.split(",");
+
+        int attrFoundCount = 0;
+
+        for(int i = 0;i < tableNames.length;i++)    {
+            String currTableName = tableNames[i].trim();
+            ArrayList<String> currAttrList = new ArrayList<>();
+            if(!catalog.tableExists(currTableName))
+                throw new DMLParserException("Table " + currTableName + " does not exist");
+            Table currTable = catalog.getTable(currTableName);
+
+            for(int j = 0;j < attrNames.length;j++) {
+                String curAttrName = attrNames[j].trim();
+                if(currTable.attributeExists(curAttrName)) {
+                    currAttrList.add(curAttrName);
+                    attrFoundCount++;
+                }
+                else if(curAttrName.contains("."))  { // try to parse dot notation, ie "foo.id"
+                    String splitAttr[] = curAttrName.split("[\\s.\\s]"); // split by spaces and "."
+
+                    // table name matches AND attribute exists in table
+                    if(splitAttr[0].equals(currTable.getName()) && currTable.attributeExists(splitAttr[1])) {
+                        currAttrList.add(splitAttr[1]);
+                        attrFoundCount++;
+                    }
+                }
+            }
+            tables.put(currTableName, currAttrList);
+        }
+
+        if(attrFoundCount != attrNames.length) // all the attribute in the attribute list were not found
+            throw new DMLParserException("Invalid Attributes");
+        return tables;
     }
 
     /**
