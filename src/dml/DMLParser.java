@@ -54,13 +54,35 @@ public class DMLParser implements IDMLParser {
     
     @Override
     public Object[][] parseDMLQuery(String statement) throws DMLParserException{
-        statement = statement.toLowerCase();
+        statement = statement.toLowerCase().replace(";", "");
         if(!statement.contains("select") || !statement.contains("from"))
             throw new DMLParserException("Query must contain select and from");
 
-        // grabs attributes form statement
-        String attribute = statement.substring(statement.indexOf("select") + 6, statement.indexOf("from")).trim();
+        int beginOfFrom = statement.indexOf("from"); // -1 if there is no "from"
+        int beginOfWhere = statement.indexOf("where"); // -1 if there is no "where"
+        int beginOfOrderBy = statement.indexOf("order by"); // -1 if there is no "order by"
 
+        String selectSubString = statement.substring(0, beginOfFrom).trim();
+        String fromSubString = "";
+        String whereSubString = "";
+        String orderBySubString = "";
+
+        if(beginOfWhere == -1 && beginOfOrderBy == -1) // no "where" and no "oder by"
+            fromSubString = statement.substring(beginOfFrom).trim();
+        else if(beginOfWhere != -1) {// there is a "where" clause
+            fromSubString = statement.substring(beginOfFrom, beginOfWhere).trim();
+            if (beginOfOrderBy == -1) // there is a "where" and no "order by"
+                whereSubString = statement.substring(beginOfWhere).trim();
+            else { // there is a "where" and a "order by"
+                whereSubString = statement.substring(beginOfWhere, beginOfOrderBy).trim();
+                orderBySubString = statement.substring(beginOfOrderBy).trim();
+            }
+        }
+        else if(beginOfOrderBy != -1) { // there is no "where" but there is an "oder by"
+            fromSubString = statement.substring(beginOfFrom, beginOfOrderBy).trim();
+            orderBySubString = statement.substring(beginOfOrderBy).trim();
+        }
+        
         return null;
     }
 
