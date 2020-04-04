@@ -83,7 +83,14 @@ public class DMLParser implements IDMLParser {
             orderBySubString = statement.substring(beginOfOrderBy).trim();
         }
 
-        parseSelectAndFrom(selectSubString, fromSubString);
+        // key - tableName, value - ArrayList of attributes
+        HashMap<String, ArrayList<String>> fromHash = parseSelectAndFrom(selectSubString, fromSubString);
+
+        // todo parse "where" part of statement
+
+        // todo parse "order by" part of statement
+
+        // todo create relation array for the select statement
         return null;
     }
 
