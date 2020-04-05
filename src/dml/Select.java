@@ -37,12 +37,12 @@ public class Select {
 
         parseQuery(selectString); // call helper function to parse select statement
 
-        int attrCount = 0;
+        int totalAttrCount = 0; // the total number of attributes being selected form all tables
         Object[] tables = selectFromHash.keySet().toArray();
         for(int i = 0;i < tables.length;i++)    {
-            attrCount += selectFromHash.get(tables[i]).size();
+            totalAttrCount += selectFromHash.get(tables[i]).size();
         }
-        this.data = new Object[this.selectFromHash.keySet().size()][attrCount];
+        this.data = new Object[this.selectFromHash.keySet().size()][totalAttrCount];
     }
 
     /**
