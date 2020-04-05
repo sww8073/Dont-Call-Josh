@@ -21,12 +21,12 @@ public class Select {
         this.storageManager = storageManager;
 
         parseQuery(selectString);
-
     }
 
     /**
-     * Th
-     * @param selectString
+     * This is a helper function for the constructor. This parses the select statement and initializes
+     * the subString instance variable.
+     * @param selectString The select statement.
      * @throws DMLParserException
      */
     private void parseQuery(String selectString) throws DMLParserException   {
@@ -60,10 +60,8 @@ public class Select {
         }
 
         // key - tableName, value - ArrayList of attributes
-        // HashMap<String, ArrayList<String>> fromHash = parseSelectAndFrom(selectSubString, fromSubString);
+        HashMap<String, ArrayList<String>> fromHash = parseSelectAndFrom(selectSubString, fromSubString);
     }
-
-    public void runQuery(){}
 
     /**
      * This function parses the "select" and "from" part pf the query.
@@ -113,5 +111,4 @@ public class Select {
             throw new DMLParserException("Invalid Attributes");
         return tables;
     }
-
 }
