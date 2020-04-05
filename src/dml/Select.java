@@ -1,9 +1,13 @@
+/**
+ * Phase 4
+ * Team: Dont Tell Josh
+ * 04/05/20
+ */
 package dml;
 
 import database.Catalog;
 import ddl.Table;
 import storagemanager.StorageManager;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -11,10 +15,10 @@ public class Select {
 
     private static Catalog catalog;
     private static StorageManager storageManager;
-    private String selectSubString;
-    private String fromSubString;
-    private String whereSubString;
-    private String orderBySubString;
+    private String selectSubString; // ex: "select attr1, att2, table1.att3"
+    private String fromSubString; // ex: "from table1, table2"
+    private String whereSubString; // ex: "where attr1 = 1 and and attr2 = true"
+    private String orderBySubString; // ex "order by attr3, attr1"
 
     private Object[][] data;
 
