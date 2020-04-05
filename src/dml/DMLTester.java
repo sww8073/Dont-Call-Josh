@@ -64,7 +64,7 @@ public class DMLTester {
 
 
         // You may need to modify some values to test on your system
-        String dbLoc = "C:\\Users\\Matthew\\Desktop\\DB\\data";
+        String dbLoc = "C:\\Users\\jtell\\Desktop\\Database\\Database2";
         int pageBufferSize = 20;
         int pageSize = 4096;
         AStorageManager sm;
@@ -158,8 +158,7 @@ public class DMLTester {
         database.executeNonQuery(insert4);
         database.executeNonQuery(insert4Multiple);
 
-        database.executeQuery("select foo.id, name, baz.id " +
-                "from foo, baz where aaa order by bbb");
+        database.executeQuery("select id, name from foo");
 //
 //        System.out.println("These inserts should report errors...");
 //
