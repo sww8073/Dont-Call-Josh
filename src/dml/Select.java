@@ -7,7 +7,9 @@ package dml;
 
 import database.Catalog;
 import ddl.Table;
+import javafx.beans.binding.ObjectExpression;
 import storagemanager.StorageManager;
+import storagemanager.StorageManagerException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,7 +26,7 @@ public class Select {
     private String orderBySubString; // ex "order by attr3, attr1"
 
     private HashMap<Table, ArrayList<String>> selectFromHash;
-    private HashMap<String, ArrayList<Object[]>> seperateSelects;
+    private HashMap<String, ArrayList<Object[]>> seperatedSelects;
 
     /**
      * Constructor.
@@ -32,7 +34,7 @@ public class Select {
     public Select(Catalog catalog, StorageManager storageManager, String selectString) throws DMLParserException    {
         this.catalog = catalog;
         this.storageManager = storageManager;
-        this.seperateSelects = new HashMap<>();
+        this.seperatedSelects = new HashMap<>();
         
         parseQuery(selectString); // call helper function to parse select statement
     }
@@ -126,10 +128,23 @@ public class Select {
         return tables;
     }
 
-    private void runSeperateSelects(){
-        Iterable<Table> tables = selectFromHash.keySet();
-        for (Table table: tables) {
-            ArrayList<String> attributes = selectFromHash.get(table);
+    public void runSeperateSelects() throws DMLParserException {
+        Object[] tables = selectFromHash.keySet().toArray();
+        for (Object tableObject: tables) { // loops through all tables covered by the og select statement
+            Table currTable = (Table)tableObject;
+            String currTableName = currTable.getName();
+            ArrayList<String> attributes = selectFromHash.get(currTable); // the selected attribute fro each table
+
+            // 2d records array containing tuples with only the selected attributes
+            ArrayList<Object[]> recordsWithSelectedAttrs = new ArrayList<>();
+
+            try {
+                // gets all the records from the table
+                Object[][] allRecords = storageManager.getRecords(currTable.getId());
+                Object[] selectedAttr = new Object[attributes.size()]; // the number of records chosen from this table
+
+            }
+            catch(StorageManagerException e)    { throw new DMLParserException(e.getMessage()); }
         }
     }
 
