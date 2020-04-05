@@ -129,7 +129,10 @@ public class Select {
     }
 
     /**
-     * This functions runs 
+     * This functions runs the select from part of the query as separate parts.
+     * ex: "select table1.attr1, table1.attr2, table2.attr1 form table1, table2;" will bw run as
+     * "select table1.attr1, table1.attr2 form table1;" and "select table2.attr1 form table2;".
+     * The results are added to the separateSelects Hash.
      * @throws DMLParserException
      */
     public void runSeperateSelects() throws DMLParserException {
@@ -144,14 +147,15 @@ public class Select {
             try {
                 // gets all the records from the table
                 Object[][] allRecords = storageManager.getRecords(currTable.getId());
-                for(int i = 0;i < allRecords.length;i++) {
-                    Object[] selectedAttr = new Object[attributes.size()]; // the number of records chosen from this table
+                for(int i = 0;i < allRecords.length;i++) { // loop through all th records within currTable
 
+                    // gets all the selected attributes from record i
+                    Object[] selectedAttr = new Object[attributes.size()];
                     for (int j = 0; j < attributes.size(); j++) {
                         int attrIndex = currTable.getIndex(attributes.get(j));
-                        selectedAttr[j] = allRecords[i][j];
+                        selectedAttr[j] = allRecords[i][attrIndex];
                     }
-                    recordsWithSelectedAttrs.add(selectedAttr);
+                    recordsWithSelectedAttrs.add(selectedAttr); // adds selected attributes too solution data structure
                 }
                 seperatedSelects.put(currTable.getName(), recordsWithSelectedAttrs);
             }
