@@ -128,12 +128,15 @@ public class Select {
         return tables;
     }
 
+    /**
+     * This functions runs 
+     * @throws DMLParserException
+     */
     public void runSeperateSelects() throws DMLParserException {
         Object[] tables = selectFromHash.keySet().toArray();
         for (Object tableObject: tables) { // loops through all tables covered by the og select statement
             Table currTable = (Table)tableObject;
-            String currTableName = currTable.getName();
-            ArrayList<String> attributes = selectFromHash.get(currTable); // the selected attribute fro each table
+            ArrayList<String> attributes = selectFromHash.get(currTable); // the selected attribute from each table
 
             // 2d records array containing tuples with only the selected attributes
             ArrayList<Object[]> recordsWithSelectedAttrs = new ArrayList<>();
@@ -141,8 +144,16 @@ public class Select {
             try {
                 // gets all the records from the table
                 Object[][] allRecords = storageManager.getRecords(currTable.getId());
-                Object[] selectedAttr = new Object[attributes.size()]; // the number of records chosen from this table
+                for(int i = 0;i < allRecords.length;i++) {
+                    Object[] selectedAttr = new Object[attributes.size()]; // the number of records chosen from this table
 
+                    for (int j = 0; j < attributes.size(); j++) {
+                        int attrIndex = currTable.getIndex(attributes.get(j));
+                        selectedAttr[j] = allRecords[i][j];
+                    }
+                    recordsWithSelectedAttrs.add(selectedAttr);
+                }
+                seperatedSelects.put(currTable.getName(), recordsWithSelectedAttrs);
             }
             catch(StorageManagerException e)    { throw new DMLParserException(e.getMessage()); }
         }
