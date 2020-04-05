@@ -8,6 +8,7 @@ package dml;
 import database.Catalog;
 import ddl.Table;
 import storagemanager.StorageManager;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -22,6 +23,7 @@ public class Select {
     private String whereSubString; // ex: "where attr1 = 1 and and attr2 = true"
     private String orderBySubString; // ex "order by attr3, attr1"
 
+    private HashMap<Table, ArrayList<String>> selectFromHash;
     private HashMap<String, ArrayList<String>> selectFromHash; // key - tableName, value - ArrayList of attributes
     private Object[][] data; // the 2d relation array
 
@@ -74,7 +76,7 @@ public class Select {
             orderBySubString = selectString.substring(beginOfOrderBy).trim();
         }
 
-
+        // key - tableName, value - ArrayList of attributes
         this.selectFromHash = parseSelectAndFrom(selectSubString, fromSubString);
     }
 
@@ -86,7 +88,7 @@ public class Select {
      * @throws DMLParserException
      */
     private HashMap parseSelectAndFrom(String selectString, String fromString) throws DMLParserException  {
-        HashMap<String, ArrayList<String>> tables = new HashMap<>(); // key - tableName, value - ArrayList of attributes
+        HashMap<Table, ArrayList<String>> tables = new HashMap<>(); // key - tableName, value - ArrayList of attributes
 
         fromString = fromString.replace("from", "").trim(); // remove "from"
         String tableNames[] = fromString.split(",");
@@ -119,7 +121,7 @@ public class Select {
                     }
                 }
             }
-            tables.put(currTableName, currAttrList);
+            tables.put(currTable, currAttrList);
         }
 
         if(attrFoundCount != attrNames.length) // all the attribute in the attribute list were not found
@@ -128,10 +130,13 @@ public class Select {
     }
 
     private void getData(){
+        ArrayList<Table> tables = new ArrayList<>();
+        tables.addAll(selectFromHash.keySet());
 
-        for (int i = 0; i < selectFromHash.keySet().size(); i++) {
-            Table table = catalog.getTable(this.selectFromHash.keySet().toArray()[i]);
-
+        for (int i = 0; i < tables.size(); i++) {
+            //for each table grab the data
+            Table currTable = tables.get(i);
+            data[i] = selectFromHash.get(currTable).toArray();
         }
 
     }
