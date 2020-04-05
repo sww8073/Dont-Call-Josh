@@ -24,7 +24,6 @@ public class Select {
     private String orderBySubString; // ex "order by attr3, attr1"
 
     private HashMap<Table, ArrayList<String>> selectFromHash;
-    private HashMap<String, ArrayList<String>> selectFromHash; // key - tableName, value - ArrayList of attributes
     private Object[][] data; // the 2d relation array
 
 
