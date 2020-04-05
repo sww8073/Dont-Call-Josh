@@ -16,6 +16,8 @@ public class Select {
     private String whereSubString;
     private String orderBySubString;
 
+    private Object[][] data;
+
     private HashMap<String, ArrayList<String>> selectFromHash;
 
 
@@ -25,6 +27,7 @@ public class Select {
     public Select(Catalog catalog, StorageManager storageManager, String selectString) throws DMLParserException    {
         this.catalog = catalog;
         this.storageManager = storageManager;
+        this.data = new Object[this.selectFromHash.keySet().size()][];
 
         parseQuery(selectString); // call helper function to parse select statement
     }
@@ -117,4 +120,14 @@ public class Select {
             throw new DMLParserException("Invalid Attributes");
         return tables;
     }
+
+    private void getData(){
+
+        for (int i = 0; i < selectFromHash.keySet().size(); i++) {
+            Table table = catalog.getTable(this.selectFromHash.keySet().toArray()[i]);
+
+        }
+
+    }
+
 }
