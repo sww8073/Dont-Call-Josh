@@ -34,9 +34,15 @@ public class Select {
     public Select(Catalog catalog, StorageManager storageManager, String selectString) throws DMLParserException    {
         this.catalog = catalog;
         this.storageManager = storageManager;
-        this.data = new Object[this.selectFromHash.keySet().size()][];
 
         parseQuery(selectString); // call helper function to parse select statement
+
+        int attrCount = 0;
+        Object[] tables = selectFromHash.keySet().toArray();
+        for(int i = 0;i < tables.length;i++)    {
+            attrCount += selectFromHash.get(tables[i]).size();
+        }
+        this.data = new Object[this.selectFromHash.keySet().size()][attrCount];
     }
 
     /**
