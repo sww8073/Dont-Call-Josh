@@ -158,8 +158,7 @@ public class DMLTester {
         database.executeNonQuery(insert4);
         database.executeNonQuery(insert4Multiple);
 
-        database.executeQuery("select foo.id, name, baz.id " +
-                "from foo, baz where aaa order by bbb");
+        database.executeQuery("select id, name from foo");
 //
 //        System.out.println("These inserts should report errors...");
 //

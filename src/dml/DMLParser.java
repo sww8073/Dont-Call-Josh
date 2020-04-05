@@ -86,6 +86,8 @@ public class DMLParser implements IDMLParser {
         // key - tableName, value - ArrayList of attributes
         HashMap<String, ArrayList<String>> fromHash = parseSelectAndFrom(selectSubString, fromSubString);
 
+
+
         // todo parse "where" part of statement
 
         // todo parse "order by" part of statement
