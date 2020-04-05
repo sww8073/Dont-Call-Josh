@@ -24,9 +24,7 @@ public class Select {
     private String orderBySubString; // ex "order by attr3, attr1"
 
     private HashMap<Table, ArrayList<String>> selectFromHash;
-    private Object[][] data; // the 2d relation array
-
-
+    private HashMap<String, ArrayList<Object[]>> seperateSelects;
 
     /**
      * Constructor.
@@ -34,15 +32,9 @@ public class Select {
     public Select(Catalog catalog, StorageManager storageManager, String selectString) throws DMLParserException    {
         this.catalog = catalog;
         this.storageManager = storageManager;
-
+        this.seperateSelects = new HashMap<>();
+        
         parseQuery(selectString); // call helper function to parse select statement
-
-        int totalAttrCount = 0; // the total number of attributes being selected form all tables
-        Object[] tables = selectFromHash.keySet().toArray();
-        for(int i = 0;i < tables.length;i++)    {
-            totalAttrCount += selectFromHash.get(tables[i]).size();
-        }
-        this.data = new Object[this.selectFromHash.keySet().size()][totalAttrCount];
     }
 
     /**
@@ -134,16 +126,11 @@ public class Select {
         return tables;
     }
 
-    private void getData(){
-        ArrayList<Table> tables = new ArrayList<>();
-        tables.addAll(selectFromHash.keySet());
-
-        for (int i = 0; i < tables.size(); i++) {
-            //for each table grab the data
-            Table currTable = tables.get(i);
-            data[i] = selectFromHash.get(currTable).toArray();
+    private void runSeperateSelects(){
+        Iterable<Table> tables = selectFromHash.keySet();
+        for (Table table: tables) {
+            ArrayList<String> attributes = selectFromHash.get(table);
         }
-
     }
 
 }
