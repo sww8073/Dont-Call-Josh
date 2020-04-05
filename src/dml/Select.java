@@ -12,17 +12,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Select {
-
+    // static instance variables, same variables from DMLParser
     private static Catalog catalog;
     private static StorageManager storageManager;
+
+    // private instance variables
     private String selectSubString; // ex: "select attr1, att2, table1.att3"
     private String fromSubString; // ex: "from table1, table2"
     private String whereSubString; // ex: "where attr1 = 1 and and attr2 = true"
     private String orderBySubString; // ex "order by attr3, attr1"
 
-    private Object[][] data;
+    private HashMap<String, ArrayList<String>> selectFromHash; // key - tableName, value - ArrayList of attributes
+    private Object[][] data; // the 2d relation array
 
-    private HashMap<String, ArrayList<String>> selectFromHash;
 
 
     /**
@@ -72,7 +74,7 @@ public class Select {
             orderBySubString = selectString.substring(beginOfOrderBy).trim();
         }
 
-        // key - tableName, value - ArrayList of attributes
+
         this.selectFromHash = parseSelectAndFrom(selectSubString, fromSubString);
     }
 
