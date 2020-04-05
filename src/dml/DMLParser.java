@@ -54,9 +54,7 @@ public class DMLParser implements IDMLParser {
     
     @Override
     public Object[][] parseDMLQuery(String statement) throws DMLParserException{
-
-
-
+        Select select = new Select(catalog, storageManager, statement);
 
         // todo parse "where" part of statement
 

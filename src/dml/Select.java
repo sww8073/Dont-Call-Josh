@@ -16,11 +16,17 @@ public class Select {
     private String whereSubString;
     private String orderBySubString;
 
+    private HashMap<String, ArrayList<String>> selectFromHash;
+
+
+    /**
+     * Constructor.
+     */
     public Select(Catalog catalog, StorageManager storageManager, String selectString) throws DMLParserException    {
         this.catalog = catalog;
         this.storageManager = storageManager;
 
-        parseQuery(selectString);
+        parseQuery(selectString); // call helper function to parse select statement
     }
 
     /**
@@ -60,7 +66,7 @@ public class Select {
         }
 
         // key - tableName, value - ArrayList of attributes
-        HashMap<String, ArrayList<String>> fromHash = parseSelectAndFrom(selectSubString, fromSubString);
+        this.selectFromHash = parseSelectAndFrom(selectSubString, fromSubString);
     }
 
     /**
