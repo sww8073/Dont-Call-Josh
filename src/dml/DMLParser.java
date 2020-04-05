@@ -54,37 +54,7 @@ public class DMLParser implements IDMLParser {
     
     @Override
     public Object[][] parseDMLQuery(String statement) throws DMLParserException{
-        statement = statement.toLowerCase().replace(";", "");
-        if(!statement.contains("select") || !statement.contains("from"))
-            throw new DMLParserException("Query must contain select and from");
 
-        int beginOfFrom = statement.indexOf("from"); // -1 if there is no "from"
-        int beginOfWhere = statement.indexOf("where"); // -1 if there is no "where"
-        int beginOfOrderBy = statement.indexOf("order by"); // -1 if there is no "order by"
-
-        String selectSubString = statement.substring(0, beginOfFrom).trim();
-        String fromSubString = "";
-        String whereSubString = "";
-        String orderBySubString = "";
-
-        if(beginOfWhere == -1 && beginOfOrderBy == -1) // no "where" and no "oder by"
-            fromSubString = statement.substring(beginOfFrom).trim();
-        else if(beginOfWhere != -1) {// there is a "where" clause
-            fromSubString = statement.substring(beginOfFrom, beginOfWhere).trim();
-            if (beginOfOrderBy == -1) // there is a "where" and no "order by"
-                whereSubString = statement.substring(beginOfWhere).trim();
-            else { // there is a "where" and a "order by"
-                whereSubString = statement.substring(beginOfWhere, beginOfOrderBy).trim();
-                orderBySubString = statement.substring(beginOfOrderBy).trim();
-            }
-        }
-        else if(beginOfOrderBy != -1) { // there is no "where" but there is an "oder by"
-            fromSubString = statement.substring(beginOfFrom, beginOfOrderBy).trim();
-            orderBySubString = statement.substring(beginOfOrderBy).trim();
-        }
-
-        // key - tableName, value - ArrayList of attributes
-        HashMap<String, ArrayList<String>> fromHash = parseSelectAndFrom(selectSubString, fromSubString);
 
 
 
@@ -94,55 +64,6 @@ public class DMLParser implements IDMLParser {
 
         // todo create relation array for the select statement
         return null;
-    }
-
-    /**
-     * This function parses the "select" and "from" part pf the query.
-     * @param selectString "select attribute1, attribute2"
-     * @param fromString "from table1, table2"
-     * @return HashMap key table - table name, value - ArrayList of attributes
-     * @throws DMLParserException
-     */
-    private HashMap parseSelectAndFrom(String selectString, String fromString) throws DMLParserException  {
-        HashMap<String, ArrayList<String>> tables = new HashMap<>(); // key - tableName, value - ArrayList of attributes
-
-        fromString = fromString.replace("from", "").trim(); // remove "from"
-        String tableNames[] = fromString.split(",");
-
-        selectString = selectString.replace("select", "").trim(); // remove "select"
-        String attrNames[] = selectString.split(",");
-
-        int attrFoundCount = 0;
-
-        for(int i = 0;i < tableNames.length;i++)    {
-            String currTableName = tableNames[i].trim();
-            ArrayList<String> currAttrList = new ArrayList<>();
-            if(!catalog.tableExists(currTableName))
-                throw new DMLParserException("Table " + currTableName + " does not exist");
-            Table currTable = catalog.getTable(currTableName);
-
-            for(int j = 0;j < attrNames.length;j++) {
-                String curAttrName = attrNames[j].trim();
-                if(currTable.attributeExists(curAttrName)) {
-                    currAttrList.add(curAttrName);
-                    attrFoundCount++;
-                }
-                else if(curAttrName.contains("."))  { // try to parse dot notation, ie "foo.id"
-                    String splitAttr[] = curAttrName.split("[\\s.\\s]"); // split by spaces and "."
-
-                    // table name matches AND attribute exists in table
-                    if(splitAttr[0].equals(currTable.getName()) && currTable.attributeExists(splitAttr[1])) {
-                        currAttrList.add(splitAttr[1]);
-                        attrFoundCount++;
-                    }
-                }
-            }
-            tables.put(currTableName, currAttrList);
-        }
-
-        if(attrFoundCount != attrNames.length) // all the attribute in the attribute list were not found
-            throw new DMLParserException("Invalid Attributes");
-        return tables;
     }
 
     /**
