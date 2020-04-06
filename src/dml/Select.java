@@ -200,13 +200,23 @@ public class Select {
         if(list.size() < 1)
             throw new DMLParserException("Cartesian product is empty");
 
-        int secondDimSize = 0;
-        List firstList = list.get(0);
+        int secondDimSize = 0; // the second dim size is the sum of the length of all the individual object arrays
+        List<Object[]> firstList = list.get(0);
         for(int i = 0;i < firstList.size();i++)   {
-//            Object[] arr =
+            secondDimSize += firstList.get(i).length;
         }
 
-        Object[][] result = new Object[list.size()][];
+        Object[][] result = new Object[list.size()][secondDimSize];
+
+        for(int i = 0;i < list.size();i++)  {
+            int colIndex = 0;
+            for(int j = 0;j < list.get(i).size();j++)   {
+                for(int k = 0;k < list.get(i).get(j).length;k++)    {
+                    result[i][colIndex] = list.get(i).get(j)[k];
+                    colIndex++;
+                }
+            }
+        }
 
         return null;
     }
