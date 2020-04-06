@@ -177,7 +177,7 @@ public class Select {
 
 
     //take each separated select and take the cartesian product of them
-    public List<List<Object[]>> cartesianProduct() {
+    public Object[][]  cartesianProduct() throws DMLParserException {
         Collection<ArrayList<Object[]>> lists = seperatedSelects.values();
 
         List<List<Object[]>> combinations = Arrays.asList(Arrays.asList());
@@ -192,8 +192,22 @@ public class Select {
             }
             combinations = extraColumnCombinations;
         }
-        return combinations;
+
+        return convert2dListTo2dObject(combinations);
     }
 
+    private Object[][] convert2dListTo2dObject(List<List<Object[]>> list) throws DMLParserException  {
+        if(list.size() < 1)
+            throw new DMLParserException("Cartesian product is empty");
 
+        int secondDimSize = 0;
+        List firstList = list.get(0);
+        for(int i = 0;i < firstList.size();i++)   {
+//            Object[] arr =
+        }
+
+        Object[][] result = new Object[list.size()][];
+
+        return null;
+    }
 }
