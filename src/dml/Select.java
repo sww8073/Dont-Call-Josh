@@ -11,8 +11,11 @@ import ddl.Table;
 import storagemanager.StorageManager;
 import storagemanager.StorageManagerException;
 
+import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 public class Select {
     // static instance variables, same variables from DMLParser
@@ -171,4 +174,26 @@ public class Select {
             catch(StorageManagerException e)    { throw new DMLParserException(e.getMessage()); }
         }
     }
+
+
+    //take each separated select and take the cartesian product of them
+    public <T> List<List<T>> cartesianProduct() {
+        ArrayList<ArrayList<Object[]>> lists = seperatedSelects.values();
+
+        List<List<T>> combinations = Arrays.asList(Arrays.asList());
+        for (List<T> list : lists) {
+            List<List<T>> extraColumnCombinations = new ArrayList<>();
+            for (List<T> combination : combinations) {
+                for (T element : list) {
+                    List<T> newCombination = new ArrayList<>(combination);
+                    newCombination.add(element);
+                    extraColumnCombinations.add(newCombination);
+                }
+            }
+            combinations = extraColumnCombinations;
+        }
+        return combinations;
+    }
+
+
 }
