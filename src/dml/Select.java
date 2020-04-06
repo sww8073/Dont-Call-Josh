@@ -7,7 +7,6 @@ package dml;
 
 import database.Catalog;
 import ddl.Table;
-import javafx.beans.binding.ObjectExpression;
 import storagemanager.StorageManager;
 import storagemanager.StorageManagerException;
 
@@ -122,7 +121,6 @@ public class Select {
             }
             tables.put(currTable, currAttrList);
         }
-
         if(attrFoundCount != attrNames.length) // all the attribute in the attribute list were not found
             throw new DMLParserException("Invalid Attributes");
         return tables;
@@ -135,7 +133,7 @@ public class Select {
      * The results are added to the separateSelects Hash.
      * @throws DMLParserException
      */
-    public void runSeperateSelects() throws DMLParserException {
+    public void separateSelect() throws DMLParserException {
         Object[] tables = selectFromHash.keySet().toArray();
         for (Object tableObject: tables) { // loops through all tables covered by the og select statement
             Table currTable = (Table)tableObject;
@@ -162,5 +160,4 @@ public class Select {
             catch(StorageManagerException e)    { throw new DMLParserException(e.getMessage()); }
         }
     }
-
 }
