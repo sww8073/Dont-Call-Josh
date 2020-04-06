@@ -29,7 +29,7 @@ public class Select {
     private String orderBySubString; // ex "order by attr3, attr1"
 
     private HashMap<Table, ArrayList<String>> selectFromHash;
-    private HashMap<String, ArrayList<Object[]>> seperatedSelects;
+    private HashMap<String, ArrayList<Object[]>> separatedSelects;
 
     /**
      * Constructor.
@@ -37,7 +37,7 @@ public class Select {
     public Select(Catalog catalog, StorageManager storageManager, String selectString) throws DMLParserException    {
         this.catalog = catalog;
         this.storageManager = storageManager;
-        this.seperatedSelects = new HashMap<>();
+        this.separatedSelects = new HashMap<>();
         
         parseQuery(selectString); // call helper function to parse select statement
     }
@@ -169,17 +169,21 @@ public class Select {
                     }
                     recordsWithSelectedAttrs.add(selectedAttr); // adds selected attributes too solution data structure
                 }
-                seperatedSelects.put(currTable.getName(), recordsWithSelectedAttrs);
+                separatedSelects.put(currTable.getName(), recordsWithSelectedAttrs);
             }
             catch(StorageManagerException e)    { throw new DMLParserException(e.getMessage()); }
         }
     }
 
-
-    //take each separated select and take the cartesian product of them
+    /**
+     * This function takes the cartesian product of everything in the separatedSelects hash.
+     * @return A 2d Object array of the cartesian product
+     * @throws DMLParserException
+     */
     public Object[][]  cartesianProduct() throws DMLParserException {
-        Collection<ArrayList<Object[]>> lists = seperatedSelects.values();
+        Collection<ArrayList<Object[]>> lists = separatedSelects.values();
 
+        // source https://codereview.stackexchange.com/questions/67804/generate-cartesian-product-of-list-in-java
         List<List<Object[]>> combinations = Arrays.asList(Arrays.asList());
         for (ArrayList<Object[]> list : lists) {
             List<List<Object[]>> extraColumnCombinations = new ArrayList<>();
@@ -192,22 +196,26 @@ public class Select {
             }
             combinations = extraColumnCombinations;
         }
-
-        return convert2dListTo2dObject(combinations);
+        return convert2dListTo2dObject(combinations); // convert the 2d list to 2d Object arrya
     }
 
+    /**
+     * This function converts the 2d list to a 2d object array
+     * @throws DMLParserException
+     */
     private Object[][] convert2dListTo2dObject(List<List<Object[]>> list) throws DMLParserException  {
         if(list.size() < 1)
             throw new DMLParserException("Cartesian product is empty");
 
-        int secondDimSize = 0; // the second dim size is the sum of the length of all the individual object arrays
+        // the second dim size is the sum of the length of all the individual object arrays
+        int secondDimSize = 0;
         List<Object[]> firstList = list.get(0);
         for(int i = 0;i < firstList.size();i++)   {
             secondDimSize += firstList.get(i).length;
         }
 
+        // iterate through 2d List and populate 2d Object Array
         Object[][] result = new Object[list.size()][secondDimSize];
-
         for(int i = 0;i < list.size();i++)  {
             int colIndex = 0;
             for(int j = 0;j < list.get(i).size();j++)   {
@@ -217,7 +225,6 @@ public class Select {
                 }
             }
         }
-
         return null;
     }
 }
