@@ -177,15 +177,15 @@ public class Select {
 
 
     //take each separated select and take the cartesian product of them
-    public <T> List<List<T>> cartesianProduct() {
-        ArrayList<ArrayList<Object[]>> lists = seperatedSelects.values();
+    public List<List<Object[]>> cartesianProduct() {
+        Collection<ArrayList<Object[]>> lists = seperatedSelects.values();
 
-        List<List<T>> combinations = Arrays.asList(Arrays.asList());
-        for (List<T> list : lists) {
-            List<List<T>> extraColumnCombinations = new ArrayList<>();
-            for (List<T> combination : combinations) {
-                for (T element : list) {
-                    List<T> newCombination = new ArrayList<>(combination);
+        List<List<Object[]>> combinations = Arrays.asList(Arrays.asList());
+        for (ArrayList<Object[]> list : lists) {
+            List<List<Object[]>> extraColumnCombinations = new ArrayList<>();
+            for (List<Object[]> combination : combinations) {
+                for (Object[] element : list) {
+                    List<Object[]> newCombination = new ArrayList<>(combination);
                     newCombination.add(element);
                     extraColumnCombinations.add(newCombination);
                 }
