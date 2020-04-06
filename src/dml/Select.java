@@ -6,6 +6,7 @@
 package dml;
 
 import database.Catalog;
+import ddl.Attribute;
 import ddl.Table;
 import storagemanager.StorageManager;
 import storagemanager.StorageManagerException;
@@ -117,6 +118,16 @@ public class Select {
                         currAttrList.add(splitAttr[1]);
                         attrFoundCount++;
                     }
+                }
+                else if(curAttrName.equals("*"))    { // include all attributes
+                    if(attrNames.length != 1) // the * and attributes together is an error
+                        throw new DMLParserException("Cannot have * and other attributes together.");
+
+                    // add all attributes form the table as selected attributes
+                    ArrayList<Attribute> attrList = currTable.getAttrs();
+                    for(Attribute attr : attrList)
+                        currAttrList.add(attr.getName());
+                    attrFoundCount = 1;
                 }
             }
             tables.put(currTable, currAttrList);
