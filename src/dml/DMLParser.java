@@ -60,10 +60,12 @@ public class DMLParser implements IDMLParser {
 
         // todo parse "where" part of statement
 
-        ArrayList<Integer> orderByIndexes = select.indexesToSortCartesianProd(select.getOrderBySubString(),
-                select.getSeparatedSelects());
-        Object[][] sortedRelationsArr = select.sortRelations(relationsArr, orderByIndexes);
-        return null;
+        if(!select.getOrderBySubString().equals("")) {
+            ArrayList<Integer> orderByIndexes = select.indexesToSortCartesianProd(select.getOrderBySubString(),
+                    select.getSeparatedSelects());
+            relationsArr = select.sortRelations(relationsArr, orderByIndexes);
+        }
+        return relationsArr;
     }
 
     /**
