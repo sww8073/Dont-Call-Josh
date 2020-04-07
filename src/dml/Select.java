@@ -270,7 +270,7 @@ public class Select {
                 }
             }
         }
-        if(attrFoundCount != orderByAttrs.length)
+        if(attrFoundCount != orderByAttrs.length) // check for missing attributes or double counted attributes
             throw new DMLParserException("Incorrect order by attributes");
         return orderedByIndexes;
     }
