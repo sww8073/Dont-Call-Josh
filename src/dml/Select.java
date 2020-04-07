@@ -282,8 +282,25 @@ public class Select {
         return orderedByIndexes;
     }
 
-    public Object[][] sortRelations(Object[][] relations, ArrayList<Integer> orderingIndexes)  {
-        return null;
+    /**
+     * Uses bubble sort to sort tuples by the ordering indexes
+     * @return sorted array of tuples
+     * @throws DMLParserException
+     */
+    public Object[][] sortRelations(Object[][] relations, ArrayList<Integer> orderingIndexes) throws DMLParserException  {
+        Object[][] solution = relations;
+        int n = solution.length;
+        for(int i = 0;i < n - 1;i++)    {
+            for(int j = 0;j < n - i - 1;j++)    {
+                if(compareTuple(solution[j], solution[i], orderingIndexes) > 0)    {
+                    // swap solutions[j+1] and solutions[i]
+                    Object[] temp = solution[j];
+                    solution[j] = solution[j + 1];
+                    solution[j + 1] = temp;
+                }
+            }
+        }
+        return solution;
     }
 
     /**
