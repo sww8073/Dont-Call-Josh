@@ -281,4 +281,8 @@ public class Select {
             throw new DMLParserException("Incorrect order by attributes");
         return orderedByIndexes;
     }
+
+    public Object[][] sortRelations(Object[][] relations, ArrayList<Integer> orderingIndexes)  {
+        return null;
+    }
 }

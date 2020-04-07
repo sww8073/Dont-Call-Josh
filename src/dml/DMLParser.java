@@ -58,14 +58,11 @@ public class DMLParser implements IDMLParser {
         select.separateSelect(); // parse and compute separate selects
         Object[][] relationsArr = select.cartesianProduct(); // get cartesian product of all the separated selects
 
-        ArrayList<Integer> orderByIndexes = select.indexesToSortCartesianProd(select.getOrderBySubString(),
-                select.getSeparatedSelects());
-
         // todo parse "where" part of statement
 
-        // todo parse "order by" part of statement
-
-        // todo create relation array for the select statement
+        ArrayList<Integer> orderByIndexes = select.indexesToSortCartesianProd(select.getOrderBySubString(),
+                select.getSeparatedSelects());
+        Object[][] sortedRelationsArr = select.sortRelations(relationsArr, orderByIndexes);
         return null;
     }
 
