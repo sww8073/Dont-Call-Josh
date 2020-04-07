@@ -11,11 +11,7 @@ import ddl.Table;
 import storagemanager.StorageManager;
 import storagemanager.StorageManagerException;
 
-import java.util.Collection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class Select {
     // static instance variables, same variables from DMLParser
@@ -41,6 +37,10 @@ public class Select {
         
         parseQuery(selectString); // call helper function to parse select statement
     }
+
+    // getters
+    public String getOrderBySubString() { return orderBySubString; }
+    public HashMap<Table, ArrayList<String>> getSelectFromHash() { return selectFromHash; }
 
     /**
      * This is a helper function for the constructor. This parses the select statement and initializes
@@ -196,7 +196,7 @@ public class Select {
             }
             combinations = extraColumnCombinations;
         }
-        return convert2dListTo2dObject(combinations); // convert the 2d list to 2d Object arrya
+        return convert2dListTo2dObject(combinations); // convert the 2d list to 2d Object array
     }
 
     /**
@@ -226,5 +226,52 @@ public class Select {
             }
         }
         return null;
+    }
+
+    /**
+     * This function gets the indexes that the cartesian product of all the select statements will be ordered by.
+     * @param orderByString The unparsed order by string
+     * @param selectFromHash key -> Table, value -> ArrayList<String> attribute names
+     * @return ArrayList of indexes for the cartesian product. Sorted in ascending order base on how the cartesian
+     * product should be sorted.
+     */
+    public ArrayList<Integer> indexesToSortCartesianProd(
+            String orderByString, HashMap<Table, ArrayList<String>> selectFromHash) throws DMLParserException {
+        orderByString = orderBySubString.replace("order by", "").trim(); // remove "order by"
+        String[] orderByAttrs = orderByString.split(","); // retrieve all the attributes that will be ordered by
+        Object[] tableArr = selectFromHash.keySet().toArray();
+
+        ArrayList<Integer> orderedByIndexes = new ArrayList<>(); // the indexes the cartesian product will be ordered by
+
+        int attrFoundCount = 0; // this is used for error checking double counting or missing attributes
+        for(int i = 0;i < orderByAttrs.length;i++)    { // loop through all ordering attributes
+            String orderedAttrName = orderByAttrs[i].trim();
+            int cartesianProdIndex = 0;
+            for(int j = 0;j < tableArr.length;j++)    { // loop through tables
+                Table currTable = (Table)tableArr[j];
+                ArrayList<String> attrList = selectFromHash.get(currTable);
+
+                for(int k = 0;k < attrList.size();k++)  { // loop through tables attributes
+                    String currTableAttrName = attrList.get(k); // curr attr from the table
+
+                    if(currTableAttrName.equals(orderedAttrName))   {
+                        orderedByIndexes.add(cartesianProdIndex); // ordered attr matches this attr in this table
+                        attrFoundCount++;
+                    }
+                    else if(orderedAttrName.contains("."))    {
+                        String splitAttr[] = orderedAttrName.split("[\\s.\\s]"); // split by spaces and "."
+
+                        if(splitAttr[0].equals(currTable.getName()) && currTableAttrName.equals(splitAttr[1]))    {
+                            orderedByIndexes.add(cartesianProdIndex); // ordered attr matches this table and this attr
+                            attrFoundCount++;
+                        }
+                    }
+                    cartesianProdIndex++;
+                }
+            }
+        }
+        if(attrFoundCount != orderByAttrs.length)
+            throw new DMLParserException("Incorrect order by attributes");
+        return orderedByIndexes;
     }
 }

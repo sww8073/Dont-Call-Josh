@@ -55,8 +55,11 @@ public class DMLParser implements IDMLParser {
     @Override
     public Object[][] parseDMLQuery(String statement) throws DMLParserException{
         Select select = new Select(catalog, storageManager, statement);
-        select.separateSelect();
-        select.cartesianProduct();
+        select.separateSelect(); // parse and compute separate selects
+        Object[][] relationsArr = select.cartesianProduct(); // get cartesian product of all the separated selects
+
+        ArrayList<Integer> orderByIndexes = select.indexesToSortCartesianProd(select.getOrderBySubString(),
+                select.getSelectFromHash());
 
         // todo parse "where" part of statement
 

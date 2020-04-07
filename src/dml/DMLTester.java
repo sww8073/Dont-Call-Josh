@@ -159,7 +159,7 @@ public class DMLTester {
         database.executeNonQuery(insert4Multiple);
 
         // database.executeQuery("select foo.id, name, baz.id, department from foo, baz");
-        database.executeQuery("select * from foo, baz, bar");
+        database.executeQuery("select * from foo, baz, bar order by foo.id, baz.id, amount");
 //
 //        System.out.println("These inserts should report errors...");
 //
