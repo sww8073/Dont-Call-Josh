@@ -60,7 +60,7 @@ public class DMLParser implements IDMLParser {
 
         // todo parse "where" part of statement
 
-        if(!select.getOrderBySubString().equals("")) {
+        if(!select.getOrderBySubString().equals("")) { // check if there is order by in select statement
             ArrayList<Integer> orderByIndexes = select.indexesToSortCartesianProd(select.getOrderBySubString(),
                     select.getSeparatedSelects());
             relationsArr = select.sortRelations(relationsArr, orderByIndexes);
