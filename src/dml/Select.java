@@ -285,4 +285,76 @@ public class Select {
     public Object[][] sortRelations(Object[][] relations, ArrayList<Integer> orderingIndexes)  {
         return null;
     }
+
+    /**
+     * This function compares tuples based on specified comparison indices,
+     * @param t1 tuple one
+     * @param t2 tuple 2
+     * @param orderingIndexes List of indices you are comparing in ascending order
+     * @return if t1 > t2, return 1
+     *          if t1 < t2, return -1
+     *          if t1 == t2, return 0
+     *          return -2 if error
+     * @throws DMLParserException
+     */
+    private int compareTuple(Object[] t1, Object[] t2, ArrayList<Integer> orderingIndexes) throws DMLParserException    {
+        for(Integer index : orderingIndexes)    {
+            int result = compareObjects(t1[index], t2[index]);
+            if(result == -2)    {
+                throw new DMLParserException("Order by comparison error.");
+            }
+            else if(result != 0)    {
+                return result; // a difference was found
+            }
+        }
+        return 0; // no differences found
+    }
+
+    /**
+     * This function compares two indices.
+     * @param val1 an object to be compared
+     * @param val2 an object to be compared
+     * @precondition both val1 and val2 must be same type
+     * @return if val1 > val2, return 1
+     *          if val1 < val2, return -1
+     *          if val1 == val2, return 0
+     *          return -2 if error
+     */
+    private int compareObjects(Object val1, Object val2)    {
+        // compare Integer
+        if(val1 instanceof Integer) {
+            if((Integer)val1 > (Integer)val2)
+                return 1;
+            else if((Integer)val1 < (Integer)val2)
+                return -1;
+            else
+                return 0;
+        }
+        // compare Doubles
+        if(val1 instanceof Double) {
+            if((Double)val1 > (Double) val2)
+                return 1;
+            else if((Double)val1 < (Double) val2)
+                return -1;
+            else
+                return 0;
+        }
+        // compare Booleans
+        if(val1 instanceof Boolean) {
+            if((Boolean)val1 == (Boolean)val2)
+                return 0;
+            else
+                return 1;
+        }
+        // compare Strings
+        if(val1 instanceof String) {
+            if(val1.toString().compareTo(val2.toString()) > 0)
+                return 1;
+            else if(val1.toString().compareTo(val2.toString()) < 0)
+                return -1;
+            else
+                return 0;
+        }
+        return -2;
+    }
 }
