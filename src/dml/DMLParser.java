@@ -59,7 +59,7 @@ public class DMLParser implements IDMLParser {
         Object[][] relationsArr = select.cartesianProduct(); // get cartesian product of all the separated selects
 
         ArrayList<Integer> orderByIndexes = select.indexesToSortCartesianProd(select.getOrderBySubString(),
-                select.getSelectFromHash());
+                select.getSeparatedSelects());
 
         // todo parse "where" part of statement
 

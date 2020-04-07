@@ -41,6 +41,7 @@ public class Select {
     // getters
     public String getOrderBySubString() { return orderBySubString; }
     public HashMap<Table, ArrayList<String>> getSelectFromHash() { return selectFromHash; }
+    public HashMap<String, ArrayList<Object[]>> getSeparatedSelects() { return separatedSelects; }
 
     /**
      * This is a helper function for the constructor. This parses the select statement and initializes
@@ -173,6 +174,8 @@ public class Select {
             }
             catch(StorageManagerException e)    { throw new DMLParserException(e.getMessage()); }
         }
+        int i = 0;
+        i++;
     }
 
     /**
@@ -180,7 +183,7 @@ public class Select {
      * @return A 2d Object array of the cartesian product
      * @throws DMLParserException
      */
-    public Object[][]  cartesianProduct() throws DMLParserException {
+    public Object[][] cartesianProduct() throws DMLParserException {
         Collection<ArrayList<Object[]>> lists = separatedSelects.values();
 
         // source https://codereview.stackexchange.com/questions/67804/generate-cartesian-product-of-list-in-java
@@ -225,21 +228,25 @@ public class Select {
                 }
             }
         }
-        return null;
+        return result;
     }
 
     /**
      * This function gets the indexes that the cartesian product of all the select statements will be ordered by.
      * @param orderByString The unparsed order by string
-     * @param selectFromHash key -> Table, value -> ArrayList<String> attribute names
+     * @param selects key -> tableName, value -> ArrayList<String> attribute names
      * @return ArrayList of indexes for the cartesian product. Sorted in ascending order base on how the cartesian
      * product should be sorted.
      */
     public ArrayList<Integer> indexesToSortCartesianProd(
-            String orderByString, HashMap<Table, ArrayList<String>> selectFromHash) throws DMLParserException {
+            String orderByString, HashMap<String, ArrayList<Object[]>> selects) throws DMLParserException {
+        // this order must match the cartesian product or this wont work!!!
+        Object[] tableNameObjArr = separatedSelects.keySet().toArray();
+        String[] tableNameArr = new String[tableNameObjArr.length];
+        System.arraycopy(tableNameObjArr, 0, tableNameArr, 0, tableNameObjArr.length);
+
         orderByString = orderBySubString.replace("order by", "").trim(); // remove "order by"
         String[] orderByAttrs = orderByString.split(","); // retrieve all the attributes that will be ordered by
-        Object[] tableArr = selectFromHash.keySet().toArray();
 
         ArrayList<Integer> orderedByIndexes = new ArrayList<>(); // the indexes the cartesian product will be ordered by
 
@@ -247,8 +254,8 @@ public class Select {
         for(int i = 0;i < orderByAttrs.length;i++)    { // loop through all ordering attributes
             String orderedAttrName = orderByAttrs[i].trim();
             int cartesianProdIndex = 0;
-            for(int j = 0;j < tableArr.length;j++)    { // loop through tables
-                Table currTable = (Table)tableArr[j];
+            for(int j = 0;j < tableNameArr.length;j++)    { // loop through tables
+                Table currTable = catalog.getTable(tableNameArr[j]);
                 ArrayList<String> attrList = selectFromHash.get(currTable);
 
                 for(int k = 0;k < attrList.size();k++)  { // loop through tables attributes
