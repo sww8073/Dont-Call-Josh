@@ -292,7 +292,7 @@ public class Select {
         int n = solution.length;
         for(int i = 0;i < n - 1;i++)    {
             for(int j = 0;j < n - i - 1;j++)    {
-                if(compareTuple(solution[j], solution[i], orderingIndexes) > 0)    {
+                  if(compareTuple(solution[j], solution[i], orderingIndexes) > 0)    {
                     // swap solutions[j+1] and solutions[i]
                     Object[] temp = solution[j];
                     solution[j] = solution[j + 1];
@@ -338,6 +338,14 @@ public class Select {
      *          return -2 if error
      */
     private int compareObjects(Object val1, Object val2)    {
+        if(val1 == null || val2 == null)    {
+            if(val1 != null && val2 == null)
+                return 1;
+            else if(val1 == null && val2 != null)
+                return -1;
+            else
+                return 0; // they are both null
+        }
         // compare Integer
         if(val1 instanceof Integer) {
             if((Integer)val1 > (Integer)val2)
