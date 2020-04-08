@@ -204,113 +204,113 @@ public class phase4Tester {
             copyData1Values.remove(i);
         }
 
-//        String testSelectSingleAttrOneTable = "select id from dataone;";
-//
-//        System.out.println("Testing: " + testSelectSingleAttrOneTable);
-//
-//        result = database.executeQuery(testSelectSingleAttrOneTable);
-//
-//        if(result.length != data1Values.size()){
-//            System.err.println("Failed: " + testSelectSingleAttrOneTable);
-//            System.err.println("Expected size " + data1Values.size() + ", got " + result.length);
-//            System.exit(1);
-//        }
-//
-//        copyData1Values = new HashMap<>(data1Values);
-//
-//        for(Object[] o: result){
-//            Integer i = (Integer)o[0];
-//
-//            if(o.length != 1){
-//                System.err.println("Invalid length of entry with key: " + i);
-//                System.exit(1);
-//            }
-//            if(!copyData1Values.containsKey(i)){
-//                System.err.println("Invalid entry with key: " + i);
-//                System.exit(1);
-//            }
-//
-//            Object[] expected = new Object[] {data1Values.get(i)[0]};
-//
-//            if(!Arrays.equals(o, expected)){
-//                System.err.println("Invalid values for key: " + i);
-//                System.exit(1);
-//            }
-//
-//            copyData1Values.remove(i);
-//        }
-//
-//        String testSelectMultipleAttrOneTable = "select id, amount from dataone;";
-//
-//        System.out.println("Testing: " + testSelectMultipleAttrOneTable);
-//
-//        result = database.executeQuery(testSelectMultipleAttrOneTable);
-//
-//        if(result.length != data1Values.size()){
-//            System.err.println("Failed: " + testSelectMultipleAttrOneTable);
-//            System.err.println("Expected size "+ data1Values.size() + ", got " + result.length);
-//            System.exit(1);
-//        }
-//
-//        copyData1Values = new HashMap<>(data1Values);
-//
-//        for(Object[] o: result){
-//            Integer i = (Integer)o[0];
-//
-//            if(o.length != 2){
-//                System.err.println("Invalid length of entry with key: " + i);
-//                System.exit(1);
-//            }
-//            if(!copyData1Values.containsKey(i)){
-//                System.err.println("Invalid entry with key: " + i);
-//                System.exit(1);
-//            }
-//
-//            Object[] expected = new Object[] {data1Values.get(i)[0], data1Values.get(i)[2]};
-//
-//            if(!Arrays.equals(o, expected)){
-//                System.err.println("Invalid values for key: " + i);
-//                System.exit(1);
-//            }
-//
-//            copyData1Values.remove(i);
-//        }
-//
-//        String testingJoin = "select * from dataone, datatwo;";
-//
-//        System.out.println("Testing: " + testingJoin);
-//
-//        result = database.executeQuery(testingJoin);
-//
-//        if(result.length != merged.size()){
-//            System.err.println("Failed: " + testingJoin);
-//            System.err.println("Expected size " + merged.size() + ", got " + result.length);
-//            System.exit(1);
-//        }
-//
-//        Map<String, Object[]> mergedCopy = new HashMap<>(merged);
-//
-//        for(Object[] o: result){
-//            String i = o[0] + "," + o[4];
-//
-//            if(o.length != 6){
-//                System.err.println("Invalid length of entry with key: " + i);
-//                System.exit(1);
-//            }
-//            if(!merged.containsKey(i)){
-//                System.err.println("Invalid entry with key: " + i);
-//                System.exit(1);
-//            }
-//
-//            if(!Arrays.equals(o, mergedCopy.get(i))){
-//                System.err.println("Invalid values for key: " + i);
-//                System.exit(1);
-//            }
-//
-//            mergedCopy.remove(i);
-//        }
-//
-//        String testingJoinAttr = "select dataone.id, datatwo.id from dataone, datatwo;";
+        String testSelectSingleAttrOneTable = "select id from dataone;";
+
+        System.out.println("Testing: " + testSelectSingleAttrOneTable);
+
+        result = database.executeQuery(testSelectSingleAttrOneTable);
+
+        if(result.length != data1Values.size()){
+            System.err.println("Failed: " + testSelectSingleAttrOneTable);
+            System.err.println("Expected size " + data1Values.size() + ", got " + result.length);
+            System.exit(1);
+        }
+
+        copyData1Values = new HashMap<>(data1Values);
+
+        for(Object[] o: result){
+            Integer i = (Integer)o[0];
+
+            if(o.length != 1){
+                System.err.println("Invalid length of entry with key: " + i);
+                System.exit(1);
+            }
+            if(!copyData1Values.containsKey(i)){
+                System.err.println("Invalid entry with key: " + i);
+                System.exit(1);
+            }
+
+            Object[] expected = new Object[] {data1Values.get(i)[0]};
+
+            if(!Arrays.equals(o, expected)){
+                System.err.println("Invalid values for key: " + i);
+                System.exit(1);
+            }
+
+            copyData1Values.remove(i);
+        }
+
+        String testSelectMultipleAttrOneTable = "select id, amount from dataone;";
+
+        System.out.println("Testing: " + testSelectMultipleAttrOneTable);
+
+        result = database.executeQuery(testSelectMultipleAttrOneTable);
+
+        if(result.length != data1Values.size()){
+            System.err.println("Failed: " + testSelectMultipleAttrOneTable);
+            System.err.println("Expected size "+ data1Values.size() + ", got " + result.length);
+            System.exit(1);
+        }
+
+        copyData1Values = new HashMap<>(data1Values);
+
+        for(Object[] o: result){
+            Integer i = (Integer)o[0];
+
+            if(o.length != 2){
+                System.err.println("Invalid length of entry with key: " + i);
+                System.exit(1);
+            }
+            if(!copyData1Values.containsKey(i)){
+                System.err.println("Invalid entry with key: " + i);
+                System.exit(1);
+            }
+
+            Object[] expected = new Object[] {data1Values.get(i)[0], data1Values.get(i)[2]};
+
+            if(!Arrays.equals(o, expected)){
+                System.err.println("Invalid values for key: " + i);
+                System.exit(1);
+            }
+
+            copyData1Values.remove(i);
+        }
+
+        String testingJoin = "select * from dataone, datatwo;";
+
+        System.out.println("Testing: " + testingJoin);
+
+        result = database.executeQuery(testingJoin);
+
+        if(result.length != merged.size()){
+            System.err.println("Failed: " + testingJoin);
+            System.err.println("Expected size " + merged.size() + ", got " + result.length);
+            System.exit(1);
+        }
+
+        Map<String, Object[]> mergedCopy = new HashMap<>(merged);
+
+        for(Object[] o: result){
+            String i = o[0] + "," + o[4];
+
+            if(o.length != 6){
+                System.err.println("Invalid length of entry with key: " + i);
+                System.exit(1);
+            }
+            if(!merged.containsKey(i)){
+                System.err.println("Invalid entry with key: " + i);
+                System.exit(1);
+            }
+
+            if(!Arrays.equals(o, mergedCopy.get(i))){
+                System.err.println("Invalid values for key: " + i);
+                System.exit(1);
+            }
+
+            mergedCopy.remove(i);
+        }
+
+        String testingJoinAttr = "select dataone.id, datatwo.id from dataone, datatwo;";
 //
 //        System.out.println("Testing: " + testingJoinAttr);
 //

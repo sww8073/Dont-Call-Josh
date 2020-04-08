@@ -27,6 +27,7 @@ public class Select {
     private HashMap<Table, ArrayList<String>> selectFromHash; // key -> Table,  value -> ArrayList of selected attrs
     private HashMap<String, ArrayList<Object[]>> separatedSelects; // key -> tableName, value -> result of select
 
+    private String[] tableOrder; // the order in which tables will be ordered
     /**
      * Constructor.
      */
@@ -81,6 +82,14 @@ public class Select {
 
         // key - tableName, value - ArrayList of attributes
         this.selectFromHash = parseSelectAndFrom(selectSubString, fromSubString);
+
+        // get the order of the tables for the cartesian product
+        String tablesStr = fromSubString.toLowerCase().replace("from", "").trim();
+        String[] tablesArr = tablesStr.split(",");
+        for(int i = 0;i < tablesArr.length;i++) {
+            tablesArr[i] = tablesArr[i].trim(); // trim extra spaces
+        }
+        tableOrder = tablesArr;
     }
 
     /**
@@ -184,7 +193,11 @@ public class Select {
      * @throws DMLParserException
      */
     public Object[][] cartesianProduct() throws DMLParserException {
-        Collection<ArrayList<Object[]>> lists = separatedSelects.values();
+        // Collection<ArrayList<Object[]>> lists = separatedSelects.values();
+        Collection<ArrayList<Object[]>> lists = new ArrayList<>();
+        for(String tableName : tableOrder) {
+            lists.add(separatedSelects.get(tableName));
+        }
 
         // source https://codereview.stackexchange.com/questions/67804/generate-cartesian-product-of-list-in-java
         List<List<Object[]>> combinations = Arrays.asList(Arrays.asList());
@@ -241,9 +254,10 @@ public class Select {
     public ArrayList<Integer> indexesToSortCartesianProd(
             String orderByString, HashMap<String, ArrayList<Object[]>> selects) throws DMLParserException {
         // this order must match the cartesian product or this wont work!!!
-        Object[] tableNameObjArr = selects.keySet().toArray();
-        String[] tableNameArr = new String[tableNameObjArr.length];
-        System.arraycopy(tableNameObjArr, 0, tableNameArr, 0, tableNameObjArr.length);
+//        Object[] tableNameObjArr = selects.keySet().toArray();
+//        String[] tableNameArr = new String[tableNameObjArr.length];
+//        System.arraycopy(tableNameObjArr, 0, tableNameArr, 0, tableNameObjArr.length);
+        String[] tableNameArr = tableOrder;
 
         orderByString = orderBySubString.replace("order by", "").trim(); // remove "order by"
         String[] orderByAttrs = orderByString.split(","); // retrieve all the attributes that will be ordered by
@@ -312,9 +326,10 @@ public class Select {
      */
     public String[] getAttrNames(HashMap<String, ArrayList<Object[]>> selects) throws DMLParserException    {
         // this order must match the cartesian product or this wont work!!!
-        Object[] tableNameObjArr = selects.keySet().toArray();
-        String[] tableNameArr = new String[tableNameObjArr.length];
-        System.arraycopy(tableNameObjArr, 0, tableNameArr, 0, tableNameObjArr.length);
+        // Object[] tableNameObjArr = selects.keySet().toArray();
+//        String[] tableNameArr = new String[tableNameObjArr.length];
+//        System.arraycopy(tableNameObjArr, 0, tableNameArr, 0, tableNameObjArr.length);
+        String[] tableNameArr = tableOrder;
 
         ArrayList<String> cartesianAttrNames = new ArrayList<>();
 
