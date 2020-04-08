@@ -666,6 +666,32 @@ public class Select {
     }
 
     /**
+     * Compares two attributes based on given list of attributes to compare
+     * @return
+     */
+    private int compareAttributes(ArrayList<String> compAttrs, Object[] record, Object[] secondRecord, String[] cartAttr) {
+        String compAttr = compAttrs.remove(0);
+        int attrIndex = 0;
+        int comparison;
+
+        // find index of attr in record
+        for (int i = 0; i < cartAttr.length; i++) {
+            if (cartAttr[i] == compAttr) {
+                attrIndex = i;
+            }
+        }
+
+        comparison = compareObjects(record[attrIndex], secondRecord[attrIndex]);
+
+        if (comparison == 0 && compAttrs.size() != 0) {
+            comparison = compareAttributes(compAttrs, record, secondRecord, cartAttr);
+        } else {
+            return comparison;
+        }
+        return comparison;
+    }
+
+    /**
      * This function compares two indices.
      * @param val1 an object to be compared
      * @param val2 an object to be compared

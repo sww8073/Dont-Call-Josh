@@ -57,10 +57,9 @@ public class DMLParser implements IDMLParser {
     public Object[][] parseDMLQuery(String statement) throws DMLParserException{
         Select select = new Select(catalog, storageManager, statement);
         select.separateSelect(); // parse and compute separate selects
-        Object[][] relationsArr = select.cartesianProduct(); // get cartesian product of all the separated select
+        Object[][] relationsArr = select.cartesianProduct(); // get cartesian product of all the separated selects
 
-        String[] attrNames = select.getAttrNames(select.getSeparatedSelects());
-        relationsArr = select.getWhereRecords(relationsArr, attrNames);
+        // todo parse "where" part of statement
 
         if(!select.getOrderBySubString().equals("")) { // check if there is order by in select statement
             ArrayList<Integer> orderByIndexes = select.indexesToSortCartesianProd(select.getOrderBySubString(),
@@ -635,34 +634,6 @@ public class DMLParser implements IDMLParser {
             throw new DMLParserException("Cannot compare invalid types.");
     }
 
-    /**
-     * Compares two attributes based on given list of attributes to compare
-     * @return
-     */
-    private int compareAttributes(ArrayList<String> compAttrs, Object[] record, Object[] secondRecord, ArrayList<String> cartAttr, ArrayList<String> cartTypes) {
-        String compAttr = compAttrs.remove(0);
-        int attrIndex = cartAttr.indexOf(compAttr);
-        String attrType = cartTypes.get(attrIndex);
-        int comparison = 0;
-        switch (compAttr) {
-            case "integer":
-                comparison = 0;
-            case "double":
-                comparison = 0;
-            case "char":
-                comparison = 0;
-            case "boolean":
-                comparison = 0;
-        }
-
-        if (comparison == 0 && compAttrs.size() != 0) {
-            // comparison = compareAttributes(compAttrs, record, secondRecord);
-        } else {
-            return comparison;
-        }
-        return comparison;
-    }
-
     public void deleteTable(String statement) throws DMLParserException{
         String[] wordsInStatement = statement.split("\\s+");
         String table = wordsInStatement[2].replace(";","");
@@ -779,7 +750,7 @@ public class DMLParser implements IDMLParser {
         }
     }
 
-    public static Object[][] mergeArray(Object[][] a, Object[][] b){
+    private Object[][] mergeArray(Object[][] a, Object[][] b){
         Object[][] result = new Object[a.length + b.length][];
         System.arraycopy(a, 0, result, 0, a.length);
         System.arraycopy(b, 0, result, a.length, b.length);
@@ -791,7 +762,7 @@ public class DMLParser implements IDMLParser {
      * @param value String value
      * @return String type
      */
-    public static String checkType(String value){
+    private String checkType(String value){
         String blank;
         try{
             Integer.parseInt(value);
