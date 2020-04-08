@@ -638,9 +638,26 @@ public class DMLParser implements IDMLParser {
      * Compares two attributes based on given list of attributes to compare
      * @return
      */
-    private int compareAttributes(Table table, String[] compAttrs, Object[] Record, Object[] SecondRecord) {
-        ArrayList<Attribute> attributes = table.getAttrs();
+    private int compareAttributes(ArrayList<String> compAttrs, Object[] record, Object[] secondRecord) {
+        String compAttr = compAttrs.remove(0);
 
+        int comparison = 0;
+        switch (compAttr) {
+            case "integer":
+                comparison = 0;
+            case "double":
+                comparison = 0;
+            case "char":
+                comparison = 0;
+            case "boolean":
+                comparison = 0;
+        }
+        if (comparison == 0 && compAttrs.size() != 0) {
+            comparison = compareAttributes(compAttrs, record, secondRecord);
+        } else {
+            return 0;
+        }
+        return comparison;
     }
 
     public void deleteTable(String statement) throws DMLParserException{
