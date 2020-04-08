@@ -656,7 +656,7 @@ public class DMLParser implements IDMLParser {
         }
 
         if (comparison == 0 && compAttrs.size() != 0) {
-            comparison = compareAttributes(compAttrs, record, secondRecord);
+            // comparison = compareAttributes(compAttrs, record, secondRecord);
         } else {
             return comparison;
         }

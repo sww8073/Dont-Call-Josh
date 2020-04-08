@@ -2,16 +2,10 @@ package testers;
 
 import database.Database;
 import database.IDatabase;
-import storagemanager.AStorageManager;
-import storagemanager.StorageManager;
-import storagemanager.StorageManagerException;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.util.*;
-
-// import static storagemanager.Tester.deleteDirectory; // I had to remove this, it doesnt exist anywhere. by Matt C
 
 public class phase4Tester {
 
@@ -19,14 +13,10 @@ public class phase4Tester {
 
 
         // You may need to modify some values to test on your system
-        String dbLoc = "C:\\Users\\Matthew\\Desktop\\DB\\data";
-
-        // deleteDirectory(new File(dbLoc)); // I had to remove this, it doesnt exist anywhere. by Matt C
-        new File(dbLoc).mkdir();
+        String dbLoc = "db/";
 
         int pageBufferSize = 20;
         int pageSize = 4096;
-        AStorageManager sm;
 
         IDatabase database = Database.getConnection(dbLoc, pageBufferSize, pageSize);
 
