@@ -174,36 +174,36 @@ public class phase4Tester {
 
         String testSelectStarOneTableOrder = "select * from dataone order by amount;";
 
-//        System.out.println("Testing: " + testSelectStarOneTableOrder);
-//
-//        result = database.executeQuery(testSelectStarOneTableOrder);
-//
-//        if(result.length != data1Values.size()){
-//            System.err.println("Failed: " + testSelectStarOneTableOrder);
-//            System.err.println("Expected size 1000, got " + result.length);
-//            System.exit(1);
-//        }
-//
-//        int counter = 0;
-//
-//        for(Object[] o: result){
-//            Integer i = (Integer)o[0];
-//
-//            if(o.length != 4){
-//                System.err.println("Invalid length of entry with key: " + i);
-//                System.exit(1);
-//            }
-//
-//            if(!Arrays.equals(o, sortedAmount.get(counter++))){
-//                System.out.println(sortedAmount.get(counter-1)[2]);
-//                System.out.println(o[2]);
-//                System.err.println("Invalid values for key: " + i);
-//                System.exit(1);
-//            }
-//
-//            copyData1Values.remove(i);
-//        }
-//
+        System.out.println("Testing: " + testSelectStarOneTableOrder);
+
+        result = database.executeQuery(testSelectStarOneTableOrder);
+
+        if(result.length != data1Values.size()){
+            System.err.println("Failed: " + testSelectStarOneTableOrder);
+            System.err.println("Expected size 1000, got " + result.length);
+            System.exit(1);
+        }
+
+        int counter = 0;
+
+        for(Object[] o: result){
+            Integer i = (Integer)o[0];
+
+            if(o.length != 4){
+                System.err.println("Invalid length of entry with key: " + i);
+                System.exit(1);
+            }
+
+            if(!Arrays.equals(o, sortedAmount.get(counter++))){
+                System.out.println(sortedAmount.get(counter-1)[2]);
+                System.out.println(o[2]);
+                System.err.println("Invalid values for key: " + i);
+                System.exit(1);
+            }
+
+            copyData1Values.remove(i);
+        }
+
 //        String testSelectSingleAttrOneTable = "select id from dataone;";
 //
 //        System.out.println("Testing: " + testSelectSingleAttrOneTable);

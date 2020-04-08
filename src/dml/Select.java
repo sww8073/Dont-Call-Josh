@@ -288,11 +288,12 @@ public class Select {
      * @throws DMLParserException
      */
     public Object[][] sortRelations(Object[][] relations, ArrayList<Integer> orderingIndexes) throws DMLParserException  {
+        // https://www.geeksforgeeks.org/bubble-sort/
         Object[][] solution = relations;
         int n = solution.length;
         for(int i = 0;i < n - 1;i++)    {
             for(int j = 0;j < n - i - 1;j++)    {
-                  if(compareTuple(solution[j], solution[i], orderingIndexes) > 0)    {
+                  if(compareTuple(solution[j], solution[j + 1], orderingIndexes) > 0)    {
                     // swap solutions[j+1] and solutions[i]
                     Object[] temp = solution[j];
                     solution[j] = solution[j + 1];
