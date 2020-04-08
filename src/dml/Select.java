@@ -24,9 +24,10 @@ public class Select {
     private String whereSubString; // ex: "where attr1 = 1 and and attr2 = true"
     private String orderBySubString; // ex "order by attr3, attr1"
 
-    private HashMap<Table, ArrayList<String>> selectFromHash;
-    private HashMap<String, ArrayList<Object[]>> separatedSelects;
+    private HashMap<Table, ArrayList<String>> selectFromHash; // key -> Table,  value -> ArrayList of selected attrs
+    private HashMap<String, ArrayList<Object[]>> separatedSelects; // key -> tableName, value -> result of select
 
+    private String[] tableOrder; // the order in which tables will be ordered
     /**
      * Constructor.
      */
@@ -81,6 +82,14 @@ public class Select {
 
         // key - tableName, value - ArrayList of attributes
         this.selectFromHash = parseSelectAndFrom(selectSubString, fromSubString);
+
+        // get the order of the tables for the cartesian product
+        String tablesStr = fromSubString.toLowerCase().replace("from", "").trim();
+        String[] tablesArr = tablesStr.split(",");
+        for(int i = 0;i < tablesArr.length;i++) {
+            tablesArr[i] = tablesArr[i].trim(); // trim extra spaces
+        }
+        tableOrder = tablesArr;
     }
 
     /**
@@ -184,7 +193,11 @@ public class Select {
      * @throws DMLParserException
      */
     public Object[][] cartesianProduct() throws DMLParserException {
-        Collection<ArrayList<Object[]>> lists = separatedSelects.values();
+        // Collection<ArrayList<Object[]>> lists = separatedSelects.values();
+        Collection<ArrayList<Object[]>> lists = new ArrayList<>();
+        for(String tableName : tableOrder) {
+            lists.add(separatedSelects.get(tableName));
+        }
 
         // source https://codereview.stackexchange.com/questions/67804/generate-cartesian-product-of-list-in-java
         List<List<Object[]>> combinations = Arrays.asList(Arrays.asList());
@@ -241,9 +254,10 @@ public class Select {
     public ArrayList<Integer> indexesToSortCartesianProd(
             String orderByString, HashMap<String, ArrayList<Object[]>> selects) throws DMLParserException {
         // this order must match the cartesian product or this wont work!!!
-        Object[] tableNameObjArr = separatedSelects.keySet().toArray();
-        String[] tableNameArr = new String[tableNameObjArr.length];
-        System.arraycopy(tableNameObjArr, 0, tableNameArr, 0, tableNameObjArr.length);
+//        Object[] tableNameObjArr = selects.keySet().toArray();
+//        String[] tableNameArr = new String[tableNameObjArr.length];
+//        System.arraycopy(tableNameObjArr, 0, tableNameArr, 0, tableNameObjArr.length);
+        String[] tableNameArr = tableOrder;
 
         orderByString = orderBySubString.replace("order by", "").trim(); // remove "order by"
         String[] orderByAttrs = orderByString.split(","); // retrieve all the attributes that will be ordered by
@@ -288,11 +302,12 @@ public class Select {
      * @throws DMLParserException
      */
     public Object[][] sortRelations(Object[][] relations, ArrayList<Integer> orderingIndexes) throws DMLParserException  {
+        // https://www.geeksforgeeks.org/bubble-sort/
         Object[][] solution = relations;
         int n = solution.length;
         for(int i = 0;i < n - 1;i++)    {
             for(int j = 0;j < n - i - 1;j++)    {
-                if(compareTuple(solution[j], solution[i], orderingIndexes) > 0)    {
+                  if(compareTuple(solution[j], solution[j + 1], orderingIndexes) > 0)    {
                     // swap solutions[j+1] and solutions[i]
                     Object[] temp = solution[j];
                     solution[j] = solution[j + 1];
@@ -301,6 +316,36 @@ public class Select {
             }
         }
         return solution;
+    }
+
+    /**
+     * This function gets the attribute names of the cartesian product result array
+     * @param selects hash of the form: key -> tableName, value -> result of select
+     * @return Array of attribute names in the form: tableName.attrName
+     * @throws DMLParserException
+     */
+    public String[] getAttrNames(HashMap<String, ArrayList<Object[]>> selects) throws DMLParserException    {
+        // this order must match the cartesian product or this wont work!!!
+        // Object[] tableNameObjArr = selects.keySet().toArray();
+//        String[] tableNameArr = new String[tableNameObjArr.length];
+//        System.arraycopy(tableNameObjArr, 0, tableNameArr, 0, tableNameObjArr.length);
+        String[] tableNameArr = tableOrder;
+
+        ArrayList<String> cartesianAttrNames = new ArrayList<>();
+
+        // loop through tables in cartesian product order, then loop through each tables selected attributes
+        for(String tableName : tableNameArr)    {
+            Table table = catalog.getTable(tableName);
+            ArrayList<String> selectedAttrs = selectFromHash.get(table);
+            for(String attrName : selectedAttrs)    {
+                cartesianAttrNames.add(tableName + "." + attrName);
+            }
+        }
+
+        Object[] tempResult = cartesianAttrNames.toArray();
+        String[] result = new String[tempResult.length];
+        System.arraycopy(tempResult, 0, result, 0, tempResult.length);
+        return result;
     }
 
     /**
@@ -338,6 +383,14 @@ public class Select {
      *          return -2 if error
      */
     private int compareObjects(Object val1, Object val2)    {
+        if(val1 == null || val2 == null)    {
+            if(val1 != null && val2 == null)
+                return 1;
+            else if(val1 == null && val2 != null)
+                return -1;
+            else
+                return 0; // they are both null
+        }
         // compare Integer
         if(val1 instanceof Integer) {
             if((Integer)val1 > (Integer)val2)
