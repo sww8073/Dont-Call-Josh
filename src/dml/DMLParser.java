@@ -57,9 +57,10 @@ public class DMLParser implements IDMLParser {
     public Object[][] parseDMLQuery(String statement) throws DMLParserException{
         Select select = new Select(catalog, storageManager, statement);
         select.separateSelect(); // parse and compute separate selects
-        Object[][] relationsArr = select.cartesianProduct(); // get cartesian product of all the separated selects
+        Object[][] relationsArr = select.cartesianProduct(); // get cartesian product of all the separated select
 
-        // todo parse "where" part of statement
+        String[] attrNames = select.getAttrNames(select.getSeparatedSelects());
+        relationsArr = select.getWhereRecords(relationsArr, attrNames);
 
         if(!select.getOrderBySubString().equals("")) { // check if there is order by in select statement
             ArrayList<Integer> orderByIndexes = select.indexesToSortCartesianProd(select.getOrderBySubString(),
@@ -750,7 +751,7 @@ public class DMLParser implements IDMLParser {
         }
     }
 
-    private Object[][] mergeArray(Object[][] a, Object[][] b){
+    public static Object[][] mergeArray(Object[][] a, Object[][] b){
         Object[][] result = new Object[a.length + b.length][];
         System.arraycopy(a, 0, result, 0, a.length);
         System.arraycopy(b, 0, result, a.length, b.length);
@@ -762,7 +763,7 @@ public class DMLParser implements IDMLParser {
      * @param value String value
      * @return String type
      */
-    private String checkType(String value){
+    public static String checkType(String value){
         String blank;
         try{
             Integer.parseInt(value);
