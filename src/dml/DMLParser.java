@@ -638,9 +638,10 @@ public class DMLParser implements IDMLParser {
      * Compares two attributes based on given list of attributes to compare
      * @return
      */
-    private int compareAttributes(ArrayList<String> compAttrs, Object[] record, Object[] secondRecord) {
+    private int compareAttributes(ArrayList<String> compAttrs, Object[] record, Object[] secondRecord, ArrayList<String> cartAttr, ArrayList<String> cartTypes) {
         String compAttr = compAttrs.remove(0);
-
+        int attrIndex = cartAttr.indexOf(compAttr);
+        String attrType = cartTypes.get(attrIndex);
         int comparison = 0;
         switch (compAttr) {
             case "integer":
@@ -652,10 +653,11 @@ public class DMLParser implements IDMLParser {
             case "boolean":
                 comparison = 0;
         }
+
         if (comparison == 0 && compAttrs.size() != 0) {
             comparison = compareAttributes(compAttrs, record, secondRecord);
         } else {
-            return 0;
+            return comparison;
         }
         return comparison;
     }
