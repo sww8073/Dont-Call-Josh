@@ -6,6 +6,7 @@ import ddl.Table;
 import storagemanager.StorageManager;
 import storagemanager.StorageManagerException;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class DMLParser implements IDMLParser {
@@ -632,6 +633,15 @@ public class DMLParser implements IDMLParser {
             return 0;
         else
             throw new DMLParserException("Cannot compare invalid types.");
+    }
+
+    /**
+     * Compares two attributes based on given list of attributes to compare
+     * @return
+     */
+    private int compareAttributes(Table table, String[] compAttrs, Object[] Record, Object[] SecondRecord) {
+        ArrayList<Attribute> attributes = table.getAttrs();
+
     }
 
     public void deleteTable(String statement) throws DMLParserException{
