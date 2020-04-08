@@ -311,43 +311,43 @@ public class phase4Tester {
         }
 
         String testingJoinAttr = "select dataone.id, datatwo.id from dataone, datatwo;";
-//
-//        System.out.println("Testing: " + testingJoinAttr);
-//
-//        result = database.executeQuery(testingJoinAttr);
-//
-//        if(result.length != merged.size()){
-//            System.err.println("Failed: " + testingJoinAttr);
-//            System.err.println("Expected size " + merged.size() + ", got " + result.length);
-//            System.exit(1);
-//        }
-//
-//        mergedCopy = new HashMap<>(merged);
-//
-//        for(Object[] o: result){
-//            String i = o[0] + "," + o[1];
-//
-//            if(o.length != 2){
-//                System.err.println("Invalid length of entry with key: " + i);
-//                System.exit(1);
-//            }
-//            if(!merged.containsKey(i)){
-//                System.err.println("Invalid entry with key: " + i);
-//                System.exit(1);
-//            }
-//
-//            Object[] expected = new Object[]{
-//                    mergedCopy.get(i)[0],
-//                    mergedCopy.get(i)[4]
-//            };
-//            if(!Arrays.equals(o, expected)){
-//                System.err.println("Invalid values for key: " + i);
-//                System.exit(1);
-//            }
-//
-//            mergedCopy.remove(i);
-//        }
-//
+
+        System.out.println("Testing: " + testingJoinAttr);
+
+        result = database.executeQuery(testingJoinAttr);
+
+        if(result.length != merged.size()){
+            System.err.println("Failed: " + testingJoinAttr);
+            System.err.println("Expected size " + merged.size() + ", got " + result.length);
+            System.exit(1);
+        }
+
+        mergedCopy = new HashMap<>(merged);
+
+        for(Object[] o: result){
+            String i = o[0] + "," + o[1];
+
+            if(o.length != 2){
+                System.err.println("Invalid length of entry with key: " + i);
+                System.exit(1);
+            }
+            if(!merged.containsKey(i)){
+                System.err.println("Invalid entry with key: " + i);
+                System.exit(1);
+            }
+
+            Object[] expected = new Object[]{
+                    mergedCopy.get(i)[0],
+                    mergedCopy.get(i)[4]
+            };
+            if(!Arrays.equals(o, expected)){
+                System.err.println("Invalid values for key: " + i);
+                System.exit(1);
+            }
+
+            mergedCopy.remove(i);
+        }
+
 //        String testingJoinWhere = "select * from dataone, datatwo where dataone.id = datatwo.id;";
 //
 //        System.out.println("Testing: " + testingJoinWhere);
