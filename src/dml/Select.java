@@ -24,8 +24,8 @@ public class Select {
     private String whereSubString; // ex: "where attr1 = 1 and and attr2 = true"
     private String orderBySubString; // ex "order by attr3, attr1"
 
-    private HashMap<Table, ArrayList<String>> selectFromHash;
-    private HashMap<String, ArrayList<Object[]>> separatedSelects;
+    private HashMap<Table, ArrayList<String>> selectFromHash; // key -> Table,  value -> ArrayList of selected attrs
+    private HashMap<String, ArrayList<Object[]>> separatedSelects; // key -> tableName, value -> result of select
 
     /**
      * Constructor.
@@ -241,7 +241,7 @@ public class Select {
     public ArrayList<Integer> indexesToSortCartesianProd(
             String orderByString, HashMap<String, ArrayList<Object[]>> selects) throws DMLParserException {
         // this order must match the cartesian product or this wont work!!!
-        Object[] tableNameObjArr = separatedSelects.keySet().toArray();
+        Object[] tableNameObjArr = selects.keySet().toArray();
         String[] tableNameArr = new String[tableNameObjArr.length];
         System.arraycopy(tableNameObjArr, 0, tableNameArr, 0, tableNameObjArr.length);
 
@@ -301,6 +301,35 @@ public class Select {
             }
         }
         return solution;
+    }
+
+    /**
+     * This function gets the attribute names of the cartesian product result array
+     * @param selects hash of the form: key -> tableName, value -> result of select
+     * @return Array of attribute names in the form: tableName.attrName
+     * @throws DMLParserException
+     */
+    public String[] getAttrNames(HashMap<String, ArrayList<Object[]>> selects) throws DMLParserException    {
+        // this order must match the cartesian product or this wont work!!!
+        Object[] tableNameObjArr = selects.keySet().toArray();
+        String[] tableNameArr = new String[tableNameObjArr.length];
+        System.arraycopy(tableNameObjArr, 0, tableNameArr, 0, tableNameObjArr.length);
+
+        ArrayList<String> cartesianAttrNames = new ArrayList<>();
+
+        // loop through tables in cartesian product order, then loop through each tables selected attributes
+        for(String tableName : tableNameArr)    {
+            Table table = catalog.getTable(tableName);
+            ArrayList<String> selectedAttrs = selectFromHash.get(table);
+            for(String attrName : selectedAttrs)    {
+                cartesianAttrNames.add(tableName + "." + attrName);
+            }
+        }
+
+        Object[] tempResult = cartesianAttrNames.toArray();
+        String[] result = new String[tempResult.length];
+        System.arraycopy(tempResult, 0, result, 0, tempResult.length);
+        return result;
     }
 
     /**

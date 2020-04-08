@@ -59,6 +59,7 @@ public class DMLParser implements IDMLParser {
         Object[][] relationsArr = select.cartesianProduct(); // get cartesian product of all the separated selects
 
         // todo parse "where" part of statement
+        String[] attrNames = select.getAttrNames(select.getSeparatedSelects()); // todo here you go Stone
 
         if(!select.getOrderBySubString().equals("")) { // check if there is order by in select statement
             ArrayList<Integer> orderByIndexes = select.indexesToSortCartesianProd(select.getOrderBySubString(),
