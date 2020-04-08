@@ -638,24 +638,18 @@ public class DMLParser implements IDMLParser {
      * Compares two attributes based on given list of attributes to compare
      * @return
      */
-    private int compareAttributes(ArrayList<String> compAttrs, Object[] record, Object[] secondRecord, ArrayList<String> cartAttr, ArrayList<String> cartTypes) {
+    private int compareAttributes(ArrayList<String> compAttrs, Object[] record, Object[] secondRecord, ArrayList<String> cartAttr) throws DMLParserException{
         String compAttr = compAttrs.remove(0);
         int attrIndex = cartAttr.indexOf(compAttr);
-        String attrType = cartTypes.get(attrIndex);
-        int comparison = 0;
-        switch (compAttr) {
-            case "integer":
-                comparison = 0;
-            case "double":
-                comparison = 0;
-            case "char":
-                comparison = 0;
-            case "boolean":
-                comparison = 0;
-        }
+        int comparison;
 
+        try {
+            comparison = compare(record[attrIndex], secondRecord[attrIndex]);
+        } catch (DMLParserException e) {
+            throw new DMLParserException("Tried to compare invalid types");
+        }
         if (comparison == 0 && compAttrs.size() != 0) {
-            comparison = compareAttributes(compAttrs, record, secondRecord);
+            comparison = compareAttributes(compAttrs, record, secondRecord, cartAttr);
         } else {
             return comparison;
         }
