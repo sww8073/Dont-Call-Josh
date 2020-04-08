@@ -634,28 +634,6 @@ public class DMLParser implements IDMLParser {
             throw new DMLParserException("Cannot compare invalid types.");
     }
 
-    /**
-     * Compares two attributes based on given list of attributes to compare
-     * @return
-     */
-    private int compareAttributes(ArrayList<String> compAttrs, Object[] record, Object[] secondRecord, ArrayList<String> cartAttr) throws DMLParserException{
-        String compAttr = compAttrs.remove(0);
-        int attrIndex = cartAttr.indexOf(compAttr);
-        int comparison;
-
-        try {
-            comparison = compare(record[attrIndex], secondRecord[attrIndex]);
-        } catch (DMLParserException e) {
-            throw new DMLParserException("Tried to compare invalid types");
-        }
-        if (comparison == 0 && compAttrs.size() != 0) {
-            comparison = compareAttributes(compAttrs, record, secondRecord, cartAttr);
-        } else {
-            return comparison;
-        }
-        return comparison;
-    }
-
     public void deleteTable(String statement) throws DMLParserException{
         String[] wordsInStatement = statement.split("\\s+");
         String table = wordsInStatement[2].replace(";","");
