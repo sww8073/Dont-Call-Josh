@@ -92,14 +92,14 @@ public class Database implements IDatabase {
      * @return the table of data returned. Size zero if empty
      */
     public Object[][] executeQuery(String query) {
+        Object[][] result = new Object[0][];
         try {
-            idmlParser.parseDMLQuery(query);
+            result = idmlParser.parseDMLQuery(query);
         }
         catch (DMLParserException e)    {
             System.err.println(e.getMessage());
         }
-
-        return new Object[0][];
+        return result;
     }
 
     /**
