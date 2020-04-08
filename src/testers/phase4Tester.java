@@ -13,7 +13,7 @@ public class phase4Tester {
 
 
         // You may need to modify some values to test on your system
-        String dbLoc = "C:\\Users\\Matthew\\Desktop\\DB\\data";
+        String dbLoc = "C:\\Users\\wyatt\\Desktop\\database\\dba";
 
         int pageBufferSize = 20;
         int pageSize = 4096;
@@ -348,45 +348,45 @@ public class phase4Tester {
             mergedCopy.remove(i);
         }
 
-//        String testingJoinWhere = "select * from dataone, datatwo where dataone.id = datatwo.id;";
-//
-//        System.out.println("Testing: " + testingJoinWhere);
-//
-//        result = database.executeQuery(testingJoinWhere);
-//
-//        if(result.length != 49){
-//            System.err.println("Failed: " + testingJoinWhere);
-//            System.err.println("Expected size " + 49 + ", got " + result.length);
-//            System.exit(1);
-//        }
-//
-//        mergedCopy = new HashMap<>(merged);
-//
-//        for(Object[] o: result){
-//            String i = o[0] + "," + o[4];
-//
-//            if(o.length != 6){
-//                System.err.println("Invalid length of entry with key: " + i);
-//                System.exit(1);
-//            }
-//            if(!merged.containsKey(i)){
-//                System.err.println("Invalid entry with key: " + i);
-//                System.exit(1);
-//            }
-//
-//            if(!o[0].equals(mergedCopy.get(i)[0]) || !o[4].equals(mergedCopy.get(i)[4])){
-//                System.err.println("Invalid values joined for key: " + i);
-//                System.exit(1);
-//            }
-//
-//            if(!Arrays.equals(o, mergedCopy.get(i))){
-//                System.err.println("Invalid values for key: " + i);
-//                System.exit(1);
-//            }
-//
-//            mergedCopy.remove(i);
-//        }
-//
-//        System.out.println("Testing complete...");
+        String testingJoinWhere = "select * from dataone, datatwo where dataone.id = datatwo.id;";
+
+        System.out.println("Testing: " + testingJoinWhere);
+
+        result = database.executeQuery(testingJoinWhere);
+
+        if(result.length != 49){
+            System.err.println("Failed: " + testingJoinWhere);
+            System.err.println("Expected size " + 49 + ", got " + result.length);
+            System.exit(1);
+        }
+
+        mergedCopy = new HashMap<>(merged);
+
+        for(Object[] o: result){
+            String i = o[0] + "," + o[4];
+
+            if(o.length != 6){
+                System.err.println("Invalid length of entry with key: " + i);
+                System.exit(1);
+            }
+            if(!merged.containsKey(i)){
+                System.err.println("Invalid entry with key: " + i);
+                System.exit(1);
+            }
+
+            if(!o[0].equals(mergedCopy.get(i)[0]) || !o[4].equals(mergedCopy.get(i)[4])){
+                System.err.println("Invalid values joined for key: " + i);
+                System.exit(1);
+            }
+
+            if(!Arrays.equals(o, mergedCopy.get(i))){
+                System.err.println("Invalid values for key: " + i);
+                System.exit(1);
+            }
+
+            mergedCopy.remove(i);
+        }
+
+        System.out.println("Testing complete...");
     }
 }

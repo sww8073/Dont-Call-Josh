@@ -170,7 +170,6 @@ public class Select {
                 // gets all the records from the table
                 Object[][] allRecords = storageManager.getRecords(currTable.getId());
                 for(int i = 0;i < allRecords.length;i++) { // loop through all th records within currTable
-
                     // gets all the selected attributes from record i
                     Object[] selectedAttr = new Object[attributes.size()];
                     for (int j = 0; j < attributes.size(); j++) {
@@ -185,6 +184,300 @@ public class Select {
         }
         int i = 0;
         i++;
+    }
+
+    /**
+     * Helper function to get index of attribute in joined array
+     * @param attrNames
+     * @param attributeName
+     */
+    public int getIndex(String[] attrNames, String attributeName){
+        int index = -1;
+        for (int i = 0; i < attrNames.length; i++){
+            if(attrNames[i].equals(attributeName)){
+                index = i;
+            }
+        }
+        return index;
+    }
+
+    /***
+     * getWhereRecords - A where clause parser for phase 4, which accounts for the fact that attributes now have tables
+     * in front of their names and that the right side of the conditional is not a value but an attribute name
+     * @param records
+     * @param attrNames
+     * @return
+     * @throws DMLParserException
+     */
+    public Object[][] getWhereRecords(Object[][] records, String[] attrNames) throws DMLParserException {
+        if(whereSubString.equals("")){
+            return records;
+        }
+        Object[][] updatedRecords;
+        String[] s = whereSubString.split("where ");
+        whereSubString = s[1];
+        String[] wordsInStatement = whereSubString.split(" ");
+        int count = 0;
+        String attrName = "";
+        String conditional = "";
+        String value = "";
+        String valueType = "";
+
+        String where1 = ""; // i.e dataone.id
+        String where2 = ""; // i.e datatwo.id
+        String table1Name = "";
+        String table2Name = "";
+        Table table = null;
+        Table table2 = null;
+
+        int index = 0;
+        Attribute attribute = null;
+        Attribute attribute2 = null;
+
+        boolean and = false;
+        boolean or = false;
+        boolean loop = false;
+
+        Object[][] newRecords = records;
+        Object[][] orArray;
+        for(int i = 0; i < wordsInStatement.length; i++){
+            if (count == 0) {
+                where1 = wordsInStatement[i];
+                String[] tableAttr = wordsInStatement[i].split("\\.");
+                table1Name = tableAttr[0];
+                table = catalog.getTable(table1Name);
+                if(table == null){
+                    throw new DMLParserException("Table does not exist");
+                }
+                attrName = tableAttr[1];
+                attribute = table.getAttribute(attrName);
+                if (attribute == null) {
+                    throw new DMLParserException("Attribute does not exist");
+                }
+                count++;
+                continue;
+            }
+            else if (count == 1){
+                conditional = wordsInStatement[i];
+                count++;
+                continue;
+            }
+            else if (count == 2){
+                if( i == wordsInStatement.length - 1){
+                    value = wordsInStatement[i].replace(";","");
+                }
+                else{
+                    value = wordsInStatement[i];
+                }
+                where2 = value;
+                String[] tableAttr = value.split("\\.");
+                table2Name = tableAttr[0];
+                table2 = catalog.getTable(table2Name);
+                if(table2 == null){
+                    throw new DMLParserException("Table2 does not exist");
+                }
+                value = tableAttr[1];
+                attribute2 = table2.getAttribute(value);
+                valueType = attribute2.getType();
+                if(!valueType.equals(attribute.getType())){
+                    throw new DMLParserException("Types of attributes of the where clause does not match");
+                }
+                if(valueType.contains("varchar")){
+                    valueType = "char";
+                }
+            }
+            if(and){
+                and = false;
+                newRecords = acquireRecords(newRecords, attrNames, conditional, where1, where2, valueType);
+                loop = true;
+                if( i == wordsInStatement.length - 1){
+                    break;
+                }
+            }
+            else if(or){
+                or = false;
+                orArray = acquireRecords(records, attrNames, conditional, where1, where2, valueType); // or does not make it past this point
+                newRecords = DMLParser.mergeArray(newRecords,orArray);
+                loop = true;
+                if( i == wordsInStatement.length - 1){
+                    break;
+                }
+            }
+            if( i == wordsInStatement.length - 1){
+                newRecords = acquireRecords(records, attrNames, conditional, where1, where2, valueType);
+            }
+            else{
+                i++;
+                count = 0;
+                if(!loop){
+                    newRecords = acquireRecords(records, attrNames, conditional, where1, where2, valueType);
+                }
+                if (wordsInStatement[i].equals("and")){
+                    and = true;
+                }
+                else if (wordsInStatement[i].equals("or")){
+                    or = true;
+                }
+            }
+            loop = false;
+        }
+        updatedRecords = newRecords;
+        return updatedRecords;
+    }
+
+    /**
+     * An acquireRecords function for phase 4 that filters records out from the joined tables.
+     * @param records
+     * @param attrNames
+     * @param conditional
+     * @param where1
+     * @param where2
+     * @param type
+     * @return
+     */
+    private Object[][] acquireRecords(Object[][] records, String[] attrNames, String conditional, String where1, String where2, String type){
+        Object[][] newRecords = new Object[0][];
+        int count = 0;
+        int size = 1;
+        boolean num = false, doub = false, bool = false, charac = false;
+        int index1 = getIndex(attrNames, where1);
+        int index2 = getIndex(attrNames, where2);
+        switch(type){
+            case "integer":
+                num = true;
+                break;
+            case "double":
+                doub = true;
+                break;
+            case "char":
+                charac = true;
+                break;
+            case "boolean":
+                bool = true;
+                break;
+        }
+        if(num){
+            for(int i=0; i<records.length; i++) {
+                boolean add = false;
+                Object[] record = records[i];
+                try{
+                    int val = (Integer) record[index2];
+                    int rec = (Integer) record[index1];
+                    switch(conditional){
+                        case "=":
+                            if(rec == val){
+                                add = true;
+                            }
+                            break;
+                        case ">":
+                            if(rec > val){
+                                add = true;
+                            }
+                            break;
+                        case "<":
+                            if(rec < val){
+                                add = true;
+                            }
+                            break;
+                        case ">=":
+                            if(rec >= val){
+                                add = true;
+                            }
+                            break;
+                        case "<=":
+                            if(rec <= val){
+                                add = true;
+                            }
+                            break;
+                    }
+                    if(add){
+                        newRecords = Arrays.copyOf(newRecords, size);
+                        newRecords[count] = record;
+                        size++;
+                        count++;
+                    }
+                }catch( NullPointerException e){}
+            }
+        }
+        else if(doub){
+            for(int i=0; i<records.length; i++) {
+                boolean add = false;
+                Object[] record = records[i];
+                try{
+                    double val = (Double) record[index2];
+                    double rec = (Double) record[index1];
+                    switch(conditional){
+                        case "=":
+                            if(rec == val){
+                                add = true;
+                            }
+                            break;
+                        case ">":
+                            if(rec > val){
+                                add = true;
+                            }
+                            break;
+                        case "<":
+                            if(rec < val){
+                                add = true;
+                            }
+                            break;
+                        case ">=":
+                            if(rec >= val){
+                                add = true;
+                            }
+                            break;
+                        case "<=":
+                            if(rec <= val){
+                                add = true;
+                            }
+                            break;
+                    }
+                    if(add){
+                        newRecords = Arrays.copyOf(newRecords, size);
+                        newRecords[count] = record;
+                        size++;
+                        count++;
+                    }
+                }catch( NullPointerException e){}
+            }
+        }
+        else if(charac || bool){
+            //Compare String values
+            for(int i=0; i<records.length; i++) {
+                boolean add = false;
+                Object[] record = records[i];
+                try{
+                    String val = (String) record[index2];
+                    String rec = (String) record[index1];
+                    int compare = val.compareTo(rec);
+                    switch(conditional){
+                        case "=":
+                            if(compare == 0){
+                                add = true;
+                            }
+                            break;
+                        case ">":
+                            if(compare > 0){
+                                add = true;
+                            }
+                            break;
+                        case "<":
+                            if(compare < 0){
+                                add = true;
+                            }
+                            break;
+                    }
+                    if(add){
+                        newRecords = Arrays.copyOf(newRecords, size);
+                        newRecords[count] = record;
+                        size++;
+                        count++;
+                    }
+                }catch( NullPointerException e){}
+            }
+        }
+        return newRecords;
     }
 
     /**
